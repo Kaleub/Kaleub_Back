@@ -1,4 +1,4 @@
-package com.kale.dto.response;
+package com.kale.dto.response.auth;
 
 import lombok.Builder;
 import lombok.Getter;

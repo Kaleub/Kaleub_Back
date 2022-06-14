@@ -1,8 +1,8 @@
 package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
-import com.kale.dto.request.LoginUserReqDto;
-import com.kale.dto.response.LoginUserResDto;
+import com.kale.dto.request.auth.LoginUserReqDto;
+import com.kale.dto.response.auth.LoginUserResDto;
 import com.kale.model.User;
 import com.kale.service.AuthService;
 import lombok.RequiredArgsConstructor;
