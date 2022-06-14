@@ -1,28 +1,40 @@
 package com.kale.service;
 
+import com.kale.exception.LoginException;
 import com.kale.model.Participate;
 import com.kale.model.Room;
+import com.kale.model.User;
 import com.kale.repository.ParticipateRepository;
 import com.kale.repository.RoomRepository;
+import com.kale.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class RoomService {
 
+    private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final ParticipateRepository participateRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Room createRoom(String userEmail, String title, String password) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
 
         Room room = Room.builder()
                 .title(title)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .code(createRoomCode())
-                .ownerEmail(userEmail)
+                .ownerUser(user.get())
                 .build();
 
         Room created = roomRepository.save(room);

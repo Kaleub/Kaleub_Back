@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table
 @Entity
@@ -18,19 +16,20 @@ public class Room extends BaseEntity {
     @Column(nullable = false, unique = true, length = 20)
     private String code;
 
-    @Column(nullable = false, length = 20)
-    private String ownerEmail;
+    @ManyToOne
+    @JoinColumn(name="USER_ID")
+    private User ownerUser;
 
     @Column(nullable = false, length = 20)
     private String title;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 100)
     private String password;
 
     @Builder
-    public Room(String code, String ownerEmail, String title, String password) {
+    public Room(String code, User ownerUser, String title, String password) {
         this.code = code;
-        this.ownerEmail = ownerEmail;
+        this.ownerUser = ownerUser;
         this.title = title;
         this.password = password;
     }

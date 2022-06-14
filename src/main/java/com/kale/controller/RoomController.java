@@ -3,6 +3,7 @@ package com.kale.controller;
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.auth.LoginUserReqDto;
 import com.kale.dto.request.room.CreateRoomReqDto;
+import com.kale.dto.response.room.CreateRoomResDto;
 import com.kale.model.Room;
 import com.kale.model.User;
 import com.kale.service.RoomService;
@@ -33,11 +34,21 @@ public class RoomController {
 
         Room room = roomService.createRoom(userEmail, createRoomReqDto.getTitle(), createRoomReqDto.getPassword());
 
+        CreateRoomResDto createRoomResDto = CreateRoomResDto.builder()
+                .id(room.getId())
+                .code(room.getCode())
+                .ownerEmail(room.getOwnerUser().getEmail())
+                .title(room.getTitle())
+                .password(room.getPassword())
+                .createdDate(room.getCreatedDate())
+                .modifiedDate(room.getModifiedDate())
+                .build();
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("방 생성 성공")
-                        .data(room)
+                        .data(createRoomResDto)
                         .build()
         );
     }
