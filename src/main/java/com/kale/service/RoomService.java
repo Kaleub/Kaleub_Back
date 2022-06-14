@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,6 +83,23 @@ public class RoomService {
         } else {
             throw new NotFoundRoomException();
         }
+    }
+
+    public ArrayList<Room> getRooms(String userEmail) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        ArrayList<Room> rooms = new ArrayList<>();
+
+        ArrayList<Participate> participates = participateRepository.findAllByUser(user.get());
+        for (int i = 0; i < participates.size(); i++) {
+            rooms.add(participates.get(i).getRoom());
+        }
+
+        return rooms;
     }
 
     private String createRoomCode() {
