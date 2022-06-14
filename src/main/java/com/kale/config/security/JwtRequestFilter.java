@@ -46,6 +46,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throw new LoginException();
         }
 
+        response.setHeader("user", email);
+
         filterChain.doFilter(request, response);
     }
 }

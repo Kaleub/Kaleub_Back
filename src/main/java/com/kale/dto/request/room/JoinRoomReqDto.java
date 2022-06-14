@@ -1,12 +1,12 @@
-package com.kale.dto.request;
+package com.kale.dto.request.room;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class LoginFormDto {
+public class JoinRoomReqDto {
 
-    private String email;
+    private String code;
     private String password;
 }

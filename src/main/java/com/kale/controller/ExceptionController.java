@@ -1,7 +1,7 @@
 package com.kale.controller;
 
 import com.kale.dto.ErrorDto;
-import com.kale.exception.LoginException;
+import com.kale.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,10 @@ public class ExceptionController {
 
     //400
     @ExceptionHandler({
+            NotFoundEmailException.class,
+            InvalidPasswordException.class,
+            NotFoundRoomException.class,
+            AlreadyInRoomException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.error(ex.getMessage(), ex);

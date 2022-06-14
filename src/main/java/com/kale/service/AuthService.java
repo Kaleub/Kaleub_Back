@@ -2,6 +2,8 @@ package com.kale.service;
 
 import com.kale.constant.Role;
 import com.kale.dto.request.SignUpReqDto;
+import com.kale.exception.InvalidPasswordException;
+import com.kale.exception.NotFoundEmailException;
 import com.kale.model.User;
 import com.kale.repository.UserRepository;
 import com.kale.util.JwtUtil;
@@ -49,10 +51,12 @@ public class AuthService {
         if (user.isPresent()) {
             if (passwordEncoder.matches(password, user.get().getPassword())) {
                 return user.get();
+            } else {
+                throw new InvalidPasswordException();
             }
+        } else {
+            throw new NotFoundEmailException();
         }
-
-        return null;
     }
 
     public String createToken(User user) {
@@ -63,7 +67,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void createUser(SignUpReqDto signUpReqDto){
+    public void createUser(SignUpReqDto signUpReqDto) {
         String email = signUpReqDto.getEmail();
         String password = signUpReqDto.getPassword();
 
@@ -74,16 +78,15 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-
     }
 
 
     @Transactional(readOnly = true)
-    public String checkEmailDuplication(String email){
+    public String checkEmailDuplication(String email) {
 
         boolean emailDuplicate = userRepository.existsByEmail(email);
 
-        if (emailDuplicate){
+        if (emailDuplicate) {
             throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }
         return "가능한 이메일입니다.";
@@ -98,15 +101,14 @@ public class AuthService {
 
         //이메일 발송
         sendAuthEmail(email,authKey);
-
     }
 
     private void sendAuthEmail(String email,String authKey) {
 
-        String subject="제목";
-        String text ="회원가입을 위한 인증번호는"+ authKey +"입니다.<br/>";
+        String subject = "제목";
+        String text = "회원가입을 위한 인증번호는" + authKey + "입니다.<br/>";
 
-        try{
+        try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true,"utf-8");
             helper.setTo(email);
@@ -118,7 +120,7 @@ public class AuthService {
             e.printStackTrace();
         }
 
-        redisUtil.setDataExpire(authKey,email,60*3L);
+        redisUtil.setDataExpire(authKey, email, 60 * 3L);
 
     }
 }
