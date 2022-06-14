@@ -1,6 +1,8 @@
 package com.kale.service;
 
 import com.kale.constant.Role;
+import com.kale.exception.InvalidPasswordException;
+import com.kale.exception.NotFoundEmailException;
 import com.kale.model.User;
 import com.kale.repository.UserRepository;
 import com.kale.util.JwtUtil;
@@ -41,10 +43,12 @@ public class AuthService {
         if (user.isPresent()) {
             if (passwordEncoder.matches(password, user.get().getPassword())) {
                 return user.get();
+            } else {
+                throw new InvalidPasswordException();
             }
+        } else {
+            throw new NotFoundEmailException();
         }
-
-        return null;
     }
 
     public String createToken(User user) {

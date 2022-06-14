@@ -34,8 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .anyRequest().authenticated(); // 나머지 요청들에 대해서는 인증이 필요하다
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
