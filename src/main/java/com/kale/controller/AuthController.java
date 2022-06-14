@@ -1,7 +1,8 @@
 package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
-import com.kale.dto.request.LoginFormDto;
+import com.kale.dto.request.LoginUserReqDto;
+import com.kale.dto.response.LoginUserResDto;
 import com.kale.model.User;
 import com.kale.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -9,18 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/auth/signup")
+    @PostMapping("/signup")
     public ResponseEntity<ResponseDto> signUpUser(
-            @RequestBody LoginFormDto loginFormDTO
+            @RequestBody LoginUserReqDto loginFormDTO
             ) {
 
         User user = authService.signUpUser(
@@ -37,24 +36,27 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<ResponseDto> loginUser(
-            @RequestBody LoginFormDto loginFormDto,
-            HttpServletResponse response
+            @RequestBody LoginUserReqDto loginUserReqDto
     ) {
 
         User user = authService.loginUser(
-                loginFormDto.getEmail(),
-                loginFormDto.getPassword()
+                loginUserReqDto.getEmail(),
+                loginUserReqDto.getPassword()
         );
 
         String token = authService.createToken(user);
+
+        LoginUserResDto loginUserResDto = LoginUserResDto.builder()
+                .token(token)
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("로그인 성공")
-                        .data(token)
+                        .data(loginUserResDto)
                         .build()
         );
     }
