@@ -60,4 +60,16 @@ public class AuthController {
                         .build()
         );
     }
+
+    @GetMapping("/check")
+    ResponseEntity<ResponseDto> checkToken() {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("로그인 유지")
+                        .data(null)
+                        .build()
+        );
+    }
 }
