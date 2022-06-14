@@ -2,6 +2,7 @@ package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.auth.LoginUserReqDto;
+import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.dto.response.auth.LoginUserResDto;
 import com.kale.model.User;
 import com.kale.service.AuthService;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -50,9 +50,9 @@ public class AuthController {
 
     //마지막으로 회원 생성
     @PostMapping("/auth/signup")
-    public ResponseEntity<ResponseDto> createUser(@RequestBody SignUpReqDto signUpReqDto) {
+    public ResponseEntity<ResponseDto> createUser(@RequestBody CreateUserReqDto createUserReqDto) {
         
-        authService.createUser(signUpReqDto);
+        authService.createUser(createUserReqDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()

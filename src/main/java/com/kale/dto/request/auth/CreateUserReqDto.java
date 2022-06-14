@@ -13,7 +13,7 @@ import javax.validation.constraints.Pattern;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignUpReqDto {
+public class CreateUserReqDto {
 
 
     @Email
