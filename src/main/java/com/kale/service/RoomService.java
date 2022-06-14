@@ -1,9 +1,6 @@
 package com.kale.service;
 
-import com.kale.exception.AlreadyInRoomException;
-import com.kale.exception.InvalidPasswordException;
-import com.kale.exception.LoginException;
-import com.kale.exception.NotFoundRoomException;
+import com.kale.exception.*;
 import com.kale.model.Participate;
 import com.kale.model.Room;
 import com.kale.model.User;
@@ -14,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -100,6 +98,31 @@ public class RoomService {
         }
 
         return rooms;
+    }
+
+    public void leaveRoom(String userEmail, Long roomId) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        Optional<Room> room = roomRepository.findById(roomId);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        if (room.isEmpty()) {
+            throw new NotFoundRoomException();
+        }
+
+        Optional<Participate> participate = participateRepository.findByRoomAndUser(room.get(), user.get());
+
+        if (participate.isPresent()) {
+            participateRepository.delete(participate.get());
+            ArrayList<Participate> participateArrayList = participateRepository.findAllByRoom(room.get());
+            if (participateArrayList.size() == 0) {
+                roomRepository.delete(room.get());
+            }
+        } else {
+            throw new AlreadyNotInRoomException();
+        }
     }
 
     private String createRoomCode() {

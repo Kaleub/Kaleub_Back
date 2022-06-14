@@ -12,4 +12,5 @@ public interface ParticipateRepository extends JpaRepository<Participate, Long> 
 
     Optional<Participate> findByRoomAndUser(Room room, User user);
     ArrayList<Participate> findAllByUser(User user);
+    ArrayList<Participate> findAllByRoom(Room room);
 }

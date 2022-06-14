@@ -17,7 +17,8 @@ public class ExceptionController {
             NotFoundEmailException.class,
             InvalidPasswordException.class,
             NotFoundRoomException.class,
-            AlreadyInRoomException.class
+            AlreadyInRoomException.class,
+            AlreadyNotInRoomException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.error(ex.getMessage(), ex);
