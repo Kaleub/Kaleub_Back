@@ -1,7 +1,7 @@
 package com.kale.service;
 
 import com.kale.constant.Role;
-import com.kale.dto.request.SignUpReqDto;
+import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.exception.InvalidPasswordException;
 import com.kale.exception.NotFoundEmailException;
 import com.kale.model.User;
@@ -30,21 +30,6 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
 
-    public User signUpUser(String email, String password) {
-        Optional<User> user = userRepository.findByEmail(email);
-
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            User newUser = User.builder()
-                    .email(email)
-                    .password(passwordEncoder.encode(password))
-                    .role(Role.ROLE_USER)
-                    .build();
-            return userRepository.save(newUser);
-        }
-    }
-
     public User loginUser(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
 
@@ -67,9 +52,9 @@ public class AuthService {
     }
 
     @Transactional
-    public void createUser(SignUpReqDto signUpReqDto) {
-        String email = signUpReqDto.getEmail();
-        String password = signUpReqDto.getPassword();
+    public void createUser(CreateUserReqDto createUserReqDto) {
+        String email = createUserReqDto.getEmail();
+        String password = createUserReqDto.getPassword();
 
         User user= User.builder()
                 .email(email)
