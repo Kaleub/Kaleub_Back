@@ -111,4 +111,22 @@ public class RoomController {
                         .build()
         );
     }
+
+    @PostMapping("/{roomId}/leave")
+    public ResponseEntity<ResponseDto> leaveRoom(
+            @PathVariable("roomId") Long roomId,
+            HttpServletResponse response
+    ) {
+        String userEmail = response.getHeader("user");
+
+        roomService.leaveRoom(userEmail, roomId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("방 나가기 성공")
+                        .data(null)
+                        .build()
+        );
+    }
 }
