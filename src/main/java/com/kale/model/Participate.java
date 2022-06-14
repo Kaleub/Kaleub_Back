@@ -17,12 +17,13 @@ public class Participate extends BaseEntity {
     @JoinColumn(name="ROOM_ID")
     private Room room;
 
-    @Column(nullable = false, length = 20)
-    private String userEmail;
+    @ManyToOne
+    @JoinColumn(name="USER_ID")
+    private User user;
 
     @Builder
-    public Participate(Room room, String userEmail) {
+    public Participate(Room room, User user) {
         this.room = room;
-        this.userEmail = userEmail;
+        this.user = user;
     }
 }

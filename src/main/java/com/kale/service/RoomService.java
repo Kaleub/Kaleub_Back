@@ -1,6 +1,9 @@
 package com.kale.service;
 
+import com.kale.exception.AlreadyInRoomException;
+import com.kale.exception.InvalidPasswordException;
 import com.kale.exception.LoginException;
+import com.kale.exception.NotFoundRoomException;
 import com.kale.model.Participate;
 import com.kale.model.Room;
 import com.kale.model.User;
@@ -41,12 +44,44 @@ public class RoomService {
 
         Participate participate = Participate.builder()
                 .room(created)
-                .userEmail(userEmail)
+                .user(user.get())
                 .build();
 
         participateRepository.save(participate);
 
         return created;
+    }
+
+    public Room joinRoom(String userEmail, String code, String password) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        Optional<Room> room = roomRepository.findByCode(code);
+
+        if (room.isPresent()) {
+            if (passwordEncoder.matches(password, room.get().getPassword())) {
+                Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user.get());
+                if (participating.isPresent()) {
+                    throw new AlreadyInRoomException();
+                } else {
+                    Participate participate = Participate.builder()
+                            .room(room.get())
+                            .user(user.get())
+                            .build();
+
+                    participateRepository.save(participate);
+
+                    return room.get();
+                }
+            } else {
+                throw new InvalidPasswordException();
+            }
+        } else {
+            throw new NotFoundRoomException();
+        }
     }
 
     private String createRoomCode() {
