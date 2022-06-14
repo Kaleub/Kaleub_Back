@@ -21,7 +21,7 @@ public class AuthController {
     private final AuthService authService;
   
     //이메일이 유효한거 확인 되면, 인증 버튼 누를 수 있음
-    @PostMapping("/auth/signup/emailCheck")
+    @PostMapping("/signup/emailCheck")
     public ResponseEntity<ResponseDto> validateEmail(@Valid String email) {
 
         String message = authService.checkEmailDuplication(email);
@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     //이메일 인증 실행
-    @PostMapping("/auth/signup/email")
+    @PostMapping("/signup/email")
     public ResponseEntity<ResponseDto> authEmail(@RequestBody @Valid String email) {
 
         authService.authEmail(email);
@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     //마지막으로 회원 생성
-    @PostMapping("/auth/signup")
+    @PostMapping("/signup")
     public ResponseEntity<ResponseDto> createUser(@RequestBody CreateUserReqDto createUserReqDto) {
         
         authService.createUser(createUserReqDto);
