@@ -1,7 +1,7 @@
 package com.kale.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kale.dto.ErrorDTO;
+import com.kale.dto.ErrorDto;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         response.setStatus(401);
         response.setContentType("application/json;charset=utf-8");
-        ErrorDTO errorDTO = ErrorDTO.builder()
+        ErrorDto errorDTO = ErrorDto.builder()
                 .status(401)
                 .message("로그인이 되지 않은 사용자입니다.")
                 .build();

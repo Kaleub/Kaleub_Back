@@ -3,16 +3,12 @@ package com.kale.service;
 import com.kale.constant.Role;
 import com.kale.model.User;
 import com.kale.repository.UserRepository;
-import com.kale.util.CookieUtil;
 import com.kale.util.JwtUtil;
 import com.kale.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -21,7 +17,6 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CookieUtil cookieUtil;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
 
@@ -52,17 +47,10 @@ public class AuthService {
         return null;
     }
 
-    public Map<String, Cookie> createCookie(User user) {
+    public String createToken(User user) {
         String token = jwtUtil.generateToken(user);
-        String refreshJwt = jwtUtil.generateRefreshToken(user);
-        Cookie accessToken = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, token);
-        Cookie refreshToken = cookieUtil.createCookie(JwtUtil.REFRESH_TOKEN_NAME, refreshJwt);
-        redisUtil.setDataExpire(refreshJwt, user.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
+        redisUtil.setDataExpire(token, user.getEmail(), JwtUtil.TOKEN_VALIDATION_SECOND);
 
-        Map<String, Cookie> map = new HashMap<>();
-        map.put(JwtUtil.ACCESS_TOKEN_NAME, accessToken);
-        map.put(JwtUtil.REFRESH_TOKEN_NAME, refreshToken);
-
-        return map;
+        return token;
     }
 }

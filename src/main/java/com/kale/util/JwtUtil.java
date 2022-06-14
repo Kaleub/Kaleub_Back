@@ -17,11 +17,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    public final static long TOKEN_VALIDATION_SECOND = 1L * 60 * 60; // 1시간
-    public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1L * 60 * 60 * 24; // 1일
-
-    final static public String ACCESS_TOKEN_NAME = "accessToken";
-    final static public String REFRESH_TOKEN_NAME = "refreshToken";
+    public final static long TOKEN_VALIDATION_SECOND = 1L * 60 * 60 * 24 * 365; // 1년
 
     @Value("${spring.jwt.secret}")
     private String SECRET_KEY;
@@ -50,10 +46,6 @@ public class JwtUtil {
 
     public String generateToken(User user) {
         return doGenerateToken(user.getEmail(), TOKEN_VALIDATION_SECOND);
-    }
-
-    public String generateRefreshToken(User user) {
-        return doGenerateToken(user.getEmail(), REFRESH_TOKEN_VALIDATION_SECOND);
     }
 
     public String doGenerateToken(String email, long expireTime) {

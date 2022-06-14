@@ -35,10 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/oauth/**").permitAll()
-                .antMatchers("/api/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                .antMatchers("/api/manager/**").hasAnyRole("MANAGER", "ADMIN")
-                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .anyRequest().authenticated(); // 나머지 요청들에 대해서는 인증이 필요하다
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

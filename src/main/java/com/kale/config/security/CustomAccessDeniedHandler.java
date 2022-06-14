@@ -2,7 +2,7 @@ package com.kale.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kale.constant.Role;
-import com.kale.dto.ErrorDTO;
+import com.kale.dto.ErrorDto;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +27,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         response.setStatus(403);
         response.setContentType("application/json;charset=utf-8");
-        ErrorDTO errorDTO = ErrorDTO.builder()
+        ErrorDto errorDTO = ErrorDto.builder()
                 .status(403)
                 .message("접근 가능한 권한을 가지고 있지 않습니다.")
                 .build();

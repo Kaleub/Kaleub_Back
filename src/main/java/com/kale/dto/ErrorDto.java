@@ -6,16 +6,14 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ResponseDTO {
+public class ErrorDto {
 
     private int status;
     private String message;
-    private Object data;
 
     @Builder
-    public ResponseDTO(int status, String message, Object data) {
+    public ErrorDto(int status, String message) {
         this.status = status;
         this.message = message;
-        this.data = data;
     }
 }

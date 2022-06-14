@@ -1,6 +1,6 @@
 package com.kale.controller;
 
-import com.kale.dto.ErrorDTO;
+import com.kale.dto.ErrorDto;
 import com.kale.exception.LoginException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,11 +15,11 @@ public class ExceptionController {
     //400
     @ExceptionHandler({
     })
-    public ResponseEntity<ErrorDTO> InvalidRequest(final RuntimeException ex) {
+    public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.error(ex.getMessage(), ex);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ErrorDTO.builder()
+                ErrorDto.builder()
                         .status(400)
                         .message(ex.getMessage())
                         .build()
@@ -30,11 +30,11 @@ public class ExceptionController {
     @ExceptionHandler({
             LoginException.class
     })
-    public ResponseEntity<ErrorDTO> AuthException(final RuntimeException ex) {
+    public ResponseEntity<ErrorDto> AuthException(final RuntimeException ex) {
         log.error(ex.getMessage(), ex);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ErrorDTO.builder()
+                ErrorDto.builder()
                         .status(401)
                         .message(ex.getMessage())
                         .build()
@@ -45,11 +45,11 @@ public class ExceptionController {
     @ExceptionHandler({
             Exception.class
     })
-    public ResponseEntity<ErrorDTO> HandleAllException(final Exception ex) {
+    public ResponseEntity<ErrorDto> HandleAllException(final Exception ex) {
         log.error(ex.getMessage(), ex);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                ErrorDTO.builder()
+                ErrorDto.builder()
                         .status(500)
                         .message(ex.getMessage())
                         .build()
