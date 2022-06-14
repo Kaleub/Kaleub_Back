@@ -1,4 +1,4 @@
-package com.kale.dto.request;
+package com.kale.dto.request.auth;
 
 import lombok.Getter;
 import lombok.Setter;
