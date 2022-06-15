@@ -54,6 +54,15 @@ public class AuthService {
         sendAuthEmail(email, authKey);
     }
 
+    public void authEmailComplete(AuthEmailCompleteReqDto authEmailCompleteReqDto) {
+
+        String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
+
+        if (email != authEmailCompleteReqDto.getEmail()) {
+            throw new IncorrectAuthKeyException();
+        }
+    }
+
     public void createUser(CreateUserReqDto createUserReqDto) {
         String email = createUserReqDto.getEmail();
         String password = createUserReqDto.getPassword();
@@ -69,20 +78,6 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-    }
-
-    public void authEmailComplete(AuthEmailCompleteReqDto authEmailCompleteReqDto) {
-
-        String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
-
-        if (redisUtil.existKey(authEmailCompleteReqDto.getAuthKey())) {
-
-        }
-
-        if (email != authEmailCompleteReqDto.getEmail()) {
-            throw new IncorrectAuthKeyException();
-        }
-
     }
 
     public User loginUser(String email, String password) {
@@ -127,6 +122,4 @@ public class AuthService {
 
         return token;
     }
-
-
 }
