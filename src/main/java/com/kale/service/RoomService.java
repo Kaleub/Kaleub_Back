@@ -115,9 +115,22 @@ public class RoomService {
         Optional<Participate> participate = participateRepository.findByRoomAndUser(room.get(), user.get());
 
         if (participate.isPresent()) {
-            participateRepository.delete(participate.get());
+
+            User ownerUser = room.get().getOwnerUser();
             ArrayList<Participate> participateArrayList = participateRepository.findAllByRoom(room.get());
-            if (participateArrayList.size() == 0) {
+
+            // 사용자가 방의 주인인데 다른 참여자가 남아 있다면 방을 나갈 수 없음
+            if (user.get() == ownerUser && participateArrayList.size() > 1) {
+                throw new OwnerCanNotLeaveException();
+            }
+
+            // 사용자가 방의 주인이 아니거나 방의 참여인원이 1명이라면 방을 나갈 수 있음
+            participateRepository.delete(participate.get());
+
+            // 사용자가 방의 주인이고 방에 참여자가 더 이상 없다면 방을 삭제
+            // TO DO: 데이터가 추가된다면 방에 포함된 데이터 삭제도 구현
+            participateArrayList = participateRepository.findAllByRoom(room.get());
+            if (user.get() == ownerUser && participateArrayList.size() == 0) {
                 roomRepository.delete(room.get());
             }
         } else {
