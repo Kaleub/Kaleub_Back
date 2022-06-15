@@ -1,10 +1,7 @@
 package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
-import com.kale.dto.request.auth.AuthEmailReqDto;
-import com.kale.dto.request.auth.LoginUserReqDto;
-import com.kale.dto.request.auth.CreateUserReqDto;
-import com.kale.dto.request.auth.ValidateEmailReqDto;
+import com.kale.dto.request.auth.*;
 import com.kale.dto.response.auth.LoginUserResDto;
 import com.kale.model.User;
 import com.kale.service.AuthService;
@@ -33,6 +30,20 @@ public class AuthController {
                 ResponseDto.builder()
                         .status(200)
                         .message("중복 체크 완료")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @PostMapping("/signup/password/check")
+    public ResponseEntity<ResponseDto> validatePassword(
+            @RequestBody @Valid ValidatePasswordReqDto validatePasswordReqDto
+            ) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("비밀번호 양식 확인 완료")
                         .data(null)
                         .build()
         );
