@@ -153,6 +153,42 @@ public class RoomService {
         }
     }
 
+    public void deleteRoom(String userEmail, Long roomId) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        Optional<Room> room = roomRepository.findById(roomId);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        if (room.isEmpty()) {
+            throw new NotFoundRoomException();
+        }
+
+        User ownerUser = room.get().getOwnerUser();
+
+        // 방장이 아니면 방을 삭제할 수 없음
+        if (user.get() != ownerUser) {
+            throw new NotOwnerException();
+        }
+
+        // 방장을 제외한 다른 참가자가 더 있으면 방을 삭제할 수 없음
+        ArrayList<Participate> participates = participateRepository.findAllByRoom(room.get());
+        if (participates.size() > 1) {
+            throw new NotAloneException();
+        }
+
+        // 참가하고 있는 방이 아니면 방을 삭제할 수 없음
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user.get());
+        if (participating.isEmpty()) {
+            throw new AlreadyNotInRoomException();
+        }
+
+        // TO DO: 방 관련 데이터 삭제
+        participateRepository.delete(participating.get());
+        roomRepository.delete(room.get());
+    }
+
     private String createRoomCode() {
         String result;
         do {

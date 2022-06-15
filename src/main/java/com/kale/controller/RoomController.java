@@ -2,6 +2,7 @@ package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.room.CreateRoomReqDto;
+import com.kale.dto.request.room.DeleteRoomReqDto;
 import com.kale.dto.request.room.JoinRoomReqDto;
 import com.kale.dto.request.room.LeaveRoomReqDto;
 import com.kale.dto.response.room.CreateRoomResDto;
@@ -112,6 +113,24 @@ public class RoomController {
                 ResponseDto.builder()
                         .status(200)
                         .message("방 나가기 성공")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseDto> deleteRoom(
+            @RequestBody DeleteRoomReqDto deleteRoomReqDto,
+            HttpServletResponse response
+    ) {
+        String userEmail = response.getHeader("user");
+
+        roomService.deleteRoom(userEmail, deleteRoomReqDto.getRoomId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("방 삭제 성공")
                         .data(null)
                         .build()
         );
