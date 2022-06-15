@@ -88,21 +88,7 @@ public class RoomController {
     ) {
         String userEmail = response.getHeader("user");
 
-        ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
-        ArrayList<Room> rooms = roomService.getRooms(userEmail);
-        rooms.forEach((room -> {
-            GetRoomsResDto getRoomsResDto = GetRoomsResDto.builder()
-                    .id(room.getId())
-                    .code(room.getCode())
-                    .ownerEmail(room.getOwnerUser().getEmail())
-                    .title(room.getTitle())
-                    .password(room.getPassword())
-                    .createdDate(room.getCreatedDate())
-                    .modifiedDate(room.getModifiedDate())
-                    .build();
-
-            getRoomsResDtos.add(getRoomsResDto);
-        }));
+        ArrayList<GetRoomsResDto> getRoomsResDtos = roomService.getRooms(userEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()

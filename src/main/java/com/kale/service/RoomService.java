@@ -1,5 +1,6 @@
 package com.kale.service;
 
+import com.kale.dto.response.room.GetRoomsResDto;
 import com.kale.exception.*;
 import com.kale.model.Participate;
 import com.kale.model.Room;
@@ -82,7 +83,7 @@ public class RoomService {
         }
     }
 
-    public ArrayList<Room> getRooms(String userEmail) {
+    public ArrayList<GetRoomsResDto> getRooms(String userEmail) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         if (user.isEmpty()) {
@@ -96,7 +97,24 @@ public class RoomService {
             rooms.add(participates.get(i).getRoom());
         }
 
-        return rooms;
+        ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
+        rooms.forEach((room -> {
+            int participantsCount = participateRepository.findAllByRoom(room).size();
+            GetRoomsResDto getRoomsResDto = GetRoomsResDto.builder()
+                    .id(room.getId())
+                    .code(room.getCode())
+                    .ownerEmail(room.getOwnerUser().getEmail())
+                    .title(room.getTitle())
+                    .password(room.getPassword())
+                    .participantsCount(participantsCount)
+                    .createdDate(room.getCreatedDate())
+                    .modifiedDate(room.getModifiedDate())
+                    .build();
+
+            getRoomsResDtos.add(getRoomsResDto);
+        }));
+
+        return getRoomsResDtos;
     }
 
     public void leaveRoom(String userEmail, Long roomId) {
