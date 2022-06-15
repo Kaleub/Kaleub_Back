@@ -189,6 +189,41 @@ public class RoomService {
         roomRepository.delete(room.get());
     }
 
+    public void modifyRoomPassword(String userEmail, Long roomId, String beforePassword, String afterPassword) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        Optional<Room> room = roomRepository.findById(roomId);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        if (room.isEmpty()) {
+            throw new NotFoundRoomException();
+        }
+
+        User ownerUser = room.get().getOwnerUser();
+
+        // 방장이 아니면 비밀번호를 변경할 수 없음
+        if (user.get() != ownerUser) {
+            throw new NotOwnerException();
+        }
+
+        // 참가하고 있는 방이 아니면 비밀번호를 변경할 수 없음
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user.get());
+        if (participating.isEmpty()) {
+            throw new NotInRoomException();
+        }
+
+        // 이전 비밀번호가 틀리면 비밀번호를 변경할 수 없음
+        if (!passwordEncoder.matches(beforePassword, room.get().getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        room.get().setPassword(passwordEncoder.encode(afterPassword));
+
+        roomRepository.save(room.get());
+    }
+
     private String createRoomCode() {
         String result;
         do {

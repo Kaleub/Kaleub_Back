@@ -1,9 +1,6 @@
 package com.kale.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -23,6 +20,7 @@ public class Room extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String title;
 
+    @Setter
     @Column(nullable = false, length = 100)
     private String password;
 

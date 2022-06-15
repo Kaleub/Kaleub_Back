@@ -1,10 +1,7 @@
 package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
-import com.kale.dto.request.room.CreateRoomReqDto;
-import com.kale.dto.request.room.DeleteRoomReqDto;
-import com.kale.dto.request.room.JoinRoomReqDto;
-import com.kale.dto.request.room.LeaveRoomReqDto;
+import com.kale.dto.request.room.*;
 import com.kale.dto.response.room.CreateRoomResDto;
 import com.kale.dto.response.room.GetRoomsResDto;
 import com.kale.dto.response.room.JoinRoomResDto;
@@ -16,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.ArrayList;
 
 @RestController
@@ -27,7 +25,7 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> createRoom(
-            @RequestBody CreateRoomReqDto createRoomReqDto,
+            @RequestBody @Valid CreateRoomReqDto createRoomReqDto,
             HttpServletResponse response
             ) {
 
@@ -131,6 +129,24 @@ public class RoomController {
                 ResponseDto.builder()
                         .status(200)
                         .message("방 삭제 성공")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<ResponseDto> modifyRoomPassword(
+            @RequestBody @Valid ModifyRoomPasswordReqDto modifyRoomPasswordReqDto,
+            HttpServletResponse response
+    ) {
+        String userEmail = response.getHeader("user");
+
+        roomService.modifyRoomPassword(userEmail, modifyRoomPasswordReqDto.getRoomId(), modifyRoomPasswordReqDto.getBeforePassword(), modifyRoomPasswordReqDto.getAfterPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("방 비밀번호 변경 성공")
                         .data(null)
                         .build()
         );
