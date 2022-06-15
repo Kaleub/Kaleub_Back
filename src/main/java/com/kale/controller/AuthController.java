@@ -1,8 +1,7 @@
 package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
-import com.kale.dto.request.auth.LoginUserReqDto;
-import com.kale.dto.request.auth.CreateUserReqDto;
+import com.kale.dto.request.auth.*;
 import com.kale.dto.response.auth.LoginUserResDto;
 import com.kale.model.User;
 import com.kale.service.AuthService;
@@ -21,14 +20,30 @@ public class AuthController {
     private final AuthService authService;
   
     //이메일이 유효한거 확인 되면, 인증 버튼 누를 수 있음
-    @PostMapping("/signup/emailCheck")
-    public ResponseEntity<ResponseDto> validateEmail(@Valid String email) {
+    @PostMapping("/signup/email/check")
+    public ResponseEntity<ResponseDto> validateEmail(
+            @RequestBody @Valid ValidateEmailReqDto validateEmailReqDto
+    ) {
 
-        String message = authService.checkEmailDuplication(email);
+        authService.validateEmail(validateEmailReqDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
-                        .message(message)
+                        .message("중복 체크 완료")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @PostMapping("/signup/password/check")
+    public ResponseEntity<ResponseDto> validatePassword(
+            @RequestBody @Valid ValidatePasswordReqDto validatePasswordReqDto
+            ) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("비밀번호 양식 확인 완료")
                         .data(null)
                         .build()
         );
@@ -36,9 +51,11 @@ public class AuthController {
 
     //이메일 인증 실행
     @PostMapping("/signup/email")
-    public ResponseEntity<ResponseDto> authEmail(@RequestBody @Valid String email) {
+    public ResponseEntity<ResponseDto> authEmail(
+            @RequestBody @Valid AuthEmailReqDto authEmailReqDto
+            ) {
 
-        authService.authEmail(email);
+        authService.authEmail(authEmailReqDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -50,7 +67,9 @@ public class AuthController {
 
     //마지막으로 회원 생성
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto> createUser(@RequestBody CreateUserReqDto createUserReqDto) {
+    public ResponseEntity<ResponseDto> createUser(
+            @RequestBody @Valid CreateUserReqDto createUserReqDto
+    ) {
         
         authService.createUser(createUserReqDto);
 
