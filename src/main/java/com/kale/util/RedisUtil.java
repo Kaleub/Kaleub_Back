@@ -32,4 +32,6 @@ public class RedisUtil {
     public void deleteData(String key){
         stringRedisTemplate.delete(key);
     }
+
+    public boolean existKey(String key) { return stringRedisTemplate.hasKey(key); }
 }

@@ -1,11 +1,9 @@
 package com.kale.service;
 
 import com.kale.constant.Role;
+import com.kale.dto.request.auth.AuthEmailCompleteReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
-import com.kale.exception.ExistingEmailException;
-import com.kale.exception.InvalidPasswordException;
-import com.kale.exception.MessageFailedException;
-import com.kale.exception.NotFoundEmailException;
+import com.kale.exception.*;
 import com.kale.model.User;
 import com.kale.repository.UserRepository;
 import com.kale.util.JwtUtil;
@@ -45,13 +43,28 @@ public class AuthService {
         if (userRepository.existsByEmail(email)) {
             throw new ExistingEmailException();
         }
-
+        String authKey = "";
         //임의의 authKey 생성
-        Random random= new Random();
-        String authKey = String.valueOf(random.nextInt(888888) + 11111);
+        do {
+            Random random = new Random();
+            authKey = String.valueOf(random.nextInt(888888) + 111111);
+        } while(redisUtil.existKey(authKey));
 
         //이메일 발송
         sendAuthEmail(email, authKey);
+    }
+
+    public void authEmailComplete(AuthEmailCompleteReqDto authEmailCompleteReqDto) {
+
+        String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
+
+        try {
+            if (!email.equals(authEmailCompleteReqDto.getEmail())) {
+                throw new IncorrectAuthKeyException();
+            }
+        } catch (NullPointerException e) {
+            throw new IncorrectAuthKeyException();
+        }
     }
 
     public void createUser(CreateUserReqDto createUserReqDto) {
@@ -62,7 +75,7 @@ public class AuthService {
             throw new ExistingEmailException();
         }
 
-        User user= User.builder()
+        User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.ROLE_USER)
@@ -104,6 +117,8 @@ public class AuthService {
 
         redisUtil.setDataExpire(authKey, email, 60 * 3L);
     }
+
+
 
     public String createToken(User user) {
         String token = jwtUtil.generateToken(user);

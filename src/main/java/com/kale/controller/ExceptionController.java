@@ -36,6 +36,7 @@ public class ExceptionController {
             AlreadyInRoomException.class,
             AlreadyNotInRoomException.class,
             ExistingEmailException.class,
+            IncorrectAuthKeyException.class,
             OwnerCanNotLeaveException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {

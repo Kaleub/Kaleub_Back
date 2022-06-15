@@ -65,6 +65,22 @@ public class AuthController {
         );
     }
 
+    @PostMapping("/signup/email/complete")
+    public ResponseEntity<ResponseDto> authEmailComplete(
+            @RequestBody @Valid AuthEmailCompleteReqDto authEmailCompleteReqDto
+    ) {
+        authService.authEmailComplete(authEmailCompleteReqDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("이메일 인증 성공")
+                        .data(null)
+                        .build()
+        );
+    }
+
+
     //마지막으로 회원 생성
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto> createUser(
