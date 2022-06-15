@@ -73,8 +73,10 @@ public class AuthService {
 
         if (emailDuplicate) {
             throw new IllegalStateException("이미 존재하는 이메일입니다.");
+        }else{
+            return "가능한 이메일입니다.";
         }
-        return "가능한 이메일입니다.";
+
     }
 
 
@@ -91,7 +93,7 @@ public class AuthService {
     private void sendAuthEmail(String email,String authKey) {
 
         String subject = "제목";
-        String text = "회원가입을 위한 인증번호는" + authKey + "입니다.<br/>";
+        String text = "회원가입을 위한 인증번호는 " + authKey + " 입니다.<br/>";
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
