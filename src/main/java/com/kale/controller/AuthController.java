@@ -24,7 +24,7 @@ public class AuthController {
     @PostMapping("/signup/emailCheck")
     public ResponseEntity<ResponseDto> validateEmail(@Valid @RequestParam("email") String email) {
 
-        String message = authService.checkEmailDuplication(email);
+        String message = authService.validateEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)

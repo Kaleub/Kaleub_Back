@@ -31,25 +31,26 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
 
-    public User loginUser(String email, String password) {
-        Optional<User> user = userRepository.findByEmail(email);
+    @Transactional(readOnly = true)
+    public String validateEmail(String email) {
 
-        if (user.isPresent()) {
-            if (passwordEncoder.matches(password, user.get().getPassword())) {
-                return user.get();
-            } else {
-                throw new InvalidPasswordException();
-            }
-        } else {
-            throw new NotFoundEmailException();
+        boolean emailDuplicate = userRepository.existsByEmail(email);
+
+        if (emailDuplicate) {
+            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+        } else{
+            return "가능한 이메일입니다.";
         }
     }
 
-    public String createToken(User user) {
-        String token = jwtUtil.generateToken(user);
-        redisUtil.setDataExpire(token, user.getEmail(), JwtUtil.TOKEN_VALIDATION_SECOND);
+    public void authEmail(String email) {
 
-        return token;
+        //임의의 authKey 생성
+        Random random= new Random();
+        String authKey = String.valueOf(random.nextInt(888888) + 11111);
+
+        //이메일 발송
+        sendAuthEmail(email,authKey);
     }
 
     @Transactional
@@ -70,32 +71,21 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    public User loginUser(String email, String password) {
+        Optional<User> user = userRepository.findByEmail(email);
 
-    @Transactional(readOnly = true)
-    public String checkEmailDuplication(String email) {
-
-        boolean emailDuplicate = userRepository.existsByEmail(email);
-
-        if (emailDuplicate) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다.");
-        }else{
-            return "가능한 이메일입니다.";
+        if (user.isPresent()) {
+            if (passwordEncoder.matches(password, user.get().getPassword())) {
+                return user.get();
+            } else {
+                throw new InvalidPasswordException();
+            }
+        } else {
+            throw new NotFoundEmailException();
         }
-
     }
 
-
-    public void authEmail(String email) {
-
-        //임의의 authKey 생성
-        Random random= new Random();
-        String authKey = String.valueOf(random.nextInt(888888)+11111);
-
-        //이메일 발송
-        sendAuthEmail(email,authKey);
-    }
-
-    private void sendAuthEmail(String email,String authKey) {
+    private void sendAuthEmail(String email, String authKey) {
 
         String subject = "제목";
         String text = "회원가입을 위한 인증번호는 " + authKey + " 입니다.<br/>";
@@ -113,6 +103,12 @@ public class AuthService {
         }
 
         redisUtil.setDataExpire(authKey, email, 60 * 3L);
+    }
 
+    public String createToken(User user) {
+        String token = jwtUtil.generateToken(user);
+        redisUtil.setDataExpire(token, user.getEmail(), JwtUtil.TOKEN_VALIDATION_SECOND);
+
+        return token;
     }
 }
