@@ -14,7 +14,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -31,7 +30,6 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
 
-    @Transactional(readOnly = true)
     public String validateEmail(String email) {
 
         boolean emailDuplicate = userRepository.existsByEmail(email);
@@ -53,7 +51,6 @@ public class AuthService {
         sendAuthEmail(email,authKey);
     }
 
-    @Transactional
     public void createUser(CreateUserReqDto createUserReqDto) {
         String email = createUserReqDto.getEmail();
         String password = createUserReqDto.getPassword();
