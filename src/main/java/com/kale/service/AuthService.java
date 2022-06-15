@@ -1,11 +1,9 @@
 package com.kale.service;
 
 import com.kale.constant.Role;
+import com.kale.dto.request.auth.AuthEmailCompleteReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
-import com.kale.exception.ExistingEmailException;
-import com.kale.exception.InvalidPasswordException;
-import com.kale.exception.MessageFailedException;
-import com.kale.exception.NotFoundEmailException;
+import com.kale.exception.*;
 import com.kale.model.User;
 import com.kale.repository.UserRepository;
 import com.kale.util.JwtUtil;
@@ -53,6 +51,7 @@ public class AuthService {
         //이메일 발송
         sendAuthEmail(email, authKey);
     }
+
 
     public void createUser(CreateUserReqDto createUserReqDto) {
         String email = createUserReqDto.getEmail();
@@ -105,10 +104,22 @@ public class AuthService {
         redisUtil.setDataExpire(authKey, email, 60 * 3L);
     }
 
+    public void authEmailComplete(AuthEmailCompleteReqDto authEmailCompleteReqDto) {
+
+        String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
+
+        if (email == null){
+            throw new IncorrectAuthKeyException();
+        }
+
+    }
+
     public String createToken(User user) {
         String token = jwtUtil.generateToken(user);
         redisUtil.setDataExpire(token, user.getEmail(), JwtUtil.TOKEN_VALIDATION_SECOND);
 
         return token;
     }
+
+
 }
