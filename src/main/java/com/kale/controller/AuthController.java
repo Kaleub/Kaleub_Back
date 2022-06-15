@@ -3,6 +3,7 @@ package com.kale.controller;
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.auth.LoginUserReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
+import com.kale.dto.request.auth.ValidateEmailReqDto;
 import com.kale.dto.response.auth.LoginUserResDto;
 import com.kale.model.User;
 import com.kale.service.AuthService;
@@ -22,13 +23,15 @@ public class AuthController {
   
     //이메일이 유효한거 확인 되면, 인증 버튼 누를 수 있음
     @PostMapping("/signup/email/check")
-    public ResponseEntity<ResponseDto> validateEmail(@Valid @RequestParam("email") String email) {
+    public ResponseEntity<ResponseDto> validateEmail(
+            @RequestBody @Valid ValidateEmailReqDto validateEmailReqDto
+    ) {
 
-        String message = authService.validateEmail(email);
+        authService.validateEmail(validateEmailReqDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
-                        .message(message)
+                        .message("중복 체크 완료")
                         .data(null)
                         .build()
         );

@@ -30,14 +30,12 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
 
-    public String validateEmail(String email) {
+    public void validateEmail(String email) {
 
         boolean emailDuplicate = userRepository.existsByEmail(email);
 
         if (emailDuplicate) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다.");
-        } else{
-            return "가능한 이메일입니다.";
+            throw new ExistingEmailException();
         }
     }
 
