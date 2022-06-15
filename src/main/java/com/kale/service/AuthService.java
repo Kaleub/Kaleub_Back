@@ -43,15 +43,16 @@ public class AuthService {
         if (userRepository.existsByEmail(email)) {
             throw new ExistingEmailException();
         }
-
+        String authKey = "";
         //임의의 authKey 생성
-        Random random= new Random();
-        String authKey = String.valueOf(random.nextInt(888888) + 11111);
+        do {
+            Random random = new Random();
+            authKey = String.valueOf(random.nextInt(888888) + 11111);
+        } while(redisUtil.existKey(authKey));
 
         //이메일 발송
         sendAuthEmail(email, authKey);
     }
-
 
     public void createUser(CreateUserReqDto createUserReqDto) {
         String email = createUserReqDto.getEmail();
@@ -61,13 +62,27 @@ public class AuthService {
             throw new ExistingEmailException();
         }
 
-        User user= User.builder()
+        User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.ROLE_USER)
                 .build();
 
         userRepository.save(user);
+    }
+
+    public void authEmailComplete(AuthEmailCompleteReqDto authEmailCompleteReqDto) {
+
+        String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
+
+        if (redisUtil.existKey(authEmailCompleteReqDto.getAuthKey())) {
+
+        }
+
+        if (email != authEmailCompleteReqDto.getEmail()) {
+            throw new IncorrectAuthKeyException();
+        }
+
     }
 
     public User loginUser(String email, String password) {
@@ -104,15 +119,7 @@ public class AuthService {
         redisUtil.setDataExpire(authKey, email, 60 * 3L);
     }
 
-    public void authEmailComplete(AuthEmailCompleteReqDto authEmailCompleteReqDto) {
 
-        String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
-
-        if (email == null){
-            throw new IncorrectAuthKeyException();
-        }
-
-    }
 
     public String createToken(User user) {
         String token = jwtUtil.generateToken(user);

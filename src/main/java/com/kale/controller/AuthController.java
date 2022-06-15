@@ -67,8 +67,8 @@ public class AuthController {
 
     @PostMapping("/signup/email/complete")
     public ResponseEntity<ResponseDto> authEmailComplete(
-            @RequestBody AuthEmailCompleteReqDto authEmailCompleteReqDto
-    ){
+            @RequestBody @Valid AuthEmailCompleteReqDto authEmailCompleteReqDto
+    ) {
         authService.authEmailComplete(authEmailCompleteReqDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -78,7 +78,6 @@ public class AuthController {
                         .data(null)
                         .build()
         );
-
     }
 
 
