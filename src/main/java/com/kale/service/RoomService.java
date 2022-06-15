@@ -1,5 +1,6 @@
 package com.kale.service;
 
+import com.kale.dto.response.room.GetRoomsResDto;
 import com.kale.exception.*;
 import com.kale.model.Participate;
 import com.kale.model.Room;
@@ -82,7 +83,7 @@ public class RoomService {
         }
     }
 
-    public ArrayList<Room> getRooms(String userEmail) {
+    public ArrayList<GetRoomsResDto> getRooms(String userEmail) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         if (user.isEmpty()) {
@@ -96,7 +97,24 @@ public class RoomService {
             rooms.add(participates.get(i).getRoom());
         }
 
-        return rooms;
+        ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
+        rooms.forEach((room -> {
+            int participantsCount = participateRepository.findAllByRoom(room).size();
+            GetRoomsResDto getRoomsResDto = GetRoomsResDto.builder()
+                    .id(room.getId())
+                    .code(room.getCode())
+                    .ownerEmail(room.getOwnerUser().getEmail())
+                    .title(room.getTitle())
+                    .password(room.getPassword())
+                    .participantsCount(participantsCount)
+                    .createdDate(room.getCreatedDate())
+                    .modifiedDate(room.getModifiedDate())
+                    .build();
+
+            getRoomsResDtos.add(getRoomsResDto);
+        }));
+
+        return getRoomsResDtos;
     }
 
     public void leaveRoom(String userEmail, Long roomId) {
@@ -123,18 +141,52 @@ public class RoomService {
                 throw new OwnerCanNotLeaveException();
             }
 
-            // 사용자가 방의 주인이 아니거나 방의 참여인원이 1명이라면 방을 나갈 수 있음
-            participateRepository.delete(participate.get());
-
-            // 사용자가 방의 주인이고 방에 참여자가 더 이상 없다면 방을 삭제
-            // TO DO: 데이터가 추가된다면 방에 포함된 데이터 삭제도 구현
-            participateArrayList = participateRepository.findAllByRoom(room.get());
-            if (user.get() == ownerUser && participateArrayList.size() == 0) {
-                roomRepository.delete(room.get());
+            // 사용자가 방의 주인이고 방에 혼자 남아 있다면 방을 삭제할건지 경고 문구 보냄
+            if (user.get() == ownerUser && participateArrayList.size() == 1) {
+                throw new AlertDeleteRoomException();
             }
+
+            // 사용자가 방의 주인이 아니면 방을 나감
+            participateRepository.delete(participate.get());
         } else {
             throw new AlreadyNotInRoomException();
         }
+    }
+
+    public void deleteRoom(String userEmail, Long roomId) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        Optional<Room> room = roomRepository.findById(roomId);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        if (room.isEmpty()) {
+            throw new NotFoundRoomException();
+        }
+
+        User ownerUser = room.get().getOwnerUser();
+
+        // 방장이 아니면 방을 삭제할 수 없음
+        if (user.get() != ownerUser) {
+            throw new NotOwnerException();
+        }
+
+        // 방장을 제외한 다른 참가자가 더 있으면 방을 삭제할 수 없음
+        ArrayList<Participate> participates = participateRepository.findAllByRoom(room.get());
+        if (participates.size() > 1) {
+            throw new NotAloneException();
+        }
+
+        // 참가하고 있는 방이 아니면 방을 삭제할 수 없음
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user.get());
+        if (participating.isEmpty()) {
+            throw new AlreadyNotInRoomException();
+        }
+
+        // TO DO: 방 관련 데이터 삭제
+        participateRepository.delete(participating.get());
+        roomRepository.delete(room.get());
     }
 
     private String createRoomCode() {

@@ -2,6 +2,7 @@ package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.room.CreateRoomReqDto;
+import com.kale.dto.request.room.DeleteRoomReqDto;
 import com.kale.dto.request.room.JoinRoomReqDto;
 import com.kale.dto.request.room.LeaveRoomReqDto;
 import com.kale.dto.response.room.CreateRoomResDto;
@@ -88,21 +89,7 @@ public class RoomController {
     ) {
         String userEmail = response.getHeader("user");
 
-        ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
-        ArrayList<Room> rooms = roomService.getRooms(userEmail);
-        rooms.forEach((room -> {
-            GetRoomsResDto getRoomsResDto = GetRoomsResDto.builder()
-                    .id(room.getId())
-                    .code(room.getCode())
-                    .ownerEmail(room.getOwnerUser().getEmail())
-                    .title(room.getTitle())
-                    .password(room.getPassword())
-                    .createdDate(room.getCreatedDate())
-                    .modifiedDate(room.getModifiedDate())
-                    .build();
-
-            getRoomsResDtos.add(getRoomsResDto);
-        }));
+        ArrayList<GetRoomsResDto> getRoomsResDtos = roomService.getRooms(userEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -126,6 +113,24 @@ public class RoomController {
                 ResponseDto.builder()
                         .status(200)
                         .message("방 나가기 성공")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseDto> deleteRoom(
+            @RequestBody DeleteRoomReqDto deleteRoomReqDto,
+            HttpServletResponse response
+    ) {
+        String userEmail = response.getHeader("user");
+
+        roomService.deleteRoom(userEmail, deleteRoomReqDto.getRoomId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("방 삭제 성공")
                         .data(null)
                         .build()
         );
