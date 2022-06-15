@@ -47,7 +47,7 @@ public class AuthService {
         //임의의 authKey 생성
         do {
             Random random = new Random();
-            authKey = String.valueOf(random.nextInt(888888) + 11111);
+            authKey = String.valueOf(random.nextInt(888888) + 111111);
         } while(redisUtil.existKey(authKey));
 
         //이메일 발송
@@ -58,7 +58,11 @@ public class AuthService {
 
         String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
 
-        if (email != authEmailCompleteReqDto.getEmail()) {
+        try {
+            if (!email.equals(authEmailCompleteReqDto.getEmail())) {
+                throw new IncorrectAuthKeyException();
+            }
+        } catch (NullPointerException e) {
             throw new IncorrectAuthKeyException();
         }
     }
