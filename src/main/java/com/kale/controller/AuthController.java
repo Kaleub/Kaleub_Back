@@ -22,7 +22,7 @@ public class AuthController {
   
     //이메일이 유효한거 확인 되면, 인증 버튼 누를 수 있음
     @PostMapping("/signup/emailCheck")
-    public ResponseEntity<ResponseDto> validateEmail(@Valid String email) {
+    public ResponseEntity<ResponseDto> validateEmail(@Valid @RequestParam("email") String email) {
 
         String message = authService.checkEmailDuplication(email);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -36,7 +36,7 @@ public class AuthController {
 
     //이메일 인증 실행
     @PostMapping("/signup/email")
-    public ResponseEntity<ResponseDto> authEmail(@RequestBody @Valid String email) {
+    public ResponseEntity<ResponseDto> authEmail(@Valid @RequestParam("email") String email) {
 
         authService.authEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(
