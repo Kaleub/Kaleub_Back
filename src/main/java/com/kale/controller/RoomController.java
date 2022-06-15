@@ -52,7 +52,7 @@ public class RoomController {
         );
     }
 
-    @PostMapping("/join")
+    @PostMapping("/participate")
     public ResponseEntity<ResponseDto> joinRoom(
             @RequestBody JoinRoomReqDto joinRoomReqDto,
             HttpServletResponse response
@@ -112,7 +112,7 @@ public class RoomController {
         );
     }
 
-    @PostMapping("/{roomId}/leave")
+    @DeleteMapping("/{roomId}/participate")
     public ResponseEntity<ResponseDto> leaveRoom(
             @PathVariable("roomId") Long roomId,
             HttpServletResponse response
