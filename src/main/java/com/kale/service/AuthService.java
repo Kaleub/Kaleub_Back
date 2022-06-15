@@ -4,6 +4,7 @@ import com.kale.constant.Role;
 import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.exception.ExistingEmailException;
 import com.kale.exception.InvalidPasswordException;
+import com.kale.exception.MessageFailedException;
 import com.kale.exception.NotFoundEmailException;
 import com.kale.model.User;
 import com.kale.repository.UserRepository;
@@ -41,12 +42,16 @@ public class AuthService {
 
     public void authEmail(String email) {
 
+        if (userRepository.existsByEmail(email)) {
+            throw new ExistingEmailException();
+        }
+
         //임의의 authKey 생성
         Random random= new Random();
         String authKey = String.valueOf(random.nextInt(888888) + 11111);
 
         //이메일 발송
-        sendAuthEmail(email,authKey);
+        sendAuthEmail(email, authKey);
     }
 
     public void createUser(CreateUserReqDto createUserReqDto) {
@@ -94,7 +99,7 @@ public class AuthService {
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new MessageFailedException();
         }
 
         redisUtil.setDataExpire(authKey, email, 60 * 3L);

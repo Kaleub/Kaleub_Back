@@ -1,6 +1,7 @@
 package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
+import com.kale.dto.request.auth.AuthEmailReqDto;
 import com.kale.dto.request.auth.LoginUserReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.dto.request.auth.ValidateEmailReqDto;
@@ -39,9 +40,11 @@ public class AuthController {
 
     //이메일 인증 실행
     @PostMapping("/signup/email")
-    public ResponseEntity<ResponseDto> authEmail(@Valid @RequestParam("email") String email) {
+    public ResponseEntity<ResponseDto> authEmail(
+            @RequestBody @Valid AuthEmailReqDto authEmailReqDto
+            ) {
 
-        authService.authEmail(email);
+        authService.authEmail(authEmailReqDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)

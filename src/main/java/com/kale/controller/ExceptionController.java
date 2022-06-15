@@ -65,7 +65,8 @@ public class ExceptionController {
 
     //500
     @ExceptionHandler({
-            Exception.class
+            Exception.class,
+            MessageFailedException.class
     })
     public ResponseEntity<ErrorDto> HandleAllException(final Exception ex) {
         log.error(ex.getMessage(), ex);
