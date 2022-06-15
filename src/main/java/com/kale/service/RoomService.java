@@ -123,15 +123,13 @@ public class RoomService {
                 throw new OwnerCanNotLeaveException();
             }
 
-            // 사용자가 방의 주인이 아니거나 방의 참여인원이 1명이라면 방을 나갈 수 있음
-            participateRepository.delete(participate.get());
-
-            // 사용자가 방의 주인이고 방에 참여자가 더 이상 없다면 방을 삭제
-            // TO DO: 데이터가 추가된다면 방에 포함된 데이터 삭제도 구현
-            participateArrayList = participateRepository.findAllByRoom(room.get());
-            if (user.get() == ownerUser && participateArrayList.size() == 0) {
-                roomRepository.delete(room.get());
+            // 사용자가 방의 주인이고 방에 혼자 남아 있다면 방을 삭제할건지 경고 문구 보냄
+            if (user.get() == ownerUser && participateArrayList.size() == 1) {
+                throw new AlertDeleteRoomException();
             }
+
+            // 사용자가 방의 주인이 아니면 방을 나감
+            participateRepository.delete(participate.get());
         } else {
             throw new AlreadyNotInRoomException();
         }
