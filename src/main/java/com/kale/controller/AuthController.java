@@ -50,7 +50,9 @@ public class AuthController {
 
     //마지막으로 회원 생성
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto> createUser(@RequestBody CreateUserReqDto createUserReqDto) {
+    public ResponseEntity<ResponseDto> createUser(
+            @RequestBody @Valid CreateUserReqDto createUserReqDto
+    ) {
         
         authService.createUser(createUserReqDto);
 

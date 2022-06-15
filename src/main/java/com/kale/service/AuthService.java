@@ -2,6 +2,7 @@ package com.kale.service;
 
 import com.kale.constant.Role;
 import com.kale.dto.request.auth.CreateUserReqDto;
+import com.kale.exception.ExistingEmailException;
 import com.kale.exception.InvalidPasswordException;
 import com.kale.exception.NotFoundEmailException;
 import com.kale.model.User;
@@ -55,6 +56,10 @@ public class AuthService {
     public void createUser(CreateUserReqDto createUserReqDto) {
         String email = createUserReqDto.getEmail();
         String password = createUserReqDto.getPassword();
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ExistingEmailException();
+        }
 
         User user= User.builder()
                 .email(email)
