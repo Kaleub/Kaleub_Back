@@ -3,6 +3,7 @@ package com.kale.controller;
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.room.CreateRoomReqDto;
 import com.kale.dto.request.room.JoinRoomReqDto;
+import com.kale.dto.request.room.LeaveRoomReqDto;
 import com.kale.dto.response.room.CreateRoomResDto;
 import com.kale.dto.response.room.GetRoomsResDto;
 import com.kale.dto.response.room.JoinRoomResDto;
@@ -112,14 +113,14 @@ public class RoomController {
         );
     }
 
-    @DeleteMapping("/{roomId}/participate")
+    @DeleteMapping("/participate")
     public ResponseEntity<ResponseDto> leaveRoom(
-            @PathVariable("roomId") Long roomId,
+            @RequestBody LeaveRoomReqDto leaveRoomReqDto,
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
 
-        roomService.leaveRoom(userEmail, roomId);
+        roomService.leaveRoom(userEmail, leaveRoomReqDto.getRoomId());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
