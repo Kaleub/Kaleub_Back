@@ -84,7 +84,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public User loginUser(String email, String password) {
+    public User signinUser(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {

@@ -6,12 +6,12 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class LoginUserResDto {
+public class SigninUserResDto {
 
     private String token;
 
     @Builder
-    public LoginUserResDto(String token) {
+    public SigninUserResDto(String token) {
         this.token = token;
     }
 }

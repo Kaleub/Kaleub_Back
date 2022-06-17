@@ -2,7 +2,7 @@ package com.kale.controller;
 
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.auth.*;
-import com.kale.dto.response.auth.LoginUserResDto;
+import com.kale.dto.response.auth.SigninUserResDto;
 import com.kale.model.User;
 import com.kale.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -98,19 +98,19 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<ResponseDto> loginUser(
-            @RequestBody LoginUserReqDto loginUserReqDto
+    @PostMapping("/signin")
+    public ResponseEntity<ResponseDto> signinUser(
+            @RequestBody SigninUserReqDto signinUserReqDto
     ) {
 
-        User user = authService.loginUser(
-                loginUserReqDto.getEmail(),
-                loginUserReqDto.getPassword()
+        User user = authService.signinUser(
+                signinUserReqDto.getEmail(),
+                signinUserReqDto.getPassword()
         );
 
         String token = authService.createToken(user);
 
-        LoginUserResDto loginUserResDto = LoginUserResDto.builder()
+        SigninUserResDto signinUserResDto = SigninUserResDto.builder()
                 .token(token)
                 .build();
 
@@ -118,7 +118,7 @@ public class AuthController {
                 ResponseDto.builder()
                         .status(200)
                         .message("로그인 성공")
-                        .data(loginUserResDto)
+                        .data(signinUserResDto)
                         .build()
         );
     }
