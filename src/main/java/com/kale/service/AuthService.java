@@ -65,6 +65,8 @@ public class AuthService {
         } catch (NullPointerException e) {
             throw new IncorrectAuthKeyException();
         }
+
+        redisUtil.setDataExpire(email, "1", 60 * 60 * 24L);
     }
 
     public void createUser(CreateUserReqDto createUserReqDto) {
@@ -75,13 +77,17 @@ public class AuthService {
             throw new ExistingEmailException();
         }
 
-        User user = User.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .role(Role.ROLE_USER)
-                .build();
+        if (redisUtil.getData(email).compareTo("1") == 0) {
+            User user = User.builder()
+                    .email(email)
+                    .password(passwordEncoder.encode(password))
+                    .role(Role.ROLE_USER)
+                    .build();
+            userRepository.save(user);
+        } else {
+            throw new UnAuthenticatedEmailException();
+        }
 
-        userRepository.save(user);
     }
 
     public User signinUser(String email, String password) {

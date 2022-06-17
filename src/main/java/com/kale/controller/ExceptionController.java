@@ -41,7 +41,7 @@ public class ExceptionController {
             AlertDeleteRoomException.class,
             NotOwnerException.class,
             NotAloneException.class,
-            NotInRoomException.class
+            NotInRoomException.class,
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);
@@ -56,7 +56,8 @@ public class ExceptionController {
 
     //401
     @ExceptionHandler({
-            LoginException.class
+            LoginException.class,
+            UnAuthenticatedEmailException.class
     })
     public ResponseEntity<ErrorDto> AuthException(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);
