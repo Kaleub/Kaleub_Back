@@ -66,7 +66,7 @@ public class AuthService {
             throw new IncorrectAuthKeyException();
         }
 
-        redisUtil.setDataExpire(email,"1",60*60*24L);
+        redisUtil.setDataExpire(email, "1", 60 * 60 * 24L);
     }
 
     public void createUser(CreateUserReqDto createUserReqDto) {
