@@ -4,9 +4,7 @@ import com.kale.constant.Role;
 import com.kale.dto.request.auth.AuthEmailCompleteReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.exception.*;
-import com.kale.model.Auth;
 import com.kale.model.User;
-import com.kale.repository.AuthRepository;
 import com.kale.repository.UserRepository;
 import com.kale.util.JwtUtil;
 import com.kale.util.RedisUtil;
@@ -30,7 +28,6 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
-    private final AuthRepository authRepository;
 
     public void validateEmail(String email) {
 
@@ -69,9 +66,7 @@ public class AuthService {
             throw new IncorrectAuthKeyException();
         }
 
-        //인증확인되면, auth 테이블에 인증된 이메일 저장
-        Auth auth = new Auth(email);
-        authRepository.save(auth);
+        redisUtil.setDataExpire(email,"1",60*1440L);
     }
 
     public void createUser(CreateUserReqDto createUserReqDto) {
@@ -82,10 +77,7 @@ public class AuthService {
             throw new ExistingEmailException();
         }
 
-        if (!authRepository.existsByEmail(email)){
-            throw new UnAuthenticatedException();
-
-        }else{
+        if (redisUtil.getData(email).compareTo("1") == 0) {
             User user = User.builder()
                     .email(email)
                     .password(passwordEncoder.encode(password))
@@ -94,6 +86,8 @@ public class AuthService {
 
             userRepository.save(user);
 
+        }else {
+            throw new UnAuthenticatedEmailException();
         }
 
     }

@@ -57,7 +57,7 @@ public class ExceptionController {
     //401
     @ExceptionHandler({
             LoginException.class,
-            UnAuthenticatedException.class
+            UnAuthenticatedEmailException.class
     })
     public ResponseEntity<ErrorDto> AuthException(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);
