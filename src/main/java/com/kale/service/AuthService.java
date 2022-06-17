@@ -4,7 +4,9 @@ import com.kale.constant.Role;
 import com.kale.dto.request.auth.AuthEmailCompleteReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.exception.*;
+import com.kale.model.Auth;
 import com.kale.model.User;
+import com.kale.repository.AuthRepository;
 import com.kale.repository.UserRepository;
 import com.kale.util.JwtUtil;
 import com.kale.util.RedisUtil;
@@ -28,6 +30,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
+    private final AuthRepository authRepository;
 
     public void validateEmail(String email) {
 
@@ -65,6 +68,10 @@ public class AuthService {
         } catch (NullPointerException e) {
             throw new IncorrectAuthKeyException();
         }
+
+        //인증확인되면, auth 테이블에 인증된 이메일 저장
+        Auth auth = new Auth(email);
+        authRepository.save(auth);
     }
 
     public void createUser(CreateUserReqDto createUserReqDto) {
@@ -75,13 +82,20 @@ public class AuthService {
             throw new ExistingEmailException();
         }
 
-        User user = User.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .role(Role.ROLE_USER)
-                .build();
+        if (!authRepository.existsByEmail(email)){
+            throw new UnAuthenticatedException();
 
-        userRepository.save(user);
+        }else{
+            User user = User.builder()
+                    .email(email)
+                    .password(passwordEncoder.encode(password))
+                    .role(Role.ROLE_USER)
+                    .build();
+
+            userRepository.save(user);
+
+        }
+
     }
 
     public User signinUser(String email, String password) {
