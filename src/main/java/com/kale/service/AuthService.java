@@ -66,7 +66,7 @@ public class AuthService {
             throw new IncorrectAuthKeyException();
         }
 
-        redisUtil.setDataExpire(email,"1",60*1440L);
+        redisUtil.setDataExpire(email,"1",60*60*24L);
     }
 
     public void createUser(CreateUserReqDto createUserReqDto) {
@@ -83,10 +83,8 @@ public class AuthService {
                     .password(passwordEncoder.encode(password))
                     .role(Role.ROLE_USER)
                     .build();
-
             userRepository.save(user);
-
-        }else {
+        } else {
             throw new UnAuthenticatedEmailException();
         }
 
