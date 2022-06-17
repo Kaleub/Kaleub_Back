@@ -83,11 +83,11 @@ public class AuthService {
                     .password(passwordEncoder.encode(password))
                     .role(Role.ROLE_USER)
                     .build();
+
             userRepository.save(user);
         } else {
             throw new UnAuthenticatedEmailException();
         }
-
     }
 
     public User signinUser(String email, String password) {
