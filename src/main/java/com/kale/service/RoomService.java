@@ -28,24 +28,20 @@ public class RoomService {
     private final PasswordEncoder passwordEncoder;
 
     public CreateRoomResDto createRoom(String userEmail, String title, String password) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
-
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
         Room room = Room.builder()
                 .title(title)
                 .password(passwordEncoder.encode(password))
                 .code(createRoomCode())
-                .ownerUser(user.get())
+                .ownerUser(user)
                 .build();
 
         Room created = roomRepository.save(room);
 
         Participate participate = Participate.builder()
                 .room(created)
-                .user(user.get())
+                .user(user)
                 .build();
 
         participateRepository.save(participate);
@@ -64,23 +60,19 @@ public class RoomService {
     }
 
     public JoinRoomResDto joinRoom(String userEmail, String code, String password) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
-
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
         Optional<Room> room = roomRepository.findByCode(code);
 
         if (room.isPresent()) {
             if (passwordEncoder.matches(password, room.get().getPassword())) {
-                Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user.get());
+                Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user);
                 if (participating.isPresent()) {
                     throw new AlreadyInRoomException();
                 } else {
                     Participate participate = Participate.builder()
                             .room(room.get())
-                            .user(user.get())
+                            .user(user)
                             .build();
 
                     participateRepository.save(participate);
@@ -106,15 +98,11 @@ public class RoomService {
     }
 
     public ArrayList<GetRoomsResDto> getRooms(String userEmail) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
-
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
         ArrayList<Room> rooms = new ArrayList<>();
 
-        ArrayList<Participate> participates = participateRepository.findAllByUser(user.get());
+        ArrayList<Participate> participates = participateRepository.findAllByUser(user);
         for (int i = 0; i < participates.size(); i++) {
             rooms.add(participates.get(i).getRoom());
         }
@@ -140,31 +128,23 @@ public class RoomService {
     }
 
     public void leaveRoom(String userEmail, Long roomId) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
-        Optional<Room> room = roomRepository.findById(roomId);
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
+        Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
-
-        if (room.isEmpty()) {
-            throw new NotFoundRoomException();
-        }
-
-        Optional<Participate> participate = participateRepository.findByRoomAndUser(room.get(), user.get());
+        Optional<Participate> participate = participateRepository.findByRoomAndUser(room, user);
 
         if (participate.isPresent()) {
 
-            User ownerUser = room.get().getOwnerUser();
-            ArrayList<Participate> participateArrayList = participateRepository.findAllByRoom(room.get());
+            User ownerUser = room.getOwnerUser();
+            ArrayList<Participate> participateArrayList = participateRepository.findAllByRoom(room);
 
             // 사용자가 방의 주인인데 다른 참여자가 남아 있다면 방을 나갈 수 없음
-            if (user.get() == ownerUser && participateArrayList.size() > 1) {
+            if (user == ownerUser && participateArrayList.size() > 1) {
                 throw new OwnerCanNotLeaveException();
             }
 
             // 사용자가 방의 주인이고 방에 혼자 남아 있다면 방을 삭제할건지 경고 문구 보냄
-            if (user.get() == ownerUser && participateArrayList.size() == 1) {
+            if (user == ownerUser && participateArrayList.size() == 1) {
                 throw new AlertDeleteRoomException();
             }
 
@@ -176,69 +156,53 @@ public class RoomService {
     }
 
     public void deleteRoom(String userEmail, Long roomId) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
-        Optional<Room> room = roomRepository.findById(roomId);
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
+        Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
-
-        if (room.isEmpty()) {
-            throw new NotFoundRoomException();
-        }
-
-        User ownerUser = room.get().getOwnerUser();
+        User ownerUser = room.getOwnerUser();
 
         // 방장이 아니면 방을 삭제할 수 없음
-        if (user.get() != ownerUser) {
+        if (user != ownerUser) {
             throw new NotOwnerException();
         }
 
         // 방장을 제외한 다른 참가자가 더 있으면 방을 삭제할 수 없음
-        ArrayList<Participate> participates = participateRepository.findAllByRoom(room.get());
+        ArrayList<Participate> participates = participateRepository.findAllByRoom(room);
         if (participates.size() > 1) {
             throw new NotAloneException();
         }
 
         // 참가하고 있는 방이 아니면 방을 삭제할 수 없음
-        Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user.get());
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
         if (participating.isEmpty()) {
             throw new AlreadyNotInRoomException();
         }
 
         // TO DO: 방 관련 데이터 삭제
         participateRepository.delete(participating.get());
-        roomRepository.delete(room.get());
+        roomRepository.delete(room);
     }
 
     public void deleteUserForce(String userEmail, Long roomId, Long deletedUserId) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Optional<User> deletedUser = userRepository.findById(deletedUserId);
-        Optional<Room> room = roomRepository.findById(roomId);
+        Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
-
-        if (room.isEmpty()) {
-            throw new NotFoundRoomException();
-        }
-
-        User ownerUser = room.get().getOwnerUser();
+        User ownerUser = room.getOwnerUser();
 
         //방장이 아니면 사용자 강퇴시킬 수 없음
-        if (user.get() != ownerUser) {
+        if (user != ownerUser) {
             throw new NotOwnerException();
         }
 
         //참가 방이 아니면 강퇴시킬 수 없음
-        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room.get(), user.get());
+        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room, user);
         if (participatingOwner.isEmpty()) {
             throw new AlreadyNotInRoomException();
         }
 
         //방에 참가하지 않은 사용자 강퇴시킬 수 없음
-        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room.get(), deletedUser.get());
+        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, deletedUser.get());
         if (participatingUser.isEmpty()) {
             throw new UserAlreadyNotInRoomException();
         }
@@ -247,75 +211,59 @@ public class RoomService {
     }
 
     public void modifyRoomPassword(String userEmail, Long roomId, String beforePassword, String afterPassword) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
-        Optional<Room> room = roomRepository.findById(roomId);
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
+        Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
-
-        if (room.isEmpty()) {
-            throw new NotFoundRoomException();
-        }
-
-        User ownerUser = room.get().getOwnerUser();
+        User ownerUser = room.getOwnerUser();
 
         // 방장이 아니면 비밀번호를 변경할 수 없음
-        if (user.get() != ownerUser) {
+        if (user != ownerUser) {
             throw new NotOwnerException();
         }
 
         // 참가하고 있는 방이 아니면 비밀번호를 변경할 수 없음
-        Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user.get());
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
         if (participating.isEmpty()) {
             throw new NotInRoomException();
         }
 
         // 이전 비밀번호가 틀리면 비밀번호를 변경할 수 없음
-        if (!passwordEncoder.matches(beforePassword, room.get().getPassword())) {
+        if (!passwordEncoder.matches(beforePassword, room.getPassword())) {
             throw new InvalidPasswordException();
         }
 
-        room.get().setPassword(passwordEncoder.encode(afterPassword));
+        room.setPassword(passwordEncoder.encode(afterPassword));
 
-        roomRepository.save(room.get());
+        roomRepository.save(room);
     }
 
     public void delegateOwner(String userEmail, Long roomId, Long delegatedUserId) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Optional<User> delegatedUser = userRepository.findById(delegatedUserId);
-        Optional<Room> room = roomRepository.findById(roomId);
+        Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
-        if (user.isEmpty()) {
-            throw new LoginException();
-        }
-
-        if (room.isEmpty()) {
-            throw new NotFoundRoomException();
-        }
-
-        User ownerUser = room.get().getOwnerUser();
+        User ownerUser = room.getOwnerUser();
 
         // 방장이 아니면 방장 변경 불가능
-        if (user.get() != ownerUser) {
+        if (user != ownerUser) {
             throw new NotOwnerException();
         }
 
         //참가한 방이 아니면 위임 불가능
-        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room.get(), user.get());
+        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room, user);
         if (participatingOwner.isEmpty()) {
             throw new AlreadyNotInRoomException();
         }
 
         //위임하려는 사용자가 방에 없으면 위임 불가
-        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room.get(), delegatedUser.get());
+        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, delegatedUser.get());
         if (participatingUser.isEmpty()) {
             throw new UserAlreadyNotInRoomException();
         }
 
-        room.get().setOwnerUser(delegatedUser.get());
+        room.setOwnerUser(delegatedUser.get());
 
-        roomRepository.save(room.get());
+        roomRepository.save(room);
     }
 
     private String createRoomCode() {
@@ -345,6 +293,4 @@ public class RoomService {
         }
         return false;
     }
-
-
 }
