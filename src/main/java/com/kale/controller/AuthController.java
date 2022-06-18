@@ -3,7 +3,6 @@ package com.kale.controller;
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.auth.*;
 import com.kale.dto.response.auth.SigninUserResDto;
-import com.kale.model.User;
 import com.kale.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,6 @@ public class AuthController {
     public ResponseEntity<ResponseDto> validateEmail(
             @RequestBody @Valid ValidateEmailReqDto validateEmailReqDto
     ) {
-
         authService.validateEmail(validateEmailReqDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -38,8 +36,7 @@ public class AuthController {
     @PostMapping("/signup/password/check")
     public ResponseEntity<ResponseDto> validatePassword(
             @RequestBody @Valid ValidatePasswordReqDto validatePasswordReqDto
-            ) {
-
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -53,8 +50,7 @@ public class AuthController {
     @PostMapping("/signup/email")
     public ResponseEntity<ResponseDto> authEmail(
             @RequestBody @Valid AuthEmailReqDto authEmailReqDto
-            ) {
-
+    ) {
         authService.authEmail(authEmailReqDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -70,7 +66,6 @@ public class AuthController {
             @RequestBody @Valid AuthEmailCompleteReqDto authEmailCompleteReqDto
     ) {
         authService.authEmailComplete(authEmailCompleteReqDto);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -86,9 +81,7 @@ public class AuthController {
     public ResponseEntity<ResponseDto> createUser(
             @RequestBody @Valid CreateUserReqDto createUserReqDto
     ) {
-        
         authService.createUser(createUserReqDto);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -102,18 +95,10 @@ public class AuthController {
     public ResponseEntity<ResponseDto> signinUser(
             @RequestBody SigninUserReqDto signinUserReqDto
     ) {
-
-        User user = authService.signinUser(
+        SigninUserResDto signinUserResDto = authService.signinUser(
                 signinUserReqDto.getEmail(),
                 signinUserReqDto.getPassword()
         );
-
-        String token = authService.createToken(user);
-
-        SigninUserResDto signinUserResDto = SigninUserResDto.builder()
-                .token(token)
-                .build();
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -125,7 +110,6 @@ public class AuthController {
 
     @GetMapping("/check")
     ResponseEntity<ResponseDto> checkToken() {
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
