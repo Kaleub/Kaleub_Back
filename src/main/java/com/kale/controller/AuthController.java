@@ -33,19 +33,6 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/signup/password/check")
-    public ResponseEntity<ResponseDto> validatePassword(
-            @RequestBody @Valid ValidatePasswordReqDto validatePasswordReqDto
-    ) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.builder()
-                        .status(200)
-                        .message("비밀번호 양식 확인 완료")
-                        .data(null)
-                        .build()
-        );
-    }
-
     //이메일 인증 실행
     @PostMapping("/signup/email")
     public ResponseEntity<ResponseDto> authEmail(
