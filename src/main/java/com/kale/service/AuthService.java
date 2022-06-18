@@ -130,8 +130,6 @@ public class AuthService {
         redisUtil.setDataExpire(authKey, email, 60 * 3L);
     }
 
-
-
     private String createToken(User user) {
         String token = jwtUtil.generateToken(user);
         redisUtil.setDataExpire(token, user.getEmail(), JwtUtil.TOKEN_VALIDATION_SECOND);
