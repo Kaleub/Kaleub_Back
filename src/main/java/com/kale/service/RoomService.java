@@ -189,6 +189,41 @@ public class RoomService {
         roomRepository.delete(room.get());
     }
 
+    public void deleteUserForce(String userEmail, Long roomId, Long deletedUserId) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        Optional<User> deletedUser = userRepository.findById(deletedUserId);
+        Optional<Room> room = roomRepository.findById(roomId);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        if (room.isEmpty()) {
+            throw new NotFoundRoomException();
+        }
+
+        User ownerUser = room.get().getOwnerUser();
+
+        //방장이 아니면 사용자 강퇴시킬 수 없음
+        if (user.get() != ownerUser) {
+            throw new NotOwnerException();
+        }
+
+        //참가 방이 아니면 강퇴시킬 수 없음
+        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room.get(), user.get());
+        if (participatingOwner.isEmpty()) {
+            throw new AlreadyNotInRoomException();
+        }
+
+        //방에 참가하지 않은 사용자 강퇴시킬 수 없음
+        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room.get(), deletedUser.get());
+        if (participatingUser.isEmpty()) {
+            throw new UserAlreadyNotInRoomException();
+        }
+
+        participateRepository.delete(participatingUser.get());
+    }
+
     public void modifyRoomPassword(String userEmail, Long roomId, String beforePassword, String afterPassword) {
         Optional<User> user = userRepository.findByEmail(userEmail);
         Optional<Room> room = roomRepository.findById(roomId);
@@ -224,6 +259,43 @@ public class RoomService {
         roomRepository.save(room.get());
     }
 
+    public void delegateOwner(String userEmail, Long roomId, Long delegatedUserId) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        Optional<User> delegatedUser = userRepository.findById(delegatedUserId);
+        Optional<Room> room = roomRepository.findById(roomId);
+
+        if (user.isEmpty()) {
+            throw new LoginException();
+        }
+
+        if (room.isEmpty()) {
+            throw new NotFoundRoomException();
+        }
+
+        User ownerUser = room.get().getOwnerUser();
+
+        // 방장이 아니면 방장 변경 불가능
+        if (user.get() != ownerUser) {
+            throw new NotOwnerException();
+        }
+
+        //참가한 방이 아니면 위임 불가능
+        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room.get(), user.get());
+        if (participatingOwner.isEmpty()) {
+            throw new AlreadyNotInRoomException();
+        }
+
+        //위임하려는 사용자가 방에 없으면 위임 불가
+        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room.get(), delegatedUser.get());
+        if (participatingUser.isEmpty()) {
+            throw new UserAlreadyNotInRoomException();
+        }
+
+        room.get().setOwnerUser(delegatedUser.get());
+
+        roomRepository.save(room.get());
+    }
+
     private String createRoomCode() {
         String result;
         do {
@@ -251,4 +323,6 @@ public class RoomService {
         }
         return false;
     }
+
+
 }

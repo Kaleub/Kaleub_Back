@@ -134,6 +134,24 @@ public class RoomController {
         );
     }
 
+    @DeleteMapping("/participate/force")
+    public ResponseEntity<ResponseDto> deleteUserForce(
+            @RequestBody DeleteUserForceReqDto deleteUserForceReqDto,
+            HttpServletResponse response
+    ) {
+        String userEmail = response.getHeader("user");
+
+        roomService.deleteUserForce(userEmail, deleteUserForceReqDto.getRoomId(), deleteUserForceReqDto.getDeletedUserId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("사용자 강퇴 성공")
+                        .data(null)
+                        .build()
+        );
+    }
+
     @PutMapping("/password")
     public ResponseEntity<ResponseDto> modifyRoomPassword(
             @RequestBody @Valid ModifyRoomPasswordReqDto modifyRoomPasswordReqDto,
@@ -147,6 +165,24 @@ public class RoomController {
                 ResponseDto.builder()
                         .status(200)
                         .message("방 비밀번호 변경 성공")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @PutMapping("/owner")
+    public ResponseEntity<ResponseDto> delegateOwner(
+            @RequestBody @Valid DelegateOwnerReqDto delegateOwnerReqDto,
+            HttpServletResponse response
+    ) {
+        String userEmail = response.getHeader("user");
+
+        roomService.delegateOwner(userEmail, delegateOwnerReqDto.getRoomId(), delegateOwnerReqDto.getDelegatedUserId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("방장 위임 성공")
                         .data(null)
                         .build()
         );

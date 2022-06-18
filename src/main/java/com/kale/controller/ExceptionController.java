@@ -35,6 +35,7 @@ public class ExceptionController {
             NotFoundRoomException.class,
             AlreadyInRoomException.class,
             AlreadyNotInRoomException.class,
+            UserAlreadyNotInRoomException.class,
             ExistingEmailException.class,
             IncorrectAuthKeyException.class,
             OwnerCanNotLeaveException.class,

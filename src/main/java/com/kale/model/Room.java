@@ -13,6 +13,7 @@ public class Room extends BaseEntity {
     @Column(nullable = false, unique = true, length = 20)
     private String code;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name="USER_ID")
     private User ownerUser;
