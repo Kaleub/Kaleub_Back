@@ -2,8 +2,8 @@ package com.kale.service;
 
 import com.kale.exception.LoginException;
 import com.kale.exception.NotFoundRoomException;
-import com.kale.model.Room;
-import com.kale.model.User;
+import com.kale.domain.Room;
+import com.kale.domain.User;
 import com.kale.repository.RoomRepository;
 import com.kale.repository.UserRepository;
 import lombok.NoArgsConstructor;

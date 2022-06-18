@@ -1,4 +1,4 @@
-package com.kale.model;
+package com.kale.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;

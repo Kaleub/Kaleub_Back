@@ -1,4 +1,4 @@
-package com.kale.model;
+package com.kale.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;

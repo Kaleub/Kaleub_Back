@@ -5,7 +5,6 @@ import com.kale.dto.request.room.*;
 import com.kale.dto.response.room.CreateRoomResDto;
 import com.kale.dto.response.room.GetRoomsResDto;
 import com.kale.dto.response.room.JoinRoomResDto;
-import com.kale.model.Room;
 import com.kale.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

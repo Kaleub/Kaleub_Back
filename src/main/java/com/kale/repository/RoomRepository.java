@@ -1,6 +1,6 @@
 package com.kale.repository;
 
-import com.kale.model.Room;
+import com.kale.domain.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -5,7 +5,7 @@ import com.kale.dto.request.auth.AuthEmailCompleteReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.dto.response.auth.SigninUserResDto;
 import com.kale.exception.*;
-import com.kale.model.User;
+import com.kale.domain.User;
 import com.kale.repository.UserRepository;
 import com.kale.util.JwtUtil;
 import com.kale.util.RedisUtil;
