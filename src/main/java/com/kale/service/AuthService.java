@@ -77,7 +77,7 @@ public class AuthService {
             throw new ExistingEmailException();
         }
 
-        if (redisUtil.getData(email).compareTo("1") == 0) {
+        if (redisUtil.getData(email) != null && redisUtil.getData(email).compareTo("1") == 0) {
             User user = User.builder()
                     .email(email)
                     .password(passwordEncoder.encode(password))
