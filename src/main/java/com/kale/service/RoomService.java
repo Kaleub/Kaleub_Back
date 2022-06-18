@@ -1,6 +1,8 @@
 package com.kale.service;
 
+import com.kale.dto.response.room.CreateRoomResDto;
 import com.kale.dto.response.room.GetRoomsResDto;
+import com.kale.dto.response.room.JoinRoomResDto;
 import com.kale.exception.*;
 import com.kale.model.Participate;
 import com.kale.model.Room;
@@ -25,7 +27,7 @@ public class RoomService {
     private final ParticipateRepository participateRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Room createRoom(String userEmail, String title, String password) {
+    public CreateRoomResDto createRoom(String userEmail, String title, String password) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         if (user.isEmpty()) {
@@ -48,10 +50,20 @@ public class RoomService {
 
         participateRepository.save(participate);
 
-        return created;
+        CreateRoomResDto createRoomResDto = CreateRoomResDto.builder()
+                .id(created.getId())
+                .code(created.getCode())
+                .ownerEmail(created.getOwnerUser().getEmail())
+                .title(created.getTitle())
+                .password(created.getPassword())
+                .createdDate(created.getCreatedDate())
+                .modifiedDate(created.getModifiedDate())
+                .build();
+
+        return createRoomResDto;
     }
 
-    public Room joinRoom(String userEmail, String code, String password) {
+    public JoinRoomResDto joinRoom(String userEmail, String code, String password) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         if (user.isEmpty()) {
@@ -73,7 +85,17 @@ public class RoomService {
 
                     participateRepository.save(participate);
 
-                    return room.get();
+                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.builder()
+                            .id(room.get().getId())
+                            .code(room.get().getCode())
+                            .ownerEmail(room.get().getOwnerUser().getEmail())
+                            .title(room.get().getTitle())
+                            .password(room.get().getPassword())
+                            .createdDate(room.get().getCreatedDate())
+                            .modifiedDate(room.get().getModifiedDate())
+                            .build();
+
+                    return joinRoomResDto;
                 }
             } else {
                 throw new InvalidPasswordException();

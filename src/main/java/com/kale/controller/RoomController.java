@@ -27,22 +27,9 @@ public class RoomController {
     public ResponseEntity<ResponseDto> createRoom(
             @RequestBody @Valid CreateRoomReqDto createRoomReqDto,
             HttpServletResponse response
-            ) {
-
+    ) {
         String userEmail = response.getHeader("user");
-
-        Room room = roomService.createRoom(userEmail, createRoomReqDto.getTitle(), createRoomReqDto.getPassword());
-
-        CreateRoomResDto createRoomResDto = CreateRoomResDto.builder()
-                .id(room.getId())
-                .code(room.getCode())
-                .ownerEmail(room.getOwnerUser().getEmail())
-                .title(room.getTitle())
-                .password(room.getPassword())
-                .createdDate(room.getCreatedDate())
-                .modifiedDate(room.getModifiedDate())
-                .build();
-
+        CreateRoomResDto createRoomResDto = roomService.createRoom(userEmail, createRoomReqDto.getTitle(), createRoomReqDto.getPassword());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -57,21 +44,8 @@ public class RoomController {
             @RequestBody JoinRoomReqDto joinRoomReqDto,
             HttpServletResponse response
     ) {
-
         String userEmail = response.getHeader("user");
-
-        Room room = roomService.joinRoom(userEmail, joinRoomReqDto.getCode(), joinRoomReqDto.getPassword());
-
-        JoinRoomResDto joinRoomResDto = JoinRoomResDto.builder()
-                .id(room.getId())
-                .code(room.getCode())
-                .ownerEmail(room.getOwnerUser().getEmail())
-                .title(room.getTitle())
-                .password(room.getPassword())
-                .createdDate(room.getCreatedDate())
-                .modifiedDate(room.getModifiedDate())
-                .build();
-
+        JoinRoomResDto joinRoomResDto = roomService.joinRoom(userEmail, joinRoomReqDto.getCode(), joinRoomReqDto.getPassword());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -86,9 +60,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-
         ArrayList<GetRoomsResDto> getRoomsResDtos = roomService.getRooms(userEmail);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -104,9 +76,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-
         roomService.leaveRoom(userEmail, leaveRoomReqDto.getRoomId());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -122,9 +92,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-
         roomService.deleteRoom(userEmail, deleteRoomReqDto.getRoomId());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -140,9 +108,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-
         roomService.deleteUserForce(userEmail, deleteUserForceReqDto.getRoomId(), deleteUserForceReqDto.getDeletedUserId());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -158,9 +124,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-
         roomService.modifyRoomPassword(userEmail, modifyRoomPasswordReqDto.getRoomId(), modifyRoomPasswordReqDto.getBeforePassword(), modifyRoomPasswordReqDto.getAfterPassword());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -176,9 +140,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-
         roomService.delegateOwner(userEmail, delegateOwnerReqDto.getRoomId(), delegateOwnerReqDto.getDelegatedUserId());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)

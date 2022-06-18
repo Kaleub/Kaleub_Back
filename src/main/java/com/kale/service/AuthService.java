@@ -3,6 +3,7 @@ package com.kale.service;
 import com.kale.constant.Role;
 import com.kale.dto.request.auth.AuthEmailCompleteReqDto;
 import com.kale.dto.request.auth.CreateUserReqDto;
+import com.kale.dto.response.auth.SigninUserResDto;
 import com.kale.exception.*;
 import com.kale.model.User;
 import com.kale.repository.UserRepository;
@@ -90,12 +91,17 @@ public class AuthService {
         }
     }
 
-    public User signinUser(String email, String password) {
+    public SigninUserResDto signinUser(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
             if (passwordEncoder.matches(password, user.get().getPassword())) {
-                return user.get();
+                String token = createToken(user.get());
+                SigninUserResDto signinUserResDto = SigninUserResDto.builder()
+                        .token(token)
+                        .build();
+
+                return signinUserResDto;
             } else {
                 throw new InvalidPasswordException();
             }
@@ -126,7 +132,7 @@ public class AuthService {
 
 
 
-    public String createToken(User user) {
+    private String createToken(User user) {
         String token = jwtUtil.generateToken(user);
         redisUtil.setDataExpire(token, user.getEmail(), JwtUtil.TOKEN_VALIDATION_SECOND);
 
