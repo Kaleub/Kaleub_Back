@@ -141,7 +141,7 @@ public class RoomController {
     ) {
         String userEmail = response.getHeader("user");
 
-        roomService.deleteUserForce(userEmail, deleteUserForceReqDto.getRoomId(), deleteUserForceReqDto.getDeletedUserEmail());
+        roomService.deleteUserForce(userEmail, deleteUserForceReqDto.getRoomId(), deleteUserForceReqDto.getDeletedUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -177,7 +177,7 @@ public class RoomController {
     ) {
         String userEmail = response.getHeader("user");
 
-        roomService.delegateOwner(userEmail, delegateOwnerReqDto.getRoomId(), delegateOwnerReqDto.getDelegatedUserEmail());
+        roomService.delegateOwner(userEmail, delegateOwnerReqDto.getRoomId(), delegateOwnerReqDto.getDelegatedUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()

@@ -8,5 +8,5 @@ import lombok.Setter;
 public class DelegateOwnerReqDto {
 
     private Long roomId;
-    private String delegatedUserEmail;
+    private Long delegatedUserId;
 }

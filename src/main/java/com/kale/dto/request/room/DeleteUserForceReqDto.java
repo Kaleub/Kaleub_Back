@@ -8,7 +8,5 @@ import lombok.Setter;
 public class DeleteUserForceReqDto {
 
     private Long roomId;
-    private String deletedUserEmail;
-
-
+    private Long deletedUserId;
 }

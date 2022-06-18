@@ -189,9 +189,9 @@ public class RoomService {
         roomRepository.delete(room.get());
     }
 
-    public void deleteUserForce(String userEmail, Long roomId, String deletedUserEmail) {
+    public void deleteUserForce(String userEmail, Long roomId, Long deletedUserId) {
         Optional<User> user = userRepository.findByEmail(userEmail);
-        Optional<User> deletedUser = userRepository.findByEmail(deletedUserEmail);
+        Optional<User> deletedUser = userRepository.findById(deletedUserId);
         Optional<Room> room = roomRepository.findById(roomId);
 
         if (user.isEmpty()) {
@@ -259,9 +259,9 @@ public class RoomService {
         roomRepository.save(room.get());
     }
 
-    public void delegateOwner(String userEmail, Long roomId, String delegatedUserEmail) {
+    public void delegateOwner(String userEmail, Long roomId, Long delegatedUserId) {
         Optional<User> user = userRepository.findByEmail(userEmail);
-        Optional<User> delegatedUser = userRepository.findByEmail(delegatedUserEmail);
+        Optional<User> delegatedUser = userRepository.findById(delegatedUserId);
         Optional<Room> room = roomRepository.findById(roomId);
 
         if (user.isEmpty()) {
