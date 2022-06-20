@@ -1,6 +1,6 @@
 package com.kale.repository;
 
-import com.kale.model.User;
+import com.kale.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

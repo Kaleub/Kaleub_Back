@@ -1,8 +1,8 @@
 package com.kale.repository;
 
-import com.kale.model.Participate;
-import com.kale.model.Room;
-import com.kale.model.User;
+import com.kale.domain.Participate;
+import com.kale.domain.Room;
+import com.kale.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;

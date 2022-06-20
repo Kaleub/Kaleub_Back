@@ -1,6 +1,6 @@
 package com.kale.util;
 
-import com.kale.model.User;
+import com.kale.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

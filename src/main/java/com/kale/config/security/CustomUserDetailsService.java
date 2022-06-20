@@ -1,6 +1,6 @@
 package com.kale.config.security;
 
-import com.kale.model.User;
+import com.kale.domain.User;
 import com.kale.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

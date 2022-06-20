@@ -1,4 +1,4 @@
-package com.kale.model;
+package com.kale.domain;
 
 import com.kale.constant.Role;
 import lombok.AccessLevel;
