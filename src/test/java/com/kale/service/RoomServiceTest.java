@@ -56,7 +56,7 @@ public class RoomServiceTest {
                 .build();
 
         //when
-        roomService.createRoom(saved.getEmail(), createRoomReqDto.getTitle(), createRoomReqDto.getPassword());
+        roomService.createRoom(saved.getEmail(), createRoomReqDto);
 
         //then
         Optional<Room> room = roomRepository.findByOwnerUser(saved);

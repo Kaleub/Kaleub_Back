@@ -1,8 +1,7 @@
 package com.kale.service;
 
 import com.kale.constant.Role;
-import com.kale.dto.request.auth.AuthEmailCompleteReqDto;
-import com.kale.dto.request.auth.CreateUserReqDto;
+import com.kale.dto.request.auth.*;
 import com.kale.dto.response.auth.SigninUserResDto;
 import com.kale.exception.*;
 import com.kale.domain.User;
@@ -30,7 +29,9 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
 
-    public void validateEmail(String email) {
+    public void validateEmail(ValidateEmailReqDto validateEmailReqDto) {
+
+        String email = validateEmailReqDto.getEmail();
 
         boolean emailDuplicate = userRepository.existsByEmail(email);
 
@@ -39,7 +40,9 @@ public class AuthService {
         }
     }
 
-    public void authEmail(String email) {
+    public void authEmail(AuthEmailReqDto authEmailReqDto) {
+
+        String email = authEmailReqDto.getEmail();
 
         if (userRepository.existsByEmail(email)) {
             throw new ExistingEmailException();
@@ -91,7 +94,11 @@ public class AuthService {
         }
     }
 
-    public SigninUserResDto signinUser(String email, String password) {
+    public SigninUserResDto signinUser(SigninUserReqDto signinUserReqDto) {
+
+        String email = signinUserReqDto.getEmail();
+        String password = signinUserReqDto.getPassword();
+
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {

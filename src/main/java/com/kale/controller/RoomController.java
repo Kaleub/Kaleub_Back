@@ -28,7 +28,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        CreateRoomResDto createRoomResDto = roomService.createRoom(userEmail, createRoomReqDto.getTitle(), createRoomReqDto.getPassword());
+        CreateRoomResDto createRoomResDto = roomService.createRoom(userEmail, createRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -44,7 +44,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        JoinRoomResDto joinRoomResDto = roomService.joinRoom(userEmail, joinRoomReqDto.getCode(), joinRoomReqDto.getPassword());
+        JoinRoomResDto joinRoomResDto = roomService.joinRoom(userEmail, joinRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -75,7 +75,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        roomService.leaveRoom(userEmail, leaveRoomReqDto.getRoomId());
+        roomService.leaveRoom(userEmail, leaveRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -91,7 +91,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        roomService.disableRoom(userEmail, disableRoomReqDto.getRoomId());
+        roomService.disableRoom(userEmail, disableRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -107,7 +107,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        roomService.deleteUserForce(userEmail, deleteUserForceReqDto.getRoomId(), deleteUserForceReqDto.getDeletedUserId());
+        roomService.deleteUserForce(userEmail, deleteUserForceReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -123,7 +123,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        roomService.modifyRoomPassword(userEmail, modifyRoomPasswordReqDto.getRoomId(), modifyRoomPasswordReqDto.getBeforePassword(), modifyRoomPasswordReqDto.getAfterPassword());
+        roomService.modifyRoomPassword(userEmail, modifyRoomPasswordReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -139,7 +139,7 @@ public class RoomController {
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        roomService.delegateOwner(userEmail, delegateOwnerReqDto.getRoomId(), delegateOwnerReqDto.getDelegatedUserId());
+        roomService.delegateOwner(userEmail, delegateOwnerReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)

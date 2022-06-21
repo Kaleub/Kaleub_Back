@@ -23,7 +23,7 @@ public class AuthController {
     public ResponseEntity<ResponseDto> validateEmail(
             @RequestBody @Valid ValidateEmailReqDto validateEmailReqDto
     ) {
-        authService.validateEmail(validateEmailReqDto.getEmail());
+        authService.validateEmail(validateEmailReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -38,7 +38,7 @@ public class AuthController {
     public ResponseEntity<ResponseDto> authEmail(
             @RequestBody @Valid AuthEmailReqDto authEmailReqDto
     ) {
-        authService.authEmail(authEmailReqDto.getEmail());
+        authService.authEmail(authEmailReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -82,10 +82,7 @@ public class AuthController {
     public ResponseEntity<ResponseDto> signinUser(
             @RequestBody SigninUserReqDto signinUserReqDto
     ) {
-        SigninUserResDto signinUserResDto = authService.signinUser(
-                signinUserReqDto.getEmail(),
-                signinUserReqDto.getPassword()
-        );
+        SigninUserResDto signinUserResDto = authService.signinUser(signinUserReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
