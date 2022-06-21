@@ -95,7 +95,7 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
-                        .message("방 삭제 성공")
+                        .message("방 비활성화 성공")
                         .data(null)
                         .build()
         );
