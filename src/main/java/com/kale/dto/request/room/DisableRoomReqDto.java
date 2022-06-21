@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class DeleteRoomReqDto {
+public class DisableRoomReqDto {
 
     private Long roomId;
 }

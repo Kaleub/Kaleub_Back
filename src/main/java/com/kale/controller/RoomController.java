@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -86,13 +85,13 @@ public class RoomController {
         );
     }
 
-    @DeleteMapping
-    public ResponseEntity<ResponseDto> deleteRoom(
-            @RequestBody DeleteRoomReqDto deleteRoomReqDto,
+    @PutMapping("/disable")
+    public ResponseEntity<ResponseDto> disableRoom(
+            @RequestBody DisableRoomReqDto disableRoomReqDto,
             HttpServletResponse response
     ) {
         String userEmail = response.getHeader("user");
-        roomService.deleteRoom(userEmail, deleteRoomReqDto.getRoomId());
+        roomService.disableRoom(userEmail, disableRoomReqDto.getRoomId());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)

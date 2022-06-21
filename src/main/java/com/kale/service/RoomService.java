@@ -35,6 +35,8 @@ public class RoomService {
                 .password(passwordEncoder.encode(password))
                 .code(createRoomCode())
                 .ownerUser(user)
+                .participantsCount(1)
+                .status(true)
                 .build();
 
         Room created = roomRepository.save(room);
@@ -52,6 +54,8 @@ public class RoomService {
                 .ownerEmail(created.getOwnerUser().getEmail())
                 .title(created.getTitle())
                 .password(created.getPassword())
+                .participantsCount(created.getParticipantsCount())
+                .status(created.getStatus())
                 .createdDate(created.getCreatedDate())
                 .modifiedDate(created.getModifiedDate())
                 .build();
@@ -77,12 +81,17 @@ public class RoomService {
 
                     participateRepository.save(participate);
 
+                    room.get().setParticipantsCount(room.get().getParticipantsCount() + 1);
+                    roomRepository.save(room.get());
+
                     JoinRoomResDto joinRoomResDto = JoinRoomResDto.builder()
                             .id(room.get().getId())
                             .code(room.get().getCode())
                             .ownerEmail(room.get().getOwnerUser().getEmail())
                             .title(room.get().getTitle())
                             .password(room.get().getPassword())
+                            .participantsCount(room.get().getParticipantsCount())
+                            .status(room.get().getStatus())
                             .createdDate(room.get().getCreatedDate())
                             .modifiedDate(room.get().getModifiedDate())
                             .build();
@@ -109,14 +118,14 @@ public class RoomService {
 
         ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
         rooms.forEach((room -> {
-            int participantsCount = participateRepository.findAllByRoom(room).size();
             GetRoomsResDto getRoomsResDto = GetRoomsResDto.builder()
                     .id(room.getId())
                     .code(room.getCode())
                     .ownerEmail(room.getOwnerUser().getEmail())
                     .title(room.getTitle())
                     .password(room.getPassword())
-                    .participantsCount(participantsCount)
+                    .participantsCount(room.getParticipantsCount())
+                    .status(room.getStatus())
                     .createdDate(room.getCreatedDate())
                     .modifiedDate(room.getModifiedDate())
                     .build();
@@ -150,37 +159,40 @@ public class RoomService {
 
             // 사용자가 방의 주인이 아니면 방을 나감
             participateRepository.delete(participate.get());
+
+            room.setParticipantsCount(room.getParticipantsCount() - 1);
+            roomRepository.save(room);
         } else {
             throw new AlreadyNotInRoomException();
         }
     }
 
-    public void deleteRoom(String userEmail, Long roomId) {
+    public void disableRoom(String userEmail, Long roomId) {
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
         User ownerUser = room.getOwnerUser();
 
-        // 방장이 아니면 방을 삭제할 수 없음
+        // 방장이 아니면 방을 비활성화할 수 없음
         if (user != ownerUser) {
             throw new NotOwnerException();
         }
 
-        // 방장을 제외한 다른 참가자가 더 있으면 방을 삭제할 수 없음
+        // 방장을 제외한 다른 참가자가 더 있으면 방을 비활성화할 수 없음
         ArrayList<Participate> participates = participateRepository.findAllByRoom(room);
         if (participates.size() > 1) {
             throw new NotAloneException();
         }
 
-        // 참가하고 있는 방이 아니면 방을 삭제할 수 없음
+        // 참가하고 있는 방이 아니면 방을 비활성화할 수 없음
         Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
         if (participating.isEmpty()) {
             throw new AlreadyNotInRoomException();
         }
 
-        // TO DO: 방 관련 데이터 삭제
-        participateRepository.delete(participating.get());
-        roomRepository.delete(room);
+        // 방 비활성화
+        room.setStatus(false);
+        roomRepository.save(room);
     }
 
     public void deleteUserForce(String userEmail, Long roomId, Long deletedUserId) {
@@ -208,6 +220,8 @@ public class RoomService {
         }
 
         participateRepository.delete(participatingUser.get());
+        room.setParticipantsCount(room.getParticipantsCount() - 1);
+        roomRepository.save(room);
     }
 
     public void modifyRoomPassword(String userEmail, Long roomId, String beforePassword, String afterPassword) {

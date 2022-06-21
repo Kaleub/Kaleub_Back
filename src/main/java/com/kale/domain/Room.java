@@ -25,6 +25,7 @@ public class Room extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String password;
 
+    @Setter
     @Column(nullable = false)
     private int participantsCount;
 
