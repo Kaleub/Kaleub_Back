@@ -1,12 +1,17 @@
 package com.kale.service;
 
 import com.kale.domain.*;
+import com.kale.dto.request.feed.ModifyFeedReqDto;
+import com.kale.dto.response.feed.ModifyFeedResDto;
+import com.kale.exception.NotFeedOwnerException;
+import com.kale.exception.NotFoundFeedException;
 import com.kale.exception.NotInRoomException;
 import com.kale.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,5 +54,43 @@ public class FeedService {
 
             feedImageRepository.save(feedImage);
         });
+    }
+
+    public ModifyFeedResDto modifyFeed(String userEmail, ModifyFeedReqDto modifyFeedReqDto) {
+        User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
+        Long feedId = modifyFeedReqDto.getFeedId();
+        String title = modifyFeedReqDto.getTitle();
+        String content = modifyFeedReqDto.getContent();
+
+        Optional<Feed> feed = feedRepository.findById(feedId);
+        if (feed.isEmpty()) {
+            throw new NotFoundFeedException();
+        }
+
+        // 피드 작성자가 아니면 수정할 수 없음
+        if (feed.get().getUser() != user) {
+            throw new NotFeedOwnerException();
+        }
+
+        feed.get().setTitle(title);
+        feed.get().setContent(content);
+
+        Feed modified = feedRepository.save(feed.get());
+
+        ArrayList<String> imageUrls = new ArrayList<>();
+        ArrayList<FeedImage> feedImages = feedImageRepository.findAllByFeed(feed.get());
+        feedImages.forEach(image -> {
+            imageUrls.add(imageUrls.size(), image.getImageUrl());
+        });
+
+        ModifyFeedResDto modifyFeedResDto = ModifyFeedResDto.builder()
+                .roomId(modified.getRoom().getId())
+                .userId(modified.getUser().getId())
+                .title(modified.getTitle())
+                .content(modified.getContent())
+                .imageUrls(imageUrls)
+                .build();
+
+        return modifyFeedResDto;
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.validation.ValidationException;
+
 @ControllerAdvice
 @Slf4j
 public class ExceptionController {
@@ -30,6 +32,7 @@ public class ExceptionController {
 
     //400
     @ExceptionHandler({
+            ValidationException.class,
             NotFoundEmailException.class,
             InvalidPasswordException.class,
             NotFoundRoomException.class,
@@ -44,7 +47,9 @@ public class ExceptionController {
             NotAloneException.class,
             NotInRoomException.class,
             ExceedRoomCapacityException.class,
-            InvalidFileException.class
+            InvalidFileException.class,
+            NotFoundFeedException.class,
+            NotFeedOwnerException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);

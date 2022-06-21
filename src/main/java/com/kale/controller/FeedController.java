@@ -2,6 +2,8 @@ package com.kale.controller;
 
 import com.kale.config.resolver.UserEmail;
 import com.kale.dto.ResponseDto;
+import com.kale.dto.request.feed.ModifyFeedReqDto;
+import com.kale.dto.response.feed.ModifyFeedResDto;
 import com.kale.service.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -34,6 +37,21 @@ public class FeedController {
                         .status(200)
                         .message("피드 생성 성공")
                         .data(null)
+                        .build()
+        );
+    }
+
+    @PatchMapping
+    public ResponseEntity<ResponseDto> modifyFeed(
+            @RequestBody @Valid ModifyFeedReqDto modifyFeedReqDto,
+            @UserEmail String userEmail
+    ) {
+        ModifyFeedResDto modifyFeedResDto = feedService.modifyFeed(userEmail, modifyFeedReqDto);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("피드 수정 성공")
+                        .data(modifyFeedResDto)
                         .build()
         );
     }
