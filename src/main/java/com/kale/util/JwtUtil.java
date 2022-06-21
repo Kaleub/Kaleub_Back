@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +16,12 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+@PropertySource(value = "classpath:application-jwt.yml", factory = YamlPropertySourceFactory.class, ignoreResourceNotFound = true)
 public class JwtUtil {
 
     public final static long TOKEN_VALIDATION_SECOND = 1L * 60 * 60 * 24 * 365; // 1년
 
-    @Value("${spring.jwt.secret}")
+    @Value("${jwt.secret}")
     private String SECRET_KEY;
 
     private Key getSigningKey(String secretKey) {

@@ -43,7 +43,8 @@ public class ExceptionController {
             NotOwnerException.class,
             NotAloneException.class,
             NotInRoomException.class,
-            ExceedRoomCapacityException.class
+            ExceedRoomCapacityException.class,
+            InvalidFileException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);
@@ -75,7 +76,8 @@ public class ExceptionController {
     //500
     @ExceptionHandler({
             Exception.class,
-            MessageFailedException.class
+            MessageFailedException.class,
+            ImageUploadFailedException.class
     })
     public ResponseEntity<ErrorDto> HandleAllException(final Exception ex) {
         log.error(ex.getMessage(), ex);
