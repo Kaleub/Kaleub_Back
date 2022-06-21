@@ -21,9 +21,6 @@ public class Feed extends BaseEntity {
     @JoinColumn(name="USER_ID")
     private User user;
 
-    @Column(nullable = false, length = 200)
-    private String imageUrl;
-
     @Column(nullable = false, length = 20)
     private String title;
 
@@ -31,10 +28,9 @@ public class Feed extends BaseEntity {
     private String content;
 
     @Builder
-    public Feed(Room room, User user, String imageUrl, String title, String content) {
+    public Feed(Room room, User user, String title, String content) {
         this.room = room;
         this.user = user;
-        this.imageUrl = imageUrl;
         this.title = title;
         this.content = content;
     }
