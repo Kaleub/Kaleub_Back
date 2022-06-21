@@ -41,7 +41,7 @@ public class FeedController {
         );
     }
 
-    @PatchMapping
+    @PutMapping
     public ResponseEntity<ResponseDto> modifyFeed(
             @RequestBody @Valid ModifyFeedReqDto modifyFeedReqDto,
             @UserEmail String userEmail
