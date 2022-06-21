@@ -27,7 +27,6 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final ParticipateRepository participateRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DateUtil dateUtil;
 
     public CreateRoomResDto createRoom(String userEmail, String title, String password) {
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
@@ -154,9 +153,9 @@ public class RoomService {
                 throw new OwnerCanNotLeaveException();
             }
 
-            // 사용자가 방의 주인이고 방에 혼자 남아 있다면 방을 삭제할건지 경고 문구 보냄
+            // 사용자가 방의 주인이고 방에 혼자 남아 있다면 방을 나갈 수 없고 비활성화 할 수 있다는 메시지를 보냄
             if (user == ownerUser && participateArrayList.size() == 1) {
-                throw new AlertDeleteRoomException();
+                throw new AlertLeaveRoomException();
             }
 
             // 사용자가 방의 주인이 아니면 방을 나감

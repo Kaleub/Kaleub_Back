@@ -39,7 +39,7 @@ public class ExceptionController {
             ExistingEmailException.class,
             IncorrectAuthKeyException.class,
             OwnerCanNotLeaveException.class,
-            AlertDeleteRoomException.class,
+            AlertLeaveRoomException.class,
             NotOwnerException.class,
             NotAloneException.class,
             NotInRoomException.class,
