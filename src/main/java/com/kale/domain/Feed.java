@@ -1,9 +1,6 @@
 package com.kale.domain;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -21,9 +18,11 @@ public class Feed extends BaseEntity {
     @JoinColumn(name="USER_ID")
     private User user;
 
+    @Setter
     @Column(nullable = false, length = 20)
     private String title;
 
+    @Setter
     @Column(nullable = false, length = 100)
     private String content;
 
