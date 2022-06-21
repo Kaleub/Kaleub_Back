@@ -29,7 +29,7 @@ public class S3Service {
     public String bucket;
 
     public List<String> uploadFile(List<MultipartFile> multipartFile) {
-        List<String> fileNameList = new ArrayList<>();
+        List<String> fileUrlList = new ArrayList<>();
 
         multipartFile.forEach(file -> {
             String fileName = createFileName(file.getOriginalFilename());
@@ -44,14 +44,14 @@ public class S3Service {
                 throw new ImageUploadFailedException();
             }
 
-            fileNameList.add(fileName);
+            fileUrlList.add(amazonS3.getUrl(bucket, fileName).toString());
         });
 
-        return fileNameList;
+        return fileUrlList;
     }
 
     public void deleteFile(String fileName) {
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+        amazonS3.deleteObject(bucket, fileName);
     }
 
     private String createFileName(String fileName) {
