@@ -1,5 +1,6 @@
 package com.kale.controller;
 
+import com.kale.config.resolver.UserEmail;
 import com.kale.dto.ResponseDto;
 import com.kale.service.FeedService;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -26,9 +26,8 @@ public class FeedController {
             @RequestParam Long roomId,
             @RequestParam @NotBlank(message = "제목을 입력해야합니다.") String title,
             @RequestParam @NotNull(message = "내용은 null 값일 수 없습니다.") String content,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         feedService.createFeed(userEmail, images, roomId, title, content);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()

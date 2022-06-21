@@ -1,5 +1,6 @@
 package com.kale.controller;
 
+import com.kale.config.resolver.UserEmail;
 import com.kale.dto.ResponseDto;
 import com.kale.dto.request.room.*;
 import com.kale.dto.response.room.CreateRoomResDto;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 
@@ -25,9 +25,9 @@ public class RoomController {
     @PostMapping
     public ResponseEntity<ResponseDto> createRoom(
             @RequestBody @Valid CreateRoomReqDto createRoomReqDto,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
+        System.out.println(userEmail);
         CreateRoomResDto createRoomResDto = roomService.createRoom(userEmail, createRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -41,9 +41,8 @@ public class RoomController {
     @PostMapping("/participate")
     public ResponseEntity<ResponseDto> joinRoom(
             @RequestBody JoinRoomReqDto joinRoomReqDto,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         JoinRoomResDto joinRoomResDto = roomService.joinRoom(userEmail, joinRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -56,9 +55,8 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<ResponseDto> getRooms(
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         ArrayList<GetRoomsResDto> getRoomsResDtos = roomService.getRooms(userEmail);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -72,9 +70,8 @@ public class RoomController {
     @DeleteMapping("/participate")
     public ResponseEntity<ResponseDto> leaveRoom(
             @RequestBody LeaveRoomReqDto leaveRoomReqDto,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         roomService.leaveRoom(userEmail, leaveRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -88,9 +85,8 @@ public class RoomController {
     @PutMapping("/disable")
     public ResponseEntity<ResponseDto> disableRoom(
             @RequestBody DisableRoomReqDto disableRoomReqDto,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         roomService.disableRoom(userEmail, disableRoomReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -104,9 +100,8 @@ public class RoomController {
     @DeleteMapping("/participate/force")
     public ResponseEntity<ResponseDto> deleteUserForce(
             @RequestBody DeleteUserForceReqDto deleteUserForceReqDto,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         roomService.deleteUserForce(userEmail, deleteUserForceReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -120,9 +115,8 @@ public class RoomController {
     @PutMapping("/password")
     public ResponseEntity<ResponseDto> modifyRoomPassword(
             @RequestBody @Valid ModifyRoomPasswordReqDto modifyRoomPasswordReqDto,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         roomService.modifyRoomPassword(userEmail, modifyRoomPasswordReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
@@ -136,9 +130,8 @@ public class RoomController {
     @PutMapping("/owner")
     public ResponseEntity<ResponseDto> delegateOwner(
             @RequestBody @Valid DelegateOwnerReqDto delegateOwnerReqDto,
-            HttpServletResponse response
+            @UserEmail String userEmail
     ) {
-        String userEmail = response.getHeader("user");
         roomService.delegateOwner(userEmail, delegateOwnerReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
