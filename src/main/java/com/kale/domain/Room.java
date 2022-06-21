@@ -25,11 +25,20 @@ public class Room extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String password;
 
+    @Column(nullable = false)
+    private int participantsCount;
+
+    @Setter
+    @Column(nullable = false)
+    private Boolean status;
+
     @Builder
-    public Room(String code, User ownerUser, String title, String password) {
+    public Room(String code, User ownerUser, String title, String password, int participantsCount, Boolean status) {
         this.code = code;
         this.ownerUser = ownerUser;
         this.title = title;
         this.password = password;
+        this.participantsCount = participantsCount;
+        this.status = status;
     }
 }
