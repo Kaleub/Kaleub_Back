@@ -78,6 +78,9 @@ public class RoomService {
 
         if (room.isPresent()) {
             if (passwordEncoder.matches(password, room.get().getPassword())) {
+                if (room.get().getParticipantsCount() >= 8) {
+                    throw new ExceedRoomCapacityException();
+                }
                 Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user);
                 if (participating.isPresent()) {
                     throw new AlreadyInRoomException();

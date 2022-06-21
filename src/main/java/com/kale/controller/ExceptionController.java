@@ -43,6 +43,7 @@ public class ExceptionController {
             NotOwnerException.class,
             NotAloneException.class,
             NotInRoomException.class,
+            ExceedRoomCapacityException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);
