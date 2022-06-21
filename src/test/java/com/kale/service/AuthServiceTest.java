@@ -4,6 +4,7 @@ import com.kale.domain.User;
 import com.kale.dto.request.auth.CreateUserReqDto;
 import com.kale.repository.UserRepository;
 import com.kale.util.RedisUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +20,26 @@ class AuthServiceTest {
     @Autowired private RedisUtil redisUtil;
     @Autowired private UserRepository userRepository;
 
+    @AfterEach
+
 
     @Test
-    public void 사용자생성() {
+    public void 이메일중복_확인() {
+
+    }
+
+    @Test
+    public void 인증이메일_전송() {
+
+    }
+
+    @Test
+    public void 인증이메일_완료() {
+
+    }
+
+    @Test
+    public void createUser_() {
 
         //given
         String email = "heyazoo1007@gmail.com";
