@@ -1,5 +1,6 @@
 package com.kale.dto.request.auth;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
