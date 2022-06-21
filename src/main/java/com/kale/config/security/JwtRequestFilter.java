@@ -46,7 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throw new LoginException();
         }
 
-        response.setHeader("user", email);
+        request.setAttribute("user", email);
 
         filterChain.doFilter(request, response);
     }
