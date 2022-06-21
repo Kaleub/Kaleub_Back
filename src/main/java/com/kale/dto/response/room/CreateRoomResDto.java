@@ -1,6 +1,5 @@
 package com.kale.dto.response.room;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,13 +17,11 @@ public class CreateRoomResDto {
     private String password;
     private int participantsCount;
     private Boolean status;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime modifiedDate;
+    private long createdTimeInterval;
+    private long modifiedTimeInterval;
 
     @Builder
-    public CreateRoomResDto(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public CreateRoomResDto(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status, long createdTimeInterval, long modifiedTimeInterval) {
         this.id = id;
         this.code = code;
         this.ownerEmail = ownerEmail;
@@ -32,7 +29,7 @@ public class CreateRoomResDto {
         this.password = password;
         this.participantsCount = participantsCount;
         this.status = status;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+        this.createdTimeInterval = createdTimeInterval;
+        this.modifiedTimeInterval = modifiedTimeInterval;
     }
 }

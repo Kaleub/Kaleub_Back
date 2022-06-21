@@ -10,6 +10,7 @@ import com.kale.domain.User;
 import com.kale.repository.ParticipateRepository;
 import com.kale.repository.RoomRepository;
 import com.kale.repository.UserRepository;
+import com.kale.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final ParticipateRepository participateRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DateUtil dateUtil;
 
     public CreateRoomResDto createRoom(String userEmail, String title, String password) {
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
@@ -56,8 +58,8 @@ public class RoomService {
                 .password(created.getPassword())
                 .participantsCount(created.getParticipantsCount())
                 .status(created.getStatus())
-                .createdDate(created.getCreatedDate())
-                .modifiedDate(created.getModifiedDate())
+                .createdTimeInterval(DateUtil.convertToTimeInterval(room.getCreatedDate()))
+                .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.getModifiedDate()))
                 .build();
 
         return createRoomResDto;
@@ -92,8 +94,8 @@ public class RoomService {
                             .password(room.get().getPassword())
                             .participantsCount(room.get().getParticipantsCount())
                             .status(room.get().getStatus())
-                            .createdDate(room.get().getCreatedDate())
-                            .modifiedDate(room.get().getModifiedDate())
+                            .createdTimeInterval(DateUtil.convertToTimeInterval(room.get().getCreatedDate()))
+                            .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.get().getModifiedDate()))
                             .build();
 
                     return joinRoomResDto;
@@ -126,8 +128,8 @@ public class RoomService {
                     .password(room.getPassword())
                     .participantsCount(room.getParticipantsCount())
                     .status(room.getStatus())
-                    .createdDate(room.getCreatedDate())
-                    .modifiedDate(room.getModifiedDate())
+                    .createdTimeInterval(DateUtil.convertToTimeInterval(room.getCreatedDate()))
+                    .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.getModifiedDate()))
                     .build();
 
             getRoomsResDtos.add(getRoomsResDto);
