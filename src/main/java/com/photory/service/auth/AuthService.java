@@ -1,9 +1,9 @@
 package com.photory.service.auth;
 
-import com.photory.common.exception.model.*;
-import com.photory.common.exception.test.ConflictException;
-import com.photory.common.exception.test.NotFoundException;
-import com.photory.common.exception.test.ValidationException;
+import com.photory.common.exception.model.ConflictException;
+import com.photory.common.exception.model.InternalServerException;
+import com.photory.common.exception.model.NotFoundException;
+import com.photory.common.exception.model.ValidationException;
 import com.photory.controller.auth.dto.request.*;
 import com.photory.domain.user.UserRole;
 import com.photory.controller.auth.dto.response.SigninUserResponse;
@@ -130,7 +130,7 @@ public class AuthService {
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            throw new MessageFailedException();
+            throw new InternalServerException(String.format("(%s) 이메일에 대한 인증 메일을 전송하는 중 에러가 발생했습니다.", email));
         }
 
         redisUtil.setDataExpire(authKey, email, 60 * 3L);

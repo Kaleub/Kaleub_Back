@@ -1,7 +1,7 @@
 package com.photory.service.feed;
 
-import com.photory.common.exception.test.ForbiddenException;
-import com.photory.common.exception.test.NotFoundException;
+import com.photory.common.exception.model.ForbiddenException;
+import com.photory.common.exception.model.NotFoundException;
 import com.photory.domain.feed.Feed;
 import com.photory.domain.feed.repository.FeedRepository;
 import com.photory.domain.feedimage.FeedImage;
@@ -16,7 +16,6 @@ import com.photory.controller.feed.dto.request.DeleteFeedRequestDto;
 import com.photory.controller.feed.dto.request.ModifyFeedRequestDto;
 import com.photory.controller.feed.dto.response.ModifyFeedResponse;
 import com.photory.controller.feed.dto.response.GetFeedResponse;
-import com.photory.common.exception.model.NotInRoomException;
 import com.photory.service.image.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.photory.common.exception.ErrorCode.FORBIDDEN_FEED_OWNER_EXCEPTION;
-import static com.photory.common.exception.ErrorCode.NOT_FOUND_FEED_EXCEPTION;
+import static com.photory.common.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +45,7 @@ public class FeedService {
         // 참여하고 있는 방이 아니면 피드 생성할 수 없음
         Optional<Participate> participate = participateRepository.findByRoomAndUser(room, user);
         if (participate.isEmpty()) {
-            throw new NotInRoomException();
+            throw new ForbiddenException(String.format("방 (%s) 에 유저 (%s) 가 참여중이 아닙니다.", room.getId(), user.getId()), FORBIDDEN_ROOM_PARTICIPANT_EXCEPTION);
         }
 
         Feed feed = Feed.of(room, user, title, content);
@@ -75,7 +73,7 @@ public class FeedService {
         //방에 참가한 사람만 피드 조회할 수 있음
         Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
         if (participating.isEmpty()) {
-            throw new NotInRoomException();
+            throw new ForbiddenException(String.format("방 (%s) 에 유저 (%s) 가 참여중이 아닙니다.", room.getId(), user.getId()), FORBIDDEN_ROOM_PARTICIPANT_EXCEPTION);
         }
 
         ArrayList<String> imageUrls = new ArrayList<>();

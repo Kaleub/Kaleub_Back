@@ -1,6 +1,6 @@
 package com.photory.config.resolver;
 
-import com.photory.common.exception.test.UnAuthorizedException;
+import com.photory.common.exception.model.UnAuthorizedException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

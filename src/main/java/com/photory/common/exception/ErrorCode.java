@@ -28,6 +28,11 @@ public enum ErrorCode {
     FORBIDDEN_FILE_TYPE_EXCEPTION(BAD_REQUEST, "허용되지 않은 파일 형식입니다"),
     FORBIDDEN_FILE_NAME_EXCEPTION(BAD_REQUEST, "허용되지 않은 파일 이름입니다"),
     FORBIDDEN_ROOM_OWNER_EXCEPTION(FORBIDDEN, "방장에게만 허용되는 요청입니다."),
+    FORBIDDEN_ROOM_OWNER_LEAVE_LAST_EXCEPTION(FORBIDDEN, "방장은 다른 유저가 모두 나간 뒤에 나갈 수 있습니다."),
+    FORBIDDEN_ROOM_OWNER_DISABLE_LAST_EXCEPTION(FORBIDDEN, "방장은 다른 유저가 모두 나간 뒤에 방을 비활성화 시킬 수 있습니다."),
+    FORBIDDEN_ROOM_OWNER_LEAVE_EXCEPTION(FORBIDDEN, "방장은 방을 나갈 수 없습니다.\n방을 비활성화하면 30일 뒤에 방이 삭제됩니다."),
+    FORBIDDEN_ROOM_EXCEED_CAPACITY_EXCEPTION(FORBIDDEN, "방은 최대 인원 8명을 넘을 수 없습니다."),
+    FORBIDDEN_ROOM_PARTICIPANT_EXCEPTION(FORBIDDEN, "방 참가자에게만 허용되는 요청입니다."),
     FORBIDDEN_FEED_OWNER_EXCEPTION(FORBIDDEN, "피드 작성자에게만 허용되는 요청입니다."),
 
     // 404 Not Found
@@ -48,6 +53,8 @@ public enum ErrorCode {
     CONFLICT_NICKNAME_EXCEPTION(CONFLICT, "이미 사용중인 닉네임입니다.\n다른 닉네임을 이용해주세요"),
     CONFLICT_EMAIL_EXCEPTION(CONFLICT, "이미 사용중인 이메일입니다.\n다른 이메일을 이용해주세요"),
     CONFLICT_USER_EXCEPTION(CONFLICT, "이미 해당 계정으로 회원가입하셨습니다.\n로그인 해주세요"),
+    CONFLICT_JOIN_ROOM_EXCEPTION(CONFLICT, "이미 참가한 방입니다."),
+    CONFLICT_LEAVE_ROOM_EXCEPTION(CONFLICT, "이미 나간 방입니다."),
 
     // 415 Unsupported Media Type
     UNSUPPORTED_MEDIA_TYPE_EXCEPTION(UNSUPPORTED_MEDIA_TYPE, "해당하는 미디어 타입을 지원하지 않습니다."),

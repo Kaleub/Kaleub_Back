@@ -1,9 +1,9 @@
 package com.photory.service.room;
 
-import com.photory.common.exception.model.*;
-import com.photory.common.exception.test.ForbiddenException;
-import com.photory.common.exception.test.NotFoundException;
-import com.photory.common.exception.test.ValidationException;
+import com.photory.common.exception.model.ConflictException;
+import com.photory.common.exception.model.ForbiddenException;
+import com.photory.common.exception.model.NotFoundException;
+import com.photory.common.exception.model.ValidationException;
 import com.photory.controller.room.dto.request.*;
 import com.photory.controller.room.dto.response.CreateRoomResponse;
 import com.photory.controller.room.dto.response.GetRoomsResponse;
@@ -63,11 +63,11 @@ public class RoomService {
         if (room.isPresent()) {
             if (passwordEncoder.matches(password, room.get().getPassword())) {
                 if (room.get().getParticipantsCount() >= 8) {
-                    throw new ExceedRoomCapacityException();
+                    throw new ForbiddenException(String.format("방 (%s) 은 최대 인원 8명을 넘을 수 없습니다.", room.get().getId()), FORBIDDEN_ROOM_EXCEED_CAPACITY_EXCEPTION);
                 }
                 Optional<Participate> participating = participateRepository.findByRoomAndUser(room.get(), user);
                 if (participating.isPresent()) {
-                    throw new AlreadyInRoomException();
+                    throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 에 참가중입니다.", user.getId(), room.get().getId()), CONFLICT_JOIN_ROOM_EXCEPTION);
                 } else {
                     Participate participate = Participate.of(room.get(), user);
 
@@ -123,12 +123,12 @@ public class RoomService {
 
             // 사용자가 방의 주인인데 다른 참여자가 남아 있다면 방을 나갈 수 없음
             if (user.getId() == ownerUser.getId() && participateArrayList.size() > 1) {
-                throw new OwnerCanNotLeaveException();
+                throw new ForbiddenException(String.format("(%s) 방의 방장 (%s) 는 다른 참여자가 남아 있다면 방을 나갈 수 없습니다.", room.getId(), user.getId()), FORBIDDEN_ROOM_OWNER_LEAVE_LAST_EXCEPTION);
             }
 
             // 사용자가 방의 주인이고 방에 혼자 남아 있다면 방을 나갈 수 없고 비활성화 할 수 있다는 메시지를 보냄
             if (user.getId() == ownerUser.getId() && participateArrayList.size() == 1) {
-                throw new AlertLeaveRoomException();
+                throw new ForbiddenException(String.format("(%s) 방의 방장 (%s) 은 방을 비활성화 할 수 있습니다.", room.getId(), user.getId()), FORBIDDEN_ROOM_OWNER_LEAVE_EXCEPTION);
             }
 
             // 사용자가 방의 주인이 아니면 방을 나감
@@ -137,7 +137,7 @@ public class RoomService {
             room.setParticipantsCount(room.getParticipantsCount() - 1);
             roomRepository.save(room);
         } else {
-            throw new AlreadyNotInRoomException();
+            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", user.getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
     }
 
@@ -157,7 +157,7 @@ public class RoomService {
         // 방장을 제외한 다른 참가자가 더 있으면 방을 비활성화할 수 없음
         ArrayList<Participate> participates = participateRepository.findAllByRoom(room);
         if (participates.size() > 1) {
-            throw new NotAloneException();
+            throw new ForbiddenException(String.format("(%s) 방의 방장 (%s) 는 다른 참여자가 남아 있다면 방을 비활성화 시킬 수 없습니다.", room.getId(), user.getId()), FORBIDDEN_ROOM_OWNER_DISABLE_LAST_EXCEPTION);
         }
 
         // 방 비활성화
@@ -183,13 +183,13 @@ public class RoomService {
         //참가 방이 아니면 강퇴시킬 수 없음
         Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room, user);
         if (participatingOwner.isEmpty()) {
-            throw new AlreadyNotInRoomException();
+            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", user.getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
 
         //방에 참가하지 않은 사용자 강퇴시킬 수 없음
         Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, deletedUser.get());
         if (participatingUser.isEmpty()) {
-            throw new UserAlreadyNotInRoomException();
+            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", deletedUser.get().getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
 
         participateRepository.delete(participatingUser.get());
@@ -240,13 +240,13 @@ public class RoomService {
         //참가한 방이 아니면 위임 불가능
         Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room, user);
         if (participatingOwner.isEmpty()) {
-            throw new AlreadyNotInRoomException();
+            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", user.getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
 
         //위임하려는 사용자가 방에 없으면 위임 불가
         Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, delegatedUser.get());
         if (participatingUser.isEmpty()) {
-            throw new UserAlreadyNotInRoomException();
+            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", delegatedUser.get().getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
 
         room.setOwnerUser(delegatedUser.get());

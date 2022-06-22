@@ -1,6 +1,6 @@
 package com.photory.config.security;
 
-import com.photory.common.exception.test.UnAuthorizedException;
+import com.photory.common.exception.model.UnAuthorizedException;
 import com.photory.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -2,9 +2,7 @@ package com.photory.controller.advice;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.photory.common.dto.ApiResponse;
-import com.photory.common.exception.model.*;
-import com.photory.common.dto.ErrorDto;
-import com.photory.common.exception.test.PhotoryException;
+import com.photory.common.exception.model.PhotoryException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
@@ -125,10 +123,10 @@ public class ControllerExceptionAdvice {
      * Photory Custom Exception
      */
     @ExceptionHandler(PhotoryException.class)
-    protected ResponseEntity<ApiResponse<Object>> handleBaseException(PhotoryException exception) {
-        log.error(exception.getMessage(), exception);
-        return ResponseEntity.status(exception.getStatus())
-                .body(ApiResponse.error(exception.getErrorCode()));
+    protected ResponseEntity<ApiResponse<Object>> handleBaseException(PhotoryException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getStatus())
+                .body(ApiResponse.error(e.getErrorCode()));
     }
 
     /**
@@ -136,30 +134,8 @@ public class ControllerExceptionAdvice {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    protected ApiResponse<Object> handleException(final Exception exception) {
-        log.error(exception.getMessage(), exception);
+    protected ApiResponse<Object> handleException(final Exception e) {
+        log.error(e.getMessage(), e);
         return ApiResponse.error(INTERNAL_SERVER_EXCEPTION);
-    }
-
-    //400
-    @ExceptionHandler({
-            AlreadyInRoomException.class,
-            AlreadyNotInRoomException.class,
-            UserAlreadyNotInRoomException.class,
-            OwnerCanNotLeaveException.class,
-            AlertLeaveRoomException.class,
-            NotAloneException.class,
-            NotInRoomException.class,
-            ExceedRoomCapacityException.class
-    })
-    public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
-        log.warn(ex.getMessage(), ex);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ErrorDto.builder()
-                        .status(400)
-                        .message(ex.getMessage())
-                        .build()
-        );
     }
 }

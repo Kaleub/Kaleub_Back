@@ -1,7 +1,7 @@
 package com.photory.service.feed;
 
-import com.photory.common.exception.test.NotFoundException;
-import com.photory.common.exception.test.UnAuthorizedException;
+import com.photory.common.exception.model.NotFoundException;
+import com.photory.common.exception.model.UnAuthorizedException;
 import com.photory.domain.room.Room;
 import com.photory.domain.user.User;
 import com.photory.domain.room.repository.RoomRepository;

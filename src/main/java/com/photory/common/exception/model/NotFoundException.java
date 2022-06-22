@@ -1,4 +1,4 @@
-package com.photory.common.exception.test;
+package com.photory.common.exception.model;
 
 import com.photory.common.exception.ErrorCode;
 

@@ -1,9 +1,9 @@
 package com.photory.service;
 
-import com.photory.common.exception.model.*;
-import com.photory.common.exception.test.ForbiddenException;
-import com.photory.common.exception.test.NotFoundException;
-import com.photory.common.exception.test.ValidationException;
+import com.photory.common.exception.model.ConflictException;
+import com.photory.common.exception.model.ForbiddenException;
+import com.photory.common.exception.model.NotFoundException;
+import com.photory.common.exception.model.ValidationException;
 import com.photory.controller.room.dto.request.*;
 import com.photory.domain.user.UserRole;
 import com.photory.domain.participate.Participate;
@@ -275,7 +275,7 @@ public class RoomServiceTest {
         roomService.joinRoom(notOwner7.getEmail(), joinRoomRequestDto);
 
         //then
-        assertThrows(ExceedRoomCapacityException.class, () -> roomService.joinRoom(notOwner8.getEmail(), joinRoomRequestDto));
+        assertThrows(ForbiddenException.class, () -> roomService.joinRoom(notOwner8.getEmail(), joinRoomRequestDto));
     }
 
     @Test
@@ -304,7 +304,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(AlreadyInRoomException.class, () -> roomService.joinRoom(roomOwner.getEmail(), joinRoomRequestDto));
+        assertThrows(ConflictException.class, () -> roomService.joinRoom(roomOwner.getEmail(), joinRoomRequestDto));
     }
 
     @Test
@@ -386,7 +386,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(AlreadyNotInRoomException.class, () -> roomService.leaveRoom(notOwner.getEmail(), leaveRoomRequestDto));
+        assertThrows(ConflictException.class, () -> roomService.leaveRoom(notOwner.getEmail(), leaveRoomRequestDto));
     }
 
     @Test
@@ -427,7 +427,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(OwnerCanNotLeaveException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomRequestDto));
+        assertThrows(ForbiddenException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomRequestDto));
     }
 
     @Test
@@ -455,7 +455,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(AlertLeaveRoomException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomRequestDto));
+        assertThrows(ForbiddenException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomRequestDto));
     }
 
     @Test
@@ -570,7 +570,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(NotAloneException.class, () -> roomService.disableRoom(roomOwner.getEmail(), disableRoomRequestDto));
+        assertThrows(ForbiddenException.class, () -> roomService.disableRoom(roomOwner.getEmail(), disableRoomRequestDto));
     }
 
     @Test
