@@ -485,4 +485,86 @@ public class RoomServiceTest {
                 () -> assertEquals(false, disabledRoom.get().getStatus())
         );
     }
+
+    @Test
+    @DisplayName("disableRoomTest_실패_방장이_아닌_경우")
+    void disableRoomTest_실패_방장이_아닌_경우() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User user2 = User.builder()
+                .email("user2@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+
+        DisableRoomReqDto disableRoomReqDto = DisableRoomReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(NotOwnerException.class, () -> roomService.disableRoom(notOwner.getEmail(), disableRoomReqDto));
+    }
+
+    @Test
+    @DisplayName("disableRoomTest_실패_다른_참가자가_남은_경우")
+    void disableRoomTest_실패_다른_참가자가_남은_경우() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User user2 = User.builder()
+                .email("user2@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+
+        DisableRoomReqDto disableRoomReqDto = DisableRoomReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(NotAloneException.class, () -> roomService.disableRoom(roomOwner.getEmail(), disableRoomReqDto));
+    }
 }
