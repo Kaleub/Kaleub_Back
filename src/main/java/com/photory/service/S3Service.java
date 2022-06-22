@@ -1,7 +1,10 @@
 package com.photory.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.photory.exception.ImageUploadFailedException;
@@ -50,7 +53,17 @@ public class S3Service {
     }
 
     public void deleteFile(String fileName) {
-        amazonS3.deleteObject(bucket, fileName);
+        try {
+            //Delete 객체 생성
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(this.bucket, fileName);
+
+            //Delete
+            this.amazonS3.deleteObject(deleteObjectRequest);
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+        }
     }
 
     private String createFileName(String fileName) {
