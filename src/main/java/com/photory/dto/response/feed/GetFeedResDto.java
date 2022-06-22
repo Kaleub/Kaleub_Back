@@ -22,4 +22,15 @@ public class GetFeedResDto {
         this.content = content;
         this.imageUrls = imageUrls;
     }
+
+    public static GetFeedResDto of(Long roomId, Long userId, String title, String content, ArrayList<String> imageUrls) {
+        GetFeedResDto response = GetFeedResDto.builder()
+                .roomId(roomId)
+                .userId(userId)
+                .title(title)
+                .content(content)
+                .imageUrls(imageUrls)
+                .build();
+        return response;
+    }
 }

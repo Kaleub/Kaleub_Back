@@ -14,4 +14,11 @@ public class SigninUserResDto {
     public SigninUserResDto(String token) {
         this.token = token;
     }
+
+    public static SigninUserResDto of(String token) {
+        SigninUserResDto response = SigninUserResDto.builder()
+                .token(token)
+                .build();
+        return response;
+    }
 }

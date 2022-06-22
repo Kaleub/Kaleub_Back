@@ -24,4 +24,15 @@ public class ModifyFeedResDto {
         this.content = content;
         this.imageUrls = imageUrls;
     }
+
+    public static ModifyFeedResDto of(Long roomId, Long userId, String title, String content, ArrayList<String> imageUrls) {
+        ModifyFeedResDto response = ModifyFeedResDto.builder()
+                .roomId(roomId)
+                .userId(userId)
+                .title(title)
+                .content(content)
+                .imageUrls(imageUrls)
+                .build();
+        return response;
+    }
 }

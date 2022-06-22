@@ -30,4 +30,19 @@ public class GetRoomsResDto {
         this.createdTimeInterval = createdTimeInterval;
         this.modifiedTimeInterval = modifiedTimeInterval;
     }
+
+    public static GetRoomsResDto of(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status, long createdTimeInterval, long modifiedTimeInterval) {
+        GetRoomsResDto response = GetRoomsResDto.builder()
+                .id(id)
+                .code(code)
+                .ownerEmail(ownerEmail)
+                .title(title)
+                .password(password)
+                .participantsCount(participantsCount)
+                .status(status)
+                .createdTimeInterval(createdTimeInterval)
+                .modifiedTimeInterval(modifiedTimeInterval)
+                .build();
+        return response;
+    }
 }

@@ -30,4 +30,19 @@ public class JoinRoomResDto {
         this.createdTimeInterval = createdTimeInterval;
         this.modifiedTimeInterval = modifiedTimeInterval;
     }
+
+    public static JoinRoomResDto of(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status, long createdTimeInterval, long modifiedTimeInterval) {
+        JoinRoomResDto response = JoinRoomResDto.builder()
+                .id(id)
+                .code(code)
+                .ownerEmail(ownerEmail)
+                .title(title)
+                .password(password)
+                .participantsCount(participantsCount)
+                .status(status)
+                .createdTimeInterval(createdTimeInterval)
+                .modifiedTimeInterval(modifiedTimeInterval)
+                .build();
+        return response;
+    }
 }
