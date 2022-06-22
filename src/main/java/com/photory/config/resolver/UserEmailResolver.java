@@ -1,6 +1,6 @@
 package com.photory.config.resolver;
 
-import com.photory.exception.LoginException;
+import com.photory.common.exception.model.UnAuthorizedException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class UserEmailResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer, @NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Object object = webRequest.getAttribute("user", 0);
         if (object == null) {
-            throw new LoginException();
+            throw new UnAuthorizedException("토큰이 없습니다.");
         }
         return object;
     }

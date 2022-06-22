@@ -1,7 +1,7 @@
 package com.photory.config.security;
 
-import com.photory.domain.User;
-import com.photory.repository.UserRepository;
+import com.photory.domain.user.User;
+import com.photory.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

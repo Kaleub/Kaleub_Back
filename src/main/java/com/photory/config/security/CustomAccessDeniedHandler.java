@@ -1,8 +1,8 @@
 package com.photory.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.photory.constant.Role;
-import com.photory.dto.ErrorDto;
+import com.photory.common.dto.ApiResponse;
+import com.photory.domain.user.UserRole;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 
+import static com.photory.common.exception.ErrorCode.FORBIDDEN_EXCEPTION;
+
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
@@ -27,21 +29,18 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         response.setStatus(403);
         response.setContentType("application/json;charset=utf-8");
-        ErrorDto errorDTO = ErrorDto.builder()
-                .status(403)
-                .message("접근 가능한 권한을 가지고 있지 않습니다.")
-                .build();
+        String message = "접근 가능한 권한을 가지고 있지 않습니다.";
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SecurityUser user = (SecurityUser)authentication.getPrincipal();
         Collection<GrantedAuthority> authorities = user.getAuthorities();
 
-        if (hasRole(authorities, Role.ROLE_NOT_PERMITTED.name())) {
-            errorDTO.setMessage("사용자 인증이 완료되지 않았습니다.");
+        if (hasRole(authorities, UserRole.ROLE_NOT_PERMITTED.name())) {
+            message = "사용자 인증이 완료되지 않았습니다.";
         }
 
         PrintWriter out = response.getWriter();
-        String jsonResponse = objectMapper.writeValueAsString(errorDTO);
+        String jsonResponse = objectMapper.writeValueAsString(ApiResponse.error(FORBIDDEN_EXCEPTION, message));
         out.print(jsonResponse);
     }
 

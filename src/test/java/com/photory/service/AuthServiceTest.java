@@ -1,9 +1,10 @@
 package com.photory.service;
 
-import com.photory.domain.User;
-import com.photory.dto.request.auth.CreateUserReqDto;
-import com.photory.repository.UserRepository;
-import com.photory.util.RedisUtil;
+import com.photory.controller.auth.dto.request.CreateUserRequestDto;
+import com.photory.domain.user.User;
+import com.photory.domain.user.repository.UserRepository;
+import com.photory.common.util.RedisUtil;
+import com.photory.service.auth.AuthService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,10 @@ class AuthServiceTest {
         //이메일 인증번호 저장
         redisUtil.setDataExpire(email, "1", 60 * 60 * 24L);
 
-        CreateUserReqDto dto = new CreateUserReqDto();
-        dto.setEmail(email);
-        dto.setPassword(password);
+        CreateUserRequestDto dto = CreateUserRequestDto.testBuilder()
+                .email(email)
+                .password(password)
+                .build();
 
         //when
         authService.createUser(dto);
