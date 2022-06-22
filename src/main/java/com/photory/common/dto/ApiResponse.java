@@ -9,14 +9,14 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApiResponse<T> {
 
-    public static final ApiResponse<String> SUCCESS = success("OK");
+    public static final ApiResponse<String> SUCCESS = success(null);
 
     private int status;
     private String message;
     private T data;
 
     public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(200, "", data);
+        return new ApiResponse<>(200, "OK", data);
     }
 
     public static <T> ApiResponse<T> error(ErrorCode errorCode) {
