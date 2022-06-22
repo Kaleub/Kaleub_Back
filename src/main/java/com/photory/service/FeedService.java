@@ -4,7 +4,7 @@ import com.photory.domain.*;
 import com.photory.dto.request.feed.DeleteFeedReqDto;
 import com.photory.dto.request.feed.ModifyFeedReqDto;
 import com.photory.dto.response.feed.ModifyFeedResDto;
-import com.photory.dto.response.feed.SelectFeedResDto;
+import com.photory.dto.response.feed.GetFeedResDto;
 import com.photory.exception.NotFeedOwnerException;
 import com.photory.exception.NotFoundFeedException;
 import com.photory.exception.NotInRoomException;
@@ -58,7 +58,7 @@ public class FeedService {
         });
     }
 
-    public SelectFeedResDto selectFeed(String userEmail, long feedId) {
+    public GetFeedResDto getFeed(String userEmail, long feedId) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
 
         Optional<Feed> feed = feedRepository.findById(feedId);
@@ -79,7 +79,7 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        SelectFeedResDto selectFeedResDto = SelectFeedResDto.builder()
+        GetFeedResDto getFeedResDto = GetFeedResDto.builder()
                 .roomId(feed.get().getRoom().getId())
                 .userId(feed.get().getUser().getId())
                 .title(feed.get().getTitle())
@@ -87,7 +87,7 @@ public class FeedService {
                 .imageUrls(imageUrls)
                 .build();
 
-        return selectFeedResDto;
+        return getFeedResDto;
     }
 
     public ModifyFeedResDto modifyFeed(String userEmail, ModifyFeedReqDto modifyFeedReqDto) {
@@ -102,7 +102,7 @@ public class FeedService {
         }
 
         // 피드 작성자가 아니면 수정할 수 없음
-        if (feed.get().getUser() != user) {
+        if (feed.get().getUser().getId() != user.getId()) {
             throw new NotFeedOwnerException();
         }
 

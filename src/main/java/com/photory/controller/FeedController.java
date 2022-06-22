@@ -5,7 +5,7 @@ import com.photory.dto.ResponseDto;
 import com.photory.dto.request.feed.DeleteFeedReqDto;
 import com.photory.dto.request.feed.ModifyFeedReqDto;
 import com.photory.dto.response.feed.ModifyFeedResDto;
-import com.photory.dto.response.feed.SelectFeedResDto;
+import com.photory.dto.response.feed.GetFeedResDto;
 import com.photory.service.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,16 +44,16 @@ public class FeedController {
     }
 
     @GetMapping("/{feedId}")
-    public ResponseEntity<ResponseDto> selectFeed(
+    public ResponseEntity<ResponseDto> getFeed(
             @PathVariable("feedId") @Valid long feedId,
             @UserEmail String userEmail
     ) {
-        SelectFeedResDto selectFeedResDto = feedService.selectFeed(userEmail, feedId);
+        GetFeedResDto getFeedResDto = feedService.getFeed(userEmail, feedId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("피드 조회 성공")
-                        .data(selectFeedResDto)
+                        .data(getFeedResDto)
                         .build()
         );
     }

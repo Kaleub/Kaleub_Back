@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 
 @Getter
-public class SelectFeedResDto {
+public class GetFeedResDto {
 
     private Long roomId;
     private Long userId;
@@ -15,7 +15,7 @@ public class SelectFeedResDto {
     private ArrayList<String> imageUrls;
 
     @Builder
-    public SelectFeedResDto(Long roomId, Long userId, String title, String content, ArrayList<String> imageUrls) {
+    public GetFeedResDto(Long roomId, Long userId, String title, String content, ArrayList<String> imageUrls) {
         this.roomId = roomId;
         this.userId = userId;
         this.title = title;
