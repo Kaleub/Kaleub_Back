@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static com.photory.common.exception.ErrorCode.FORBIDDEN_EXCEPTION;
+import static com.photory.common.exception.ErrorCode.UNAUTHORIZED_EXCEPTION;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -25,7 +25,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType("application/json;charset=utf-8");
         String message = "로그인이 되지 않은 사용자입니다.";
         PrintWriter out = response.getWriter();
-        String jsonResponse = objectMapper.writeValueAsString(ApiResponse.error(FORBIDDEN_EXCEPTION, message));
+        String jsonResponse = objectMapper.writeValueAsString(ApiResponse.error(UNAUTHORIZED_EXCEPTION, message));
         out.print(jsonResponse);
     }
 }

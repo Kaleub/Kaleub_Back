@@ -1,8 +1,5 @@
 package com.photory.config.security;
 
-import com.photory.config.security.CustomAccessDeniedHandler;
-import com.photory.config.security.CustomAuthenticationEntryPoint;
-import com.photory.config.security.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
