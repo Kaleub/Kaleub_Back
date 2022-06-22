@@ -161,12 +161,12 @@ public class RoomService {
             ArrayList<Participate> participateArrayList = participateRepository.findAllByRoom(room);
 
             // 사용자가 방의 주인인데 다른 참여자가 남아 있다면 방을 나갈 수 없음
-            if (user == ownerUser && participateArrayList.size() > 1) {
+            if (user.getId() == ownerUser.getId() && participateArrayList.size() > 1) {
                 throw new OwnerCanNotLeaveException();
             }
 
             // 사용자가 방의 주인이고 방에 혼자 남아 있다면 방을 나갈 수 없고 비활성화 할 수 있다는 메시지를 보냄
-            if (user == ownerUser && participateArrayList.size() == 1) {
+            if (user.getId() == ownerUser.getId() && participateArrayList.size() == 1) {
                 throw new AlertLeaveRoomException();
             }
 
@@ -189,7 +189,7 @@ public class RoomService {
         User ownerUser = room.getOwnerUser();
 
         // 방장이 아니면 방을 비활성화할 수 없음
-        if (user != ownerUser) {
+        if (user.getId() != ownerUser.getId()) {
             throw new NotOwnerException();
         }
 
@@ -221,7 +221,7 @@ public class RoomService {
         User ownerUser = room.getOwnerUser();
 
         //방장이 아니면 사용자 강퇴시킬 수 없음
-        if (user != ownerUser) {
+        if (user.getId() != ownerUser.getId()) {
             throw new NotOwnerException();
         }
 
@@ -253,7 +253,7 @@ public class RoomService {
         User ownerUser = room.getOwnerUser();
 
         // 방장이 아니면 비밀번호를 변경할 수 없음
-        if (user != ownerUser) {
+        if (user.getId() != ownerUser.getId()) {
             throw new NotOwnerException();
         }
 
@@ -284,7 +284,7 @@ public class RoomService {
         User ownerUser = room.getOwnerUser();
 
         // 방장이 아니면 방장 변경 불가능
-        if (user != ownerUser) {
+        if (user.getId() != ownerUser.getId()) {
             throw new NotOwnerException();
         }
 
