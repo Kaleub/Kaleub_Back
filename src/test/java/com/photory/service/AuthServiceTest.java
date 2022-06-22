@@ -1,9 +1,10 @@
 package com.photory.service;
 
-import com.photory.domain.User;
-import com.photory.dto.request.auth.CreateUserReqDto;
-import com.photory.repository.UserRepository;
-import com.photory.util.RedisUtil;
+import com.photory.domain.user.User;
+import com.photory.controller.auth.dto.request.CreateUserReqDto;
+import com.photory.domain.user.repository.UserRepository;
+import com.photory.common.util.RedisUtil;
+import com.photory.service.auth.AuthService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

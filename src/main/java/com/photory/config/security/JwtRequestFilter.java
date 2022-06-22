@@ -1,7 +1,7 @@
 package com.photory.config.security;
 
-import com.photory.exception.LoginException;
-import com.photory.util.JwtUtil;
+import com.photory.common.exception.model.LoginException;
+import com.photory.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

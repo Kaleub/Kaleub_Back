@@ -1,14 +1,15 @@
 package com.photory.service;
 
-import com.photory.constant.Role;
-import com.photory.domain.Participate;
-import com.photory.domain.Room;
-import com.photory.domain.User;
-import com.photory.dto.request.room.*;
-import com.photory.exception.*;
-import com.photory.repository.ParticipateRepository;
-import com.photory.repository.RoomRepository;
-import com.photory.repository.UserRepository;
+import com.photory.common.exception.model.*;
+import com.photory.controller.room.dto.request.*;
+import com.photory.domain.user.UserRole;
+import com.photory.domain.participate.Participate;
+import com.photory.domain.room.Room;
+import com.photory.domain.user.User;
+import com.photory.domain.participate.repository.ParticipateRepository;
+import com.photory.domain.room.repository.RoomRepository;
+import com.photory.domain.user.repository.UserRepository;
+import com.photory.service.room.RoomService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ public class RoomServiceTest {
         User user = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User saved = userRepository.save(user);
 
@@ -85,12 +86,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -128,12 +129,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -162,12 +163,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -197,47 +198,47 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user3 = User.builder()
                 .email("user3@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user4 = User.builder()
                 .email("user4@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user5 = User.builder()
                 .email("user5@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user6 = User.builder()
                 .email("user6@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user7 = User.builder()
                 .email("user7@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user8 = User.builder()
                 .email("user8@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user9 = User.builder()
                 .email("user9@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner1 = userRepository.save(user2);
@@ -281,7 +282,7 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
 
@@ -310,12 +311,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -358,12 +359,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -392,12 +393,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -433,7 +434,7 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
 
@@ -461,7 +462,7 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
 
@@ -494,12 +495,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -535,12 +536,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -576,7 +577,7 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
 
@@ -611,12 +612,12 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User user2 = User.builder()
                 .email("user2@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
@@ -654,7 +655,7 @@ public class RoomServiceTest {
         User user1 = User.builder()
                 .email("user1@gmail.com")
                 .password("password1")
-                .role(Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
         User roomOwner = userRepository.save(user1);
 

@@ -1,6 +1,6 @@
 package com.photory.config.resolver;
 
-import com.photory.exception.LoginException;
+import com.photory.common.exception.model.LoginException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

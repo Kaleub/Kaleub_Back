@@ -1,7 +1,7 @@
 package com.photory.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.photory.dto.ErrorDto;
+import com.photory.common.dto.ErrorDto;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

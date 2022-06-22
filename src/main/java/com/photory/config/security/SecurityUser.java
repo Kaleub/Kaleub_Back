@@ -1,6 +1,6 @@
 package com.photory.config.security;
 
-import com.photory.domain.User;
+import com.photory.domain.user.User;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 public class SecurityUser extends org.springframework.security.core.userdetails.User {

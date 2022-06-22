@@ -1,8 +1,8 @@
 package com.photory.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.photory.constant.Role;
-import com.photory.dto.ErrorDto;
+import com.photory.domain.user.UserRole;
+import com.photory.common.dto.ErrorDto;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,7 +36,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         SecurityUser user = (SecurityUser)authentication.getPrincipal();
         Collection<GrantedAuthority> authorities = user.getAuthorities();
 
-        if (hasRole(authorities, Role.ROLE_NOT_PERMITTED.name())) {
+        if (hasRole(authorities, UserRole.ROLE_NOT_PERMITTED.name())) {
             errorDTO.setMessage("사용자 인증이 완료되지 않았습니다.");
         }
 
