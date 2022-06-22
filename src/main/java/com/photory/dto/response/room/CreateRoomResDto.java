@@ -1,5 +1,7 @@
 package com.photory.dto.response.room;
 
+import com.photory.domain.Room;
+import com.photory.util.DateUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,5 +31,20 @@ public class CreateRoomResDto {
         this.status = status;
         this.createdTimeInterval = createdTimeInterval;
         this.modifiedTimeInterval = modifiedTimeInterval;
+    }
+
+    public static CreateRoomResDto of(Room room) {
+        CreateRoomResDto response = CreateRoomResDto.builder()
+                .id(room.getId())
+                .code(room.getCode())
+                .ownerEmail(room.getOwnerUser().getEmail())
+                .title(room.getTitle())
+                .password(room.getPassword())
+                .participantsCount(room.getParticipantsCount())
+                .status(room.getStatus())
+                .createdTimeInterval(DateUtil.convertToTimeInterval(room.getCreatedDate()))
+                .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.getModifiedDate()))
+                .build();
+        return response;
     }
 }

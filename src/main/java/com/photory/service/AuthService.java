@@ -81,14 +81,10 @@ public class AuthService {
             throw new ExistingEmailException();
         }
 
-//        if (redisUtil.getData(email) != null && redisUtil.getData(email).compareTo("1") == 0) {
-            User user = User.builder()
-                    .email(email)
-                    .password(passwordEncoder.encode(password))
-                    .role(Role.ROLE_USER)
-                    .build();
+//       if (redisUtil.getData(email) != null && redisUtil.getData(email).compareTo("1") == 0) {
+        User user = User.of(email, passwordEncoder.encode(password), Role.ROLE_USER);
 
-            userRepository.save(user);
+        userRepository.save(user);
 //        } else {
 //            throw new UnAuthenticatedEmailException();
 //        }
@@ -104,9 +100,7 @@ public class AuthService {
         if (user.isPresent()) {
             if (passwordEncoder.matches(password, user.get().getPassword())) {
                 String token = createToken(user.get());
-                SigninUserResDto signinUserResDto = SigninUserResDto.builder()
-                        .token(token)
-                        .build();
+                SigninUserResDto signinUserResDto = SigninUserResDto.of(token);
 
                 return signinUserResDto;
             } else {

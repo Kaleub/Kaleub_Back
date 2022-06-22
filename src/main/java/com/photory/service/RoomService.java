@@ -35,35 +35,15 @@ public class RoomService {
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
-        Room room = Room.builder()
-                .title(title)
-                .password(passwordEncoder.encode(password))
-                .code(createRoomCode())
-                .ownerUser(user)
-                .participantsCount(1)
-                .status(true)
-                .build();
+        Room room = Room.of(createRoomCode(), user, title, passwordEncoder.encode(password), 1, true);
 
         Room created = roomRepository.save(room);
 
-        Participate participate = Participate.builder()
-                .room(created)
-                .user(user)
-                .build();
+        Participate participate = Participate.of(created, user);
 
         participateRepository.save(participate);
 
-        CreateRoomResDto createRoomResDto = CreateRoomResDto.builder()
-                .id(created.getId())
-                .code(created.getCode())
-                .ownerEmail(created.getOwnerUser().getEmail())
-                .title(created.getTitle())
-                .password(created.getPassword())
-                .participantsCount(created.getParticipantsCount())
-                .status(created.getStatus())
-                .createdTimeInterval(DateUtil.convertToTimeInterval(room.getCreatedDate()))
-                .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.getModifiedDate()))
-                .build();
+        CreateRoomResDto createRoomResDto = CreateRoomResDto.of(created);
 
         return createRoomResDto;
     }
@@ -85,27 +65,14 @@ public class RoomService {
                 if (participating.isPresent()) {
                     throw new AlreadyInRoomException();
                 } else {
-                    Participate participate = Participate.builder()
-                            .room(room.get())
-                            .user(user)
-                            .build();
+                    Participate participate = Participate.of(room.get(), user);
 
                     participateRepository.save(participate);
 
                     room.get().setParticipantsCount(room.get().getParticipantsCount() + 1);
                     roomRepository.save(room.get());
 
-                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.builder()
-                            .id(room.get().getId())
-                            .code(room.get().getCode())
-                            .ownerEmail(room.get().getOwnerUser().getEmail())
-                            .title(room.get().getTitle())
-                            .password(room.get().getPassword())
-                            .participantsCount(room.get().getParticipantsCount())
-                            .status(room.get().getStatus())
-                            .createdTimeInterval(DateUtil.convertToTimeInterval(room.get().getCreatedDate()))
-                            .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.get().getModifiedDate()))
-                            .build();
+                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.of(room.get());
 
                     return joinRoomResDto;
                 }
@@ -129,17 +96,7 @@ public class RoomService {
 
         ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
         rooms.forEach((room -> {
-            GetRoomsResDto getRoomsResDto = GetRoomsResDto.builder()
-                    .id(room.getId())
-                    .code(room.getCode())
-                    .ownerEmail(room.getOwnerUser().getEmail())
-                    .title(room.getTitle())
-                    .password(room.getPassword())
-                    .participantsCount(room.getParticipantsCount())
-                    .status(room.getStatus())
-                    .createdTimeInterval(DateUtil.convertToTimeInterval(room.getCreatedDate()))
-                    .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.getModifiedDate()))
-                    .build();
+            GetRoomsResDto getRoomsResDto = GetRoomsResDto.of(room);
 
             getRoomsResDtos.add(getRoomsResDto);
         }));

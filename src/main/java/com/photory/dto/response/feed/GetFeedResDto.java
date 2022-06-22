@@ -1,5 +1,7 @@
 package com.photory.dto.response.feed;
 
+import com.photory.domain.Feed;
+import com.photory.domain.Room;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,5 +23,16 @@ public class GetFeedResDto {
         this.title = title;
         this.content = content;
         this.imageUrls = imageUrls;
+    }
+
+    public static GetFeedResDto of(Feed feed, ArrayList<String> imageUrls) {
+        GetFeedResDto response = GetFeedResDto.builder()
+                .roomId(feed.getRoom().getId())
+                .userId(feed.getUser().getId())
+                .title(feed.getTitle())
+                .content(feed.getContent())
+                .imageUrls(imageUrls)
+                .build();
+        return response;
     }
 }

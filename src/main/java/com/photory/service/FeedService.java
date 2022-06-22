@@ -38,21 +38,13 @@ public class FeedService {
             throw new NotInRoomException();
         }
 
-        Feed feed = Feed.builder()
-                .room(room)
-                .user(user)
-                .title(title)
-                .content(content)
-                .build();
+        Feed feed = Feed.of(room, user, title, content);
 
         Feed savedFeed = feedRepository.save(feed);
 
         List<String> fileUrlList = s3Service.uploadFile(images);
         fileUrlList.forEach(file -> {
-            FeedImage feedImage = FeedImage.builder()
-                    .feed(savedFeed)
-                    .imageUrl(file)
-                    .build();
+            FeedImage feedImage = FeedImage.of(savedFeed, file);
 
             feedImageRepository.save(feedImage);
         });
@@ -80,13 +72,7 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        GetFeedResDto getFeedResDto = GetFeedResDto.builder()
-                .roomId(feed.get().getRoom().getId())
-                .userId(feed.get().getUser().getId())
-                .title(feed.get().getTitle())
-                .content(feed.get().getContent())
-                .imageUrls(imageUrls)
-                .build();
+        GetFeedResDto getFeedResDto = GetFeedResDto.of(feed.get(), imageUrls);
 
         return getFeedResDto;
     }
@@ -118,13 +104,7 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        ModifyFeedResDto modifyFeedResDto = ModifyFeedResDto.builder()
-                .roomId(modified.getRoom().getId())
-                .userId(modified.getUser().getId())
-                .title(modified.getTitle())
-                .content(modified.getContent())
-                .imageUrls(imageUrls)
-                .build();
+        ModifyFeedResDto modifyFeedResDto = ModifyFeedResDto.of(modified, imageUrls);
 
         return modifyFeedResDto;
     }

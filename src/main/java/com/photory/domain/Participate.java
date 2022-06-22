@@ -26,4 +26,11 @@ public class Participate extends BaseEntity {
         this.room = room;
         this.user = user;
     }
+
+    public static Participate of(Room room, User user) {
+        return Participate.builder()
+                .room(room)
+                .user(user)
+                .build();
+    }
 }
