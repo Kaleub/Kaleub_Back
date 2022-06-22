@@ -1,14 +1,15 @@
 package com.photory.controller.feed.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+@ToString
 @Getter
-@Setter
-public class ModifyFeedReqDto {
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ModifyFeedRequestDto {
 
     private Long feedId;
 

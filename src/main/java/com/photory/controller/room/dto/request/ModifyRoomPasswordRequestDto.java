@@ -1,14 +1,13 @@
 package com.photory.controller.room.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Pattern;
 
-@Setter
+@ToString
 @Getter
-public class ModifyRoomPasswordReqDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ModifyRoomPasswordRequestDto {
 
     private Long roomId;
     private String beforePassword;
@@ -18,7 +17,7 @@ public class ModifyRoomPasswordReqDto {
     private String afterPassword;
 
     @Builder(builderMethodName = "testBuilder")
-    public ModifyRoomPasswordReqDto(Long roomId, String beforePassword, String afterPassword) {
+    public ModifyRoomPasswordRequestDto(Long roomId, String beforePassword, String afterPassword) {
         this.roomId = roomId;
         this.beforePassword = beforePassword;
         this.afterPassword = afterPassword;

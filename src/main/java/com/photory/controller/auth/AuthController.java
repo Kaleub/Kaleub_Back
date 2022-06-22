@@ -2,7 +2,7 @@ package com.photory.controller.auth;
 
 import com.photory.controller.auth.dto.request.*;
 import com.photory.common.dto.ResponseDto;
-import com.photory.controller.auth.dto.response.SigninUserResDto;
+import com.photory.controller.auth.dto.response.SigninUserResponse;
 import com.photory.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,9 +21,9 @@ public class AuthController {
     //이메일이 유효한거 확인 되면, 인증 버튼 누를 수 있음
     @PostMapping("/signup/email/check")
     public ResponseEntity<ResponseDto> validateEmail(
-            @RequestBody @Valid ValidateEmailReqDto validateEmailReqDto
+            @RequestBody @Valid ValidateEmailRequestDto validateEmailRequestDto
     ) {
-        authService.validateEmail(validateEmailReqDto);
+        authService.validateEmail(validateEmailRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -36,9 +36,9 @@ public class AuthController {
     //이메일 인증 실행
     @PostMapping("/signup/email")
     public ResponseEntity<ResponseDto> authEmail(
-            @RequestBody @Valid AuthEmailReqDto authEmailReqDto
+            @RequestBody @Valid AuthEmailRequestDto authEmailRequestDto
     ) {
-        authService.authEmail(authEmailReqDto);
+        authService.authEmail(authEmailRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -50,9 +50,9 @@ public class AuthController {
 
     @PostMapping("/signup/email/complete")
     public ResponseEntity<ResponseDto> authEmailComplete(
-            @RequestBody @Valid AuthEmailCompleteReqDto authEmailCompleteReqDto
+            @RequestBody @Valid AuthEmailCompleteRequestDto authEmailRequestDto
     ) {
-        authService.authEmailComplete(authEmailCompleteReqDto);
+        authService.authEmailComplete(authEmailRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -66,9 +66,9 @@ public class AuthController {
     //마지막으로 회원 생성
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto> createUser(
-            @RequestBody @Valid CreateUserReqDto createUserReqDto
+            @RequestBody @Valid CreateUserRequestDto createUserRequestDto
     ) {
-        authService.createUser(createUserReqDto);
+        authService.createUser(createUserRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -80,14 +80,14 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<ResponseDto> signinUser(
-            @RequestBody SigninUserReqDto signinUserReqDto
+            @RequestBody SigninUserRequestDto signinUserRequestDto
     ) {
-        SigninUserResDto signinUserResDto = authService.signinUser(signinUserReqDto);
+        SigninUserResponse signinUserResponse = authService.signinUser(signinUserRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("로그인 성공")
-                        .data(signinUserResDto)
+                        .data(signinUserResponse)
                         .build()
         );
     }

@@ -2,9 +2,9 @@ package com.photory.service.room;
 
 import com.photory.common.exception.model.*;
 import com.photory.controller.room.dto.request.*;
-import com.photory.controller.room.dto.response.CreateRoomResDto;
-import com.photory.controller.room.dto.response.GetRoomsResDto;
-import com.photory.controller.room.dto.response.JoinRoomResDto;
+import com.photory.controller.room.dto.response.CreateRoomResponse;
+import com.photory.controller.room.dto.response.GetRoomsResponse;
+import com.photory.controller.room.dto.response.JoinRoomResponse;
 import com.photory.domain.participate.Participate;
 import com.photory.domain.room.Room;
 import com.photory.domain.user.User;
@@ -28,9 +28,9 @@ public class RoomService {
     private final ParticipateRepository participateRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CreateRoomResDto createRoom(String userEmail, CreateRoomReqDto createRoomReqDto) {
-        String title = createRoomReqDto.getTitle();
-        String password = createRoomReqDto.getPassword();
+    public CreateRoomResponse createRoom(String userEmail, CreateRoomRequestDto createRoomRequestDto) {
+        String title = createRoomRequestDto.getTitle();
+        String password = createRoomRequestDto.getPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
@@ -42,14 +42,14 @@ public class RoomService {
 
         participateRepository.save(participate);
 
-        CreateRoomResDto createRoomResDto = CreateRoomResDto.of(created);
+        CreateRoomResponse createRoomResponse = CreateRoomResponse.of(created);
 
-        return createRoomResDto;
+        return createRoomResponse;
     }
 
-    public JoinRoomResDto joinRoom(String userEmail, JoinRoomReqDto joinRoomReqDto) {
-        String code = joinRoomReqDto.getCode();
-        String password = joinRoomReqDto.getPassword();
+    public JoinRoomResponse joinRoom(String userEmail, JoinRoomRequestDto joinRoomRequestDto) {
+        String code = joinRoomRequestDto.getCode();
+        String password = joinRoomRequestDto.getPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
@@ -71,9 +71,9 @@ public class RoomService {
                     room.get().setParticipantsCount(room.get().getParticipantsCount() + 1);
                     roomRepository.save(room.get());
 
-                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.of(room.get());
+                    JoinRoomResponse joinRoomResponse = JoinRoomResponse.of(room.get());
 
-                    return joinRoomResDto;
+                    return joinRoomResponse;
                 }
             } else {
                 throw new InvalidPasswordException();
@@ -83,7 +83,7 @@ public class RoomService {
         }
     }
 
-    public ArrayList<GetRoomsResDto> getRooms(String userEmail) {
+    public ArrayList<GetRoomsResponse> getRooms(String userEmail) {
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
         ArrayList<Room> rooms = new ArrayList<>();
@@ -93,18 +93,18 @@ public class RoomService {
             rooms.add(participates.get(i).getRoom());
         }
 
-        ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
+        ArrayList<GetRoomsResponse> getRoomsResponses = new ArrayList<>();
         rooms.forEach((room -> {
-            GetRoomsResDto getRoomsResDto = GetRoomsResDto.of(room);
+            GetRoomsResponse getRoomsResponse = GetRoomsResponse.of(room);
 
-            getRoomsResDtos.add(getRoomsResDto);
+            getRoomsResponses.add(getRoomsResponse);
         }));
 
-        return getRoomsResDtos;
+        return getRoomsResponses;
     }
 
-    public void leaveRoom(String userEmail, LeaveRoomReqDto leaveRoomReqDto) {
-        Long roomId = leaveRoomReqDto.getRoomId();
+    public void leaveRoom(String userEmail, LeaveRoomRequestDto leaveRoomRequestDto) {
+        Long roomId = leaveRoomRequestDto.getRoomId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
@@ -136,8 +136,8 @@ public class RoomService {
         }
     }
 
-    public void disableRoom(String userEmail, DisableRoomReqDto disableRoomReqDto) {
-        Long roomId = disableRoomReqDto.getRoomId();
+    public void disableRoom(String userEmail, DisableRoomRequestDto disableRoomRequestDto) {
+        Long roomId = disableRoomRequestDto.getRoomId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
@@ -160,9 +160,9 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    public void deleteUserForce(String userEmail, DeleteUserForceReqDto deleteUserForceReqDto) {
-        Long deletedUserId = deleteUserForceReqDto.getDeletedUserId();
-        Long roomId = deleteUserForceReqDto.getRoomId();
+    public void deleteUserForce(String userEmail, DeleteUserForceRequestDto deleteUserForceRequestDto) {
+        Long deletedUserId = deleteUserForceRequestDto.getDeletedUserId();
+        Long roomId = deleteUserForceRequestDto.getRoomId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Optional<User> deletedUser = userRepository.findById(deletedUserId);
@@ -192,10 +192,10 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    public void modifyRoomPassword(String userEmail, ModifyRoomPasswordReqDto modifyRoomPasswordReqDto) {
-        Long roomId = modifyRoomPasswordReqDto.getRoomId();
-        String beforePassword = modifyRoomPasswordReqDto.getBeforePassword();
-        String afterPassword = modifyRoomPasswordReqDto.getAfterPassword();
+    public void modifyRoomPassword(String userEmail, ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto) {
+        Long roomId = modifyRoomPasswordRequestDto.getRoomId();
+        String beforePassword = modifyRoomPasswordRequestDto.getBeforePassword();
+        String afterPassword = modifyRoomPasswordRequestDto.getAfterPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
@@ -217,9 +217,9 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    public void delegateOwner(String userEmail, DelegateOwnerReqDto delegateOwnerReqDto) {
-        Long roomId = delegateOwnerReqDto.getRoomId();
-        Long delegatedUserId = delegateOwnerReqDto.getDelegatedUserId();
+    public void delegateOwner(String userEmail, DelegateOwnerRequestDto delegateOwnerRequestDto) {
+        Long roomId = delegateOwnerRequestDto.getRoomId();
+        Long delegatedUserId = delegateOwnerRequestDto.getDelegatedUserId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Optional<User> delegatedUser = userRepository.findById(delegatedUserId);

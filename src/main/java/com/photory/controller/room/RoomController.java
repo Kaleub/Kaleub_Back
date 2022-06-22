@@ -3,9 +3,9 @@ package com.photory.controller.room;
 import com.photory.config.resolver.UserEmail;
 import com.photory.controller.room.dto.request.*;
 import com.photory.common.dto.ResponseDto;
-import com.photory.controller.room.dto.response.CreateRoomResDto;
-import com.photory.controller.room.dto.response.GetRoomsResDto;
-import com.photory.controller.room.dto.response.JoinRoomResDto;
+import com.photory.controller.room.dto.response.CreateRoomResponse;
+import com.photory.controller.room.dto.response.GetRoomsResponse;
+import com.photory.controller.room.dto.response.JoinRoomResponse;
 import com.photory.service.room.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,31 +24,31 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> createRoom(
-            @RequestBody @Valid CreateRoomReqDto createRoomReqDto,
+            @RequestBody @Valid CreateRoomRequestDto createRoomRequestDto,
             @UserEmail String userEmail
     ) {
         System.out.println(userEmail);
-        CreateRoomResDto createRoomResDto = roomService.createRoom(userEmail, createRoomReqDto);
+        CreateRoomResponse createRoomResponse = roomService.createRoom(userEmail, createRoomRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("방 생성 성공")
-                        .data(createRoomResDto)
+                        .data(createRoomResponse)
                         .build()
         );
     }
 
     @PostMapping("/participate")
     public ResponseEntity<ResponseDto> joinRoom(
-            @RequestBody JoinRoomReqDto joinRoomReqDto,
+            @RequestBody JoinRoomRequestDto joinRoomRequestDto,
             @UserEmail String userEmail
     ) {
-        JoinRoomResDto joinRoomResDto = roomService.joinRoom(userEmail, joinRoomReqDto);
+        JoinRoomResponse joinRoomResponse = roomService.joinRoom(userEmail, joinRoomRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("방 참가 성공")
-                        .data(joinRoomResDto)
+                        .data(joinRoomResponse)
                         .build()
         );
     }
@@ -57,22 +57,22 @@ public class RoomController {
     public ResponseEntity<ResponseDto> getRooms(
             @UserEmail String userEmail
     ) {
-        ArrayList<GetRoomsResDto> getRoomsResDtos = roomService.getRooms(userEmail);
+        ArrayList<GetRoomsResponse> getRoomsResponses = roomService.getRooms(userEmail);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("참여중인 방 목록 조회 성공")
-                        .data(getRoomsResDtos)
+                        .data(getRoomsResponses)
                         .build()
         );
     }
 
     @DeleteMapping("/participate")
     public ResponseEntity<ResponseDto> leaveRoom(
-            @RequestBody LeaveRoomReqDto leaveRoomReqDto,
+            @RequestBody LeaveRoomRequestDto leaveRoomRequestDto,
             @UserEmail String userEmail
     ) {
-        roomService.leaveRoom(userEmail, leaveRoomReqDto);
+        roomService.leaveRoom(userEmail, leaveRoomRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -84,10 +84,10 @@ public class RoomController {
 
     @PutMapping("/disable")
     public ResponseEntity<ResponseDto> disableRoom(
-            @RequestBody DisableRoomReqDto disableRoomReqDto,
+            @RequestBody DisableRoomRequestDto disableRoomRequestDto,
             @UserEmail String userEmail
     ) {
-        roomService.disableRoom(userEmail, disableRoomReqDto);
+        roomService.disableRoom(userEmail, disableRoomRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -99,10 +99,10 @@ public class RoomController {
 
     @DeleteMapping("/participate/force")
     public ResponseEntity<ResponseDto> deleteUserForce(
-            @RequestBody DeleteUserForceReqDto deleteUserForceReqDto,
+            @RequestBody DeleteUserForceRequestDto deleteUserForceRequestDto,
             @UserEmail String userEmail
     ) {
-        roomService.deleteUserForce(userEmail, deleteUserForceReqDto);
+        roomService.deleteUserForce(userEmail, deleteUserForceRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -114,10 +114,10 @@ public class RoomController {
 
     @PutMapping("/password")
     public ResponseEntity<ResponseDto> modifyRoomPassword(
-            @RequestBody @Valid ModifyRoomPasswordReqDto modifyRoomPasswordReqDto,
+            @RequestBody @Valid ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto,
             @UserEmail String userEmail
     ) {
-        roomService.modifyRoomPassword(userEmail, modifyRoomPasswordReqDto);
+        roomService.modifyRoomPassword(userEmail, modifyRoomPasswordRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
@@ -129,10 +129,10 @@ public class RoomController {
 
     @PutMapping("/owner")
     public ResponseEntity<ResponseDto> delegateOwner(
-            @RequestBody @Valid DelegateOwnerReqDto delegateOwnerReqDto,
+            @RequestBody @Valid DelegateOwnerRequestDto delegateOwnerRequestDto,
             @UserEmail String userEmail
     ) {
-        roomService.delegateOwner(userEmail, delegateOwnerReqDto);
+        roomService.delegateOwner(userEmail, delegateOwnerRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)

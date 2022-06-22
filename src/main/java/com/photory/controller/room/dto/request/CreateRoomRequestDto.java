@@ -1,15 +1,14 @@
 package com.photory.controller.room.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@Setter
+@ToString
 @Getter
-public class CreateRoomReqDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class CreateRoomRequestDto {
 
     @Size(min = 4, max = 8, message = "제목은 4~8 글자만 가능합니다.")
     private String title;
@@ -19,7 +18,7 @@ public class CreateRoomReqDto {
     private String password;
 
     @Builder(builderMethodName = "testBuilder")
-    public CreateRoomReqDto(String title, String password) {
+    public CreateRoomRequestDto(String title, String password) {
         this.title = title;
         this.password = password;
     }

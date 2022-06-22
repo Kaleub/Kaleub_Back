@@ -10,10 +10,10 @@ import com.photory.domain.room.Room;
 import com.photory.domain.room.repository.RoomRepository;
 import com.photory.domain.user.User;
 import com.photory.domain.user.repository.UserRepository;
-import com.photory.controller.feed.dto.request.DeleteFeedReqDto;
-import com.photory.controller.feed.dto.request.ModifyFeedReqDto;
-import com.photory.controller.feed.dto.response.ModifyFeedResDto;
-import com.photory.controller.feed.dto.response.GetFeedResDto;
+import com.photory.controller.feed.dto.request.DeleteFeedRequestDto;
+import com.photory.controller.feed.dto.request.ModifyFeedRequestDto;
+import com.photory.controller.feed.dto.response.ModifyFeedResponse;
+import com.photory.controller.feed.dto.response.GetFeedResponse;
 import com.photory.common.exception.model.NotFeedOwnerException;
 import com.photory.common.exception.model.NotFoundFeedException;
 import com.photory.common.exception.model.NotInRoomException;
@@ -59,7 +59,7 @@ public class FeedService {
         });
     }
 
-    public GetFeedResDto getFeed(String userEmail, Long feedId) {
+    public GetFeedResponse getFeed(String userEmail, Long feedId) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
 
         Optional<Feed> feed = feedRepository.findById(feedId);
@@ -81,16 +81,16 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        GetFeedResDto getFeedResDto = GetFeedResDto.of(feed.get(), imageUrls);
+        GetFeedResponse getFeedResponse = GetFeedResponse.of(feed.get(), imageUrls);
 
-        return getFeedResDto;
+        return getFeedResponse;
     }
 
-    public ModifyFeedResDto modifyFeed(String userEmail, ModifyFeedReqDto modifyFeedReqDto) {
+    public ModifyFeedResponse modifyFeed(String userEmail, ModifyFeedRequestDto modifyFeedRequestDto) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
-        Long feedId = modifyFeedReqDto.getFeedId();
-        String title = modifyFeedReqDto.getTitle();
-        String content = modifyFeedReqDto.getContent();
+        Long feedId = modifyFeedRequestDto.getFeedId();
+        String title = modifyFeedRequestDto.getTitle();
+        String content = modifyFeedRequestDto.getContent();
 
         Optional<Feed> feed = feedRepository.findById(feedId);
         if (feed.isEmpty()) {
@@ -113,14 +113,14 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        ModifyFeedResDto modifyFeedResDto = ModifyFeedResDto.of(modified, imageUrls);
+        ModifyFeedResponse modifyFeedResponse = ModifyFeedResponse.of(modified, imageUrls);
 
-        return modifyFeedResDto;
+        return modifyFeedResponse;
     }
 
-    public void deleteFeed(String userEmail, DeleteFeedReqDto deleteFeedReqDto) {
+    public void deleteFeed(String userEmail, DeleteFeedRequestDto deleteFeedRequestDto) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
-        Long feedId = deleteFeedReqDto.getFeedId();
+        Long feedId = deleteFeedRequestDto.getFeedId();
 
         Optional<Feed> feed = feedRepository.findById(feedId);
         if (feed.isEmpty()) {

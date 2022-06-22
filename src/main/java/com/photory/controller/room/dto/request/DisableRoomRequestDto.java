@@ -1,17 +1,16 @@
 package com.photory.controller.room.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Setter
+@ToString
 @Getter
-public class DisableRoomReqDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class DisableRoomRequestDto {
 
     private Long roomId;
 
     @Builder(builderMethodName = "testBuilder")
-    public DisableRoomReqDto(Long roomId) {
+    public DisableRoomRequestDto(Long roomId) {
         this.roomId = roomId;
     }
 }

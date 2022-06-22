@@ -1,15 +1,14 @@
 package com.photory.controller.feed.dto.response;
 
 import com.photory.domain.feed.Feed;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 
-@Setter
+@ToString
 @Getter
-public class ModifyFeedResDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class GetFeedResponse {
 
     private Long roomId;
     private Long userId;
@@ -18,7 +17,7 @@ public class ModifyFeedResDto {
     private ArrayList<String> imageUrls;
 
     @Builder
-    public ModifyFeedResDto(Long roomId, Long userId, String title, String content, ArrayList<String> imageUrls) {
+    public GetFeedResponse(Long roomId, Long userId, String title, String content, ArrayList<String> imageUrls) {
         this.roomId = roomId;
         this.userId = userId;
         this.title = title;
@@ -26,8 +25,8 @@ public class ModifyFeedResDto {
         this.imageUrls = imageUrls;
     }
 
-    public static ModifyFeedResDto of(Feed feed, ArrayList<String> imageUrls) {
-        ModifyFeedResDto response = ModifyFeedResDto.builder()
+    public static GetFeedResponse of(Feed feed, ArrayList<String> imageUrls) {
+        GetFeedResponse response = GetFeedResponse.builder()
                 .roomId(feed.getRoom().getId())
                 .userId(feed.getUser().getId())
                 .title(feed.getTitle())

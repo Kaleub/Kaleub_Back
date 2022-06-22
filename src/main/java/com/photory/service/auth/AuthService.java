@@ -3,7 +3,7 @@ package com.photory.service.auth;
 import com.photory.common.exception.model.*;
 import com.photory.controller.auth.dto.request.*;
 import com.photory.domain.user.UserRole;
-import com.photory.controller.auth.dto.response.SigninUserResDto;
+import com.photory.controller.auth.dto.response.SigninUserResponse;
 import com.photory.domain.user.User;
 import com.photory.domain.user.repository.UserRepository;
 import com.photory.common.util.JwtUtil;
@@ -29,9 +29,9 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
 
-    public void validateEmail(ValidateEmailReqDto validateEmailReqDto) {
+    public void validateEmail(ValidateEmailRequestDto validateEmailRequestDto) {
 
-        String email = validateEmailReqDto.getEmail();
+        String email = validateEmailRequestDto.getEmail();
 
         boolean emailDuplicate = userRepository.existsByEmail(email);
 
@@ -40,9 +40,9 @@ public class AuthService {
         }
     }
 
-    public void authEmail(AuthEmailReqDto authEmailReqDto) {
+    public void authEmail(AuthEmailRequestDto authEmailRequestDto) {
 
-        String email = authEmailReqDto.getEmail();
+        String email = authEmailRequestDto.getEmail();
 
         if (userRepository.existsByEmail(email)) {
             throw new ExistingEmailException();
@@ -58,12 +58,12 @@ public class AuthService {
         sendAuthEmail(email, authKey);
     }
 
-    public void authEmailComplete(AuthEmailCompleteReqDto authEmailCompleteReqDto) {
+    public void authEmailComplete(AuthEmailCompleteRequestDto authEmailCompleteRequestDto) {
 
-        String email = redisUtil.getData(authEmailCompleteReqDto.getAuthKey());
+        String email = redisUtil.getData(authEmailCompleteRequestDto.getAuthKey());
 
         try {
-            if (!email.equals(authEmailCompleteReqDto.getEmail())) {
+            if (!email.equals(authEmailCompleteRequestDto.getEmail())) {
                 throw new IncorrectAuthKeyException();
             }
         } catch (NullPointerException e) {
@@ -73,9 +73,9 @@ public class AuthService {
         redisUtil.setDataExpire(email, "1", 60 * 60 * 24L);
     }
 
-    public void createUser(CreateUserReqDto createUserReqDto) {
-        String email = createUserReqDto.getEmail();
-        String password = createUserReqDto.getPassword();
+    public void createUser(CreateUserRequestDto createUserRequestDto) {
+        String email = createUserRequestDto.getEmail();
+        String password = createUserRequestDto.getPassword();
 
         if (userRepository.existsByEmail(email)) {
             throw new ExistingEmailException();
@@ -90,19 +90,19 @@ public class AuthService {
 //        }
     }
 
-    public SigninUserResDto signinUser(SigninUserReqDto signinUserReqDto) {
+    public SigninUserResponse signinUser(SigninUserRequestDto signinUserRequestDto) {
 
-        String email = signinUserReqDto.getEmail();
-        String password = signinUserReqDto.getPassword();
+        String email = signinUserRequestDto.getEmail();
+        String password = signinUserRequestDto.getPassword();
 
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
             if (passwordEncoder.matches(password, user.get().getPassword())) {
                 String token = createToken(user.get());
-                SigninUserResDto signinUserResDto = SigninUserResDto.of(token);
+                SigninUserResponse signinUserResponse = SigninUserResponse.of(token);
 
-                return signinUserResDto;
+                return signinUserResponse;
             } else {
                 throw new InvalidPasswordException();
             }

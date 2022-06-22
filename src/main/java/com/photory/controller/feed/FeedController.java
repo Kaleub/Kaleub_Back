@@ -2,10 +2,10 @@ package com.photory.controller.feed;
 
 import com.photory.config.resolver.UserEmail;
 import com.photory.common.dto.ResponseDto;
-import com.photory.controller.feed.dto.request.DeleteFeedReqDto;
-import com.photory.controller.feed.dto.request.ModifyFeedReqDto;
-import com.photory.controller.feed.dto.response.ModifyFeedResDto;
-import com.photory.controller.feed.dto.response.GetFeedResDto;
+import com.photory.controller.feed.dto.request.DeleteFeedRequestDto;
+import com.photory.controller.feed.dto.request.ModifyFeedRequestDto;
+import com.photory.controller.feed.dto.response.ModifyFeedResponse;
+import com.photory.controller.feed.dto.response.GetFeedResponse;
 import com.photory.service.feed.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,37 +48,37 @@ public class FeedController {
             @PathVariable("feedId") @Valid Long feedId,
             @UserEmail String userEmail
     ) {
-        GetFeedResDto getFeedResDto = feedService.getFeed(userEmail, feedId);
+        GetFeedResponse getFeedResponse = feedService.getFeed(userEmail, feedId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("피드 조회 성공")
-                        .data(getFeedResDto)
+                        .data(getFeedResponse)
                         .build()
         );
     }
 
     @PutMapping
     public ResponseEntity<ResponseDto> modifyFeed(
-            @RequestBody @Valid ModifyFeedReqDto modifyFeedReqDto,
+            @RequestBody @Valid ModifyFeedRequestDto modifyFeedRequestDto,
             @UserEmail String userEmail
     ) {
-        ModifyFeedResDto modifyFeedResDto = feedService.modifyFeed(userEmail, modifyFeedReqDto);
+        ModifyFeedResponse modifyFeedResponse = feedService.modifyFeed(userEmail, modifyFeedRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("피드 수정 성공")
-                        .data(modifyFeedResDto)
+                        .data(modifyFeedResponse)
                         .build()
         );
     }
 
     @DeleteMapping
     public ResponseEntity<ResponseDto> deleteFeed(
-            @RequestBody @Valid DeleteFeedReqDto deleteFeedReqDto,
+            @RequestBody @Valid DeleteFeedRequestDto deleteFeedRequestDto,
             @UserEmail String userEmail
     ) {
-        feedService.deleteFeed(userEmail, deleteFeedReqDto);
+        feedService.deleteFeed(userEmail, deleteFeedRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.builder()
                         .status(200)

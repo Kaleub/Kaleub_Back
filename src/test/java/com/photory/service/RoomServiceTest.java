@@ -58,13 +58,13 @@ public class RoomServiceTest {
                 .build();
         User saved = userRepository.save(user);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
 
         //when
-        roomService.createRoom(saved.getEmail(), createRoomReqDto);
+        roomService.createRoom(saved.getEmail(), createRoomRequestDto);
 
         //then
         Optional<Room> room = roomRepository.findByOwnerUser(saved);
@@ -96,20 +96,20 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
 
         //when
-        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
 
         //then
         Optional<Room> joinedRoom = roomRepository.findByOwnerUser(roomOwner);
@@ -139,13 +139,13 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code("없는 방 코드")
                 .password("password1")
                 .build();
@@ -153,7 +153,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(NotFoundRoomException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto));
+        assertThrows(NotFoundRoomException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto));
     }
 
     @Test
@@ -173,14 +173,14 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("wrongpassword1")
                 .build();
@@ -188,7 +188,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(InvalidPasswordException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto));
+        assertThrows(InvalidPasswordException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto));
     }
 
     @Test
@@ -250,29 +250,29 @@ public class RoomServiceTest {
         User notOwner7 = userRepository.save(user8);
         User notOwner8 = userRepository.save(user9);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
 
         //when
-        roomService.joinRoom(notOwner1.getEmail(), joinRoomReqDto);
-        roomService.joinRoom(notOwner2.getEmail(), joinRoomReqDto);
-        roomService.joinRoom(notOwner3.getEmail(), joinRoomReqDto);
-        roomService.joinRoom(notOwner4.getEmail(), joinRoomReqDto);
-        roomService.joinRoom(notOwner5.getEmail(), joinRoomReqDto);
-        roomService.joinRoom(notOwner6.getEmail(), joinRoomReqDto);
-        roomService.joinRoom(notOwner7.getEmail(), joinRoomReqDto);
+        roomService.joinRoom(notOwner1.getEmail(), joinRoomRequestDto);
+        roomService.joinRoom(notOwner2.getEmail(), joinRoomRequestDto);
+        roomService.joinRoom(notOwner3.getEmail(), joinRoomRequestDto);
+        roomService.joinRoom(notOwner4.getEmail(), joinRoomRequestDto);
+        roomService.joinRoom(notOwner5.getEmail(), joinRoomRequestDto);
+        roomService.joinRoom(notOwner6.getEmail(), joinRoomRequestDto);
+        roomService.joinRoom(notOwner7.getEmail(), joinRoomRequestDto);
 
         //then
-        assertThrows(ExceedRoomCapacityException.class, () -> roomService.joinRoom(notOwner8.getEmail(), joinRoomReqDto));
+        assertThrows(ExceedRoomCapacityException.class, () -> roomService.joinRoom(notOwner8.getEmail(), joinRoomRequestDto));
     }
 
     @Test
@@ -286,14 +286,14 @@ public class RoomServiceTest {
                 .build();
         User roomOwner = userRepository.save(user1);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
@@ -301,7 +301,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(AlreadyInRoomException.class, () -> roomService.joinRoom(roomOwner.getEmail(), joinRoomReqDto));
+        assertThrows(AlreadyInRoomException.class, () -> roomService.joinRoom(roomOwner.getEmail(), joinRoomRequestDto));
     }
 
     @Test
@@ -321,30 +321,30 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
 
-        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
 
-        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+        LeaveRoomRequestDto leaveRoomRequestDto = LeaveRoomRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .build();
 
         //when
-        roomService.leaveRoom(notOwner.getEmail(), leaveRoomReqDto);
+        roomService.leaveRoom(notOwner.getEmail(), leaveRoomRequestDto);
 
         //then
         Optional<Participate> participate = participateRepository.findByRoomAndUser(room.get(), notOwner);
-        Optional<Room> leftRoom = roomRepository.findById(leaveRoomReqDto.getRoomId());
+        Optional<Room> leftRoom = roomRepository.findById(leaveRoomRequestDto.getRoomId());
 
         assertAll(
                 () -> assertTrue(participate.isEmpty()),
@@ -369,21 +369,21 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+        LeaveRoomRequestDto leaveRoomRequestDto = LeaveRoomRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .build();
 
         //when
 
         //then
-        assertThrows(AlreadyNotInRoomException.class, () -> roomService.leaveRoom(notOwner.getEmail(), leaveRoomReqDto));
+        assertThrows(AlreadyNotInRoomException.class, () -> roomService.leaveRoom(notOwner.getEmail(), leaveRoomRequestDto));
     }
 
     @Test
@@ -403,28 +403,28 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
 
-        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
 
-        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+        LeaveRoomRequestDto leaveRoomRequestDto = LeaveRoomRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .build();
 
         //when
 
         //then
-        assertThrows(OwnerCanNotLeaveException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomReqDto));
+        assertThrows(OwnerCanNotLeaveException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomRequestDto));
     }
 
     @Test
@@ -438,21 +438,21 @@ public class RoomServiceTest {
                 .build();
         User roomOwner = userRepository.save(user1);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+        LeaveRoomRequestDto leaveRoomRequestDto = LeaveRoomRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .build();
 
         //when
 
         //then
-        assertThrows(AlertLeaveRoomException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomReqDto));
+        assertThrows(AlertLeaveRoomException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomRequestDto));
     }
 
     @Test
@@ -466,19 +466,19 @@ public class RoomServiceTest {
                 .build();
         User roomOwner = userRepository.save(user1);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        DisableRoomReqDto disableRoomReqDto = DisableRoomReqDto.testBuilder()
+        DisableRoomRequestDto disableRoomRequestDto = DisableRoomRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .build();
 
         //when
-        roomService.disableRoom(roomOwner.getEmail(), disableRoomReqDto);
+        roomService.disableRoom(roomOwner.getEmail(), disableRoomRequestDto);
 
         //then
         Optional<Room> disabledRoom = roomRepository.findByOwnerUser(roomOwner);
@@ -505,28 +505,28 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
 
-        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
 
-        DisableRoomReqDto disableRoomReqDto = DisableRoomReqDto.testBuilder()
+        DisableRoomRequestDto disableRoomRequestDto = DisableRoomRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .build();
 
         //when
 
         //then
-        assertThrows(NotOwnerException.class, () -> roomService.disableRoom(notOwner.getEmail(), disableRoomReqDto));
+        assertThrows(NotOwnerException.class, () -> roomService.disableRoom(notOwner.getEmail(), disableRoomRequestDto));
     }
 
     @Test
@@ -546,28 +546,28 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
 
-        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
 
-        DisableRoomReqDto disableRoomReqDto = DisableRoomReqDto.testBuilder()
+        DisableRoomRequestDto disableRoomRequestDto = DisableRoomRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .build();
 
         //when
 
         //then
-        assertThrows(NotAloneException.class, () -> roomService.disableRoom(roomOwner.getEmail(), disableRoomReqDto));
+        assertThrows(NotAloneException.class, () -> roomService.disableRoom(roomOwner.getEmail(), disableRoomRequestDto));
     }
 
     @Test
@@ -581,21 +581,21 @@ public class RoomServiceTest {
                 .build();
         User roomOwner = userRepository.save(user1);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        ModifyRoomPasswordReqDto modifyRoomPasswordReqDto = ModifyRoomPasswordReqDto.testBuilder()
+        ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto = ModifyRoomPasswordRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .beforePassword("password1")
                 .afterPassword("password2")
                 .build();
 
         //when
-        roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordReqDto);
+        roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordRequestDto);
 
         //then
         Optional<Room> modifiedRoom = roomRepository.findByOwnerUser(roomOwner);
@@ -622,21 +622,21 @@ public class RoomServiceTest {
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
                 .code(room.get().getCode())
                 .password("password1")
                 .build();
 
-        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
 
-        ModifyRoomPasswordReqDto modifyRoomPasswordReqDto = ModifyRoomPasswordReqDto.testBuilder()
+        ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto = ModifyRoomPasswordRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .beforePassword("password1")
                 .afterPassword("password2")
@@ -645,7 +645,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(NotOwnerException.class, () -> roomService.modifyRoomPassword(notOwner.getEmail(), modifyRoomPasswordReqDto));
+        assertThrows(NotOwnerException.class, () -> roomService.modifyRoomPassword(notOwner.getEmail(), modifyRoomPasswordRequestDto));
     }
 
     @Test
@@ -659,14 +659,14 @@ public class RoomServiceTest {
                 .build();
         User roomOwner = userRepository.save(user1);
 
-        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
                 .title("room")
                 .password("password1")
                 .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
         Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
 
-        ModifyRoomPasswordReqDto modifyRoomPasswordReqDto = ModifyRoomPasswordReqDto.testBuilder()
+        ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto = ModifyRoomPasswordRequestDto.testBuilder()
                 .roomId(room.get().getId())
                 .beforePassword("wrong123")
                 .afterPassword("password2")
@@ -675,6 +675,6 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(InvalidPasswordException.class, () -> roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordReqDto));
+        assertThrows(InvalidPasswordException.class, () -> roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordRequestDto));
     }
 }

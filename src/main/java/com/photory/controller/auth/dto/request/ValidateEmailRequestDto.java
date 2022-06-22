@@ -1,14 +1,15 @@
 package com.photory.controller.auth.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+@ToString
 @Getter
-@Setter
-public class AuthEmailReqDto {
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ValidateEmailRequestDto {
 
     @Email(message = "올바르지 않은 이메일 형식입니다.")
     @NotNull(message = "이메일은 필수 입력값입니다.")

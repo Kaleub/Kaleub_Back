@@ -1,18 +1,17 @@
 package com.photory.controller.room.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Setter
+@ToString
 @Getter
-public class JoinRoomReqDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class JoinRoomRequestDto {
 
     private String code;
     private String password;
 
     @Builder(builderMethodName = "testBuilder")
-    public JoinRoomReqDto(String code, String password) {
+    public JoinRoomRequestDto(String code, String password) {
         this.code = code;
         this.password = password;
     }

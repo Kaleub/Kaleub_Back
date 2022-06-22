@@ -2,13 +2,12 @@ package com.photory.controller.room.dto.response;
 
 import com.photory.domain.room.Room;
 import com.photory.common.util.DateUtil;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Setter
+@ToString
 @Getter
-public class GetRoomsResDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class CreateRoomResponse {
 
     private Long id;
     private String code;
@@ -21,7 +20,7 @@ public class GetRoomsResDto {
     private long modifiedTimeInterval;
 
     @Builder
-    public GetRoomsResDto(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status, long createdTimeInterval, long modifiedTimeInterval) {
+    public CreateRoomResponse(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status, long createdTimeInterval, long modifiedTimeInterval) {
         this.id = id;
         this.code = code;
         this.ownerEmail = ownerEmail;
@@ -33,8 +32,8 @@ public class GetRoomsResDto {
         this.modifiedTimeInterval = modifiedTimeInterval;
     }
 
-    public static GetRoomsResDto of(Room room) {
-        GetRoomsResDto response = GetRoomsResDto.builder()
+    public static CreateRoomResponse of(Room room) {
+        CreateRoomResponse response = CreateRoomResponse.builder()
                 .id(room.getId())
                 .code(room.getCode())
                 .ownerEmail(room.getOwnerUser().getEmail())
