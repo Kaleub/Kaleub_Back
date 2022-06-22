@@ -4,10 +4,7 @@ import com.photory.constant.Role;
 import com.photory.domain.Participate;
 import com.photory.domain.Room;
 import com.photory.domain.User;
-import com.photory.dto.request.room.CreateRoomReqDto;
-import com.photory.dto.request.room.DisableRoomReqDto;
-import com.photory.dto.request.room.JoinRoomReqDto;
-import com.photory.dto.request.room.LeaveRoomReqDto;
+import com.photory.dto.request.room.*;
 import com.photory.exception.*;
 import com.photory.repository.ParticipateRepository;
 import com.photory.repository.RoomRepository;
@@ -17,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -37,6 +35,9 @@ public class RoomServiceTest {
 
     @Autowired
     private ParticipateRepository participateRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @AfterEach
     void cleanUp() {
@@ -566,5 +567,40 @@ public class RoomServiceTest {
 
         //then
         assertThrows(NotAloneException.class, () -> roomService.disableRoom(roomOwner.getEmail(), disableRoomReqDto));
+    }
+
+    @Test
+    @DisplayName("modifyRoomPasswordTest_성공")
+    void modifyRoomPasswordTest_성공() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        ModifyRoomPasswordReqDto modifyRoomPasswordReqDto = ModifyRoomPasswordReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .beforePassword("password1")
+                .afterPassword("password2")
+                .build();
+
+        //when
+        roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordReqDto);
+
+        //then
+        Optional<Room> modifiedRoom = roomRepository.findByOwnerUser(roomOwner);
+
+        assertAll(
+                () -> assertTrue(passwordEncoder.matches("password2", modifiedRoom.get().getPassword()))
+        );
     }
 }
