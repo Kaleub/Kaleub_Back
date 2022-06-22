@@ -5,6 +5,7 @@ import com.photory.domain.Participate;
 import com.photory.domain.Room;
 import com.photory.domain.User;
 import com.photory.dto.request.room.CreateRoomReqDto;
+import com.photory.dto.request.room.DisableRoomReqDto;
 import com.photory.dto.request.room.JoinRoomReqDto;
 import com.photory.dto.request.room.LeaveRoomReqDto;
 import com.photory.exception.*;
@@ -450,5 +451,38 @@ public class RoomServiceTest {
 
         //then
         assertThrows(AlertLeaveRoomException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomReqDto));
+    }
+
+    @Test
+    @DisplayName("disableRoomTest_성공")
+    void disableRoomTest_성공() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        DisableRoomReqDto disableRoomReqDto = DisableRoomReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .build();
+
+        //when
+        roomService.disableRoom(roomOwner.getEmail(), disableRoomReqDto);
+
+        //then
+        Optional<Room> disabledRoom = roomRepository.findByOwnerUser(roomOwner);
+
+        assertAll(
+                () -> assertEquals(false, disabledRoom.get().getStatus())
+        );
     }
 }
