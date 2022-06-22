@@ -43,13 +43,7 @@ public class RoomService {
 
         participateRepository.save(participate);
 
-        CreateRoomResDto createRoomResDto = CreateRoomResDto.of(created.getId(),
-                created.getCode(),
-                created.getOwnerUser().getEmail(),
-                created.getTitle(),
-                created.getPassword(),
-                created.getParticipantsCount(),
-                created.getStatus(),
+        CreateRoomResDto createRoomResDto = CreateRoomResDto.of(created,
                 DateUtil.convertToTimeInterval(room.getCreatedDate()),
                 DateUtil.convertToTimeInterval(room.getModifiedDate()));
 
@@ -80,13 +74,7 @@ public class RoomService {
                     room.get().setParticipantsCount(room.get().getParticipantsCount() + 1);
                     roomRepository.save(room.get());
 
-                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.of(room.get().getId(),
-                            room.get().getCode(),
-                            room.get().getOwnerUser().getEmail(),
-                            room.get().getTitle(),
-                            room.get().getPassword(),
-                            room.get().getParticipantsCount(),
-                            room.get().getStatus(),
+                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.of(room.get(),
                             DateUtil.convertToTimeInterval(room.get().getCreatedDate()),
                             DateUtil.convertToTimeInterval(room.get().getModifiedDate()));
 
@@ -112,13 +100,7 @@ public class RoomService {
 
         ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
         rooms.forEach((room -> {
-            GetRoomsResDto getRoomsResDto = GetRoomsResDto.of(room.getId(),
-                    room.getCode(),
-                    room.getOwnerUser().getEmail(),
-                    room.getTitle(),
-                    room.getPassword(),
-                    room.getParticipantsCount(),
-                    room.getStatus(),
+            GetRoomsResDto getRoomsResDto = GetRoomsResDto.of(room,
                     DateUtil.convertToTimeInterval(room.getCreatedDate()),
                     DateUtil.convertToTimeInterval(room.getModifiedDate()));
 

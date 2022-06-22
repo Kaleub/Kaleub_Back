@@ -72,11 +72,7 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        GetFeedResDto getFeedResDto = GetFeedResDto.of(feed.get().getRoom().getId(),
-                feed.get().getUser().getId(),
-                feed.get().getTitle(),
-                feed.get().getContent(),
-                imageUrls);
+        GetFeedResDto getFeedResDto = GetFeedResDto.of(feed.get(), imageUrls);
 
         return getFeedResDto;
     }
@@ -108,11 +104,7 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        ModifyFeedResDto modifyFeedResDto = ModifyFeedResDto.of(modified.getRoom().getId(),
-                modified.getUser().getId(),
-                modified.getTitle(),
-                modified.getContent(),
-                imageUrls);
+        ModifyFeedResDto modifyFeedResDto = ModifyFeedResDto.of(modified, imageUrls);
 
         return modifyFeedResDto;
     }
