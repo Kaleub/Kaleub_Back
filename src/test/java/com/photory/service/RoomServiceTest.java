@@ -603,4 +603,77 @@ public class RoomServiceTest {
                 () -> assertTrue(passwordEncoder.matches("password2", modifiedRoom.get().getPassword()))
         );
     }
+
+    @Test
+    @DisplayName("modifyRoomPasswordTest_실패_방장이_아닌_경우")
+    void modifyRoomPasswordTest_실패_방장이_아닌_경우() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User user2 = User.builder()
+                .email("user2@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+
+        ModifyRoomPasswordReqDto modifyRoomPasswordReqDto = ModifyRoomPasswordReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .beforePassword("password1")
+                .afterPassword("password2")
+                .build();
+
+        //when
+
+        //then
+        assertThrows(NotOwnerException.class, () -> roomService.modifyRoomPassword(notOwner.getEmail(), modifyRoomPasswordReqDto));
+    }
+
+    @Test
+    @DisplayName("modifyRoomPasswordTest_실패_비밀번호_틀린_경우")
+    void modifyRoomPasswordTest_실패_비밀번호_틀린_경우() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        ModifyRoomPasswordReqDto modifyRoomPasswordReqDto = ModifyRoomPasswordReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .beforePassword("wrong123")
+                .afterPassword("password2")
+                .build();
+
+        //when
+
+        //then
+        assertThrows(InvalidPasswordException.class, () -> roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordReqDto));
+    }
 }
