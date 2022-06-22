@@ -16,14 +16,19 @@ public enum ErrorCode {
     VALIDATION_REQUEST_MISSING_EXCEPTION(BAD_REQUEST, "필수적인 요청 값이 입력되지 않았습니다"),
     VALIDATION_WRONG_TYPE_EXCEPTION(BAD_REQUEST, "잘못된 타입이 입력되었습니다."),
     VALIDATION_SOCIAL_TYPE_EXCEPTION(BAD_REQUEST, "잘못된 소셜 프로바이더 입니다."),
+    VALIDATION_WRONG_PASSWORD_EXCEPTION(BAD_REQUEST, "잘못된 비밀번호입니다."),
+    VALIDATION_EMAIL_AUTH_KEY_EXCEPTION(BAD_REQUEST, "잘못된 이메일 인증번호입니다."),
 
     // 401 UnAuthorized
     UNAUTHORIZED_EXCEPTION(UNAUTHORIZED, "토큰이 만료되었습니다. 다시 로그인 해주세요"),
+    UNAUTHORIZED_EMAIL_EXCEPTION(UNAUTHORIZED, "인증이 완료되지 않은 이메일입니다."),
 
     // 403 Forbidden
     FORBIDDEN_EXCEPTION(FORBIDDEN, "허용하지 않는 요청입니다."),
     FORBIDDEN_FILE_TYPE_EXCEPTION(BAD_REQUEST, "허용되지 않은 파일 형식입니다"),
     FORBIDDEN_FILE_NAME_EXCEPTION(BAD_REQUEST, "허용되지 않은 파일 이름입니다"),
+    FORBIDDEN_ROOM_OWNER_EXCEPTION(FORBIDDEN, "방장에게만 허용되는 요청입니다."),
+    FORBIDDEN_FEED_OWNER_EXCEPTION(FORBIDDEN, "피드 작성자에게만 허용되는 요청입니다."),
 
     // 404 Not Found
     NOT_FOUND_EXCEPTION(NOT_FOUND, "존재하지 않습니다"),

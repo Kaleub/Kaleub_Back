@@ -1,5 +1,6 @@
 package com.photory.service.feed;
 
+import com.photory.common.exception.test.ForbiddenException;
 import com.photory.common.exception.test.NotFoundException;
 import com.photory.domain.feed.Feed;
 import com.photory.domain.feed.repository.FeedRepository;
@@ -15,7 +16,6 @@ import com.photory.controller.feed.dto.request.DeleteFeedRequestDto;
 import com.photory.controller.feed.dto.request.ModifyFeedRequestDto;
 import com.photory.controller.feed.dto.response.ModifyFeedResponse;
 import com.photory.controller.feed.dto.response.GetFeedResponse;
-import com.photory.common.exception.model.NotFeedOwnerException;
 import com.photory.common.exception.model.NotInRoomException;
 import com.photory.service.image.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.photory.common.exception.ErrorCode.FORBIDDEN_FEED_OWNER_EXCEPTION;
 import static com.photory.common.exception.ErrorCode.NOT_FOUND_FEED_EXCEPTION;
 
 @Service
@@ -101,7 +102,7 @@ public class FeedService {
 
         // 피드 작성자가 아니면 수정할 수 없음
         if (feed.get().getUser().getId() != user.getId()) {
-            throw new NotFeedOwnerException();
+            throw new ForbiddenException(String.format("유저 (%s) 는 피드 (%s) 의 작성자가 아닙니다.", user.getId(), feedId), FORBIDDEN_FEED_OWNER_EXCEPTION);
         }
 
         feed.get().setTitle(title);
@@ -131,7 +132,7 @@ public class FeedService {
 
         //피드 작성자 아니면 삭제 불가능
         if (feed.get().getUser() != user) {
-            throw new NotFeedOwnerException();
+            throw new ForbiddenException(String.format("유저 (%s) 는 피드 (%s) 의 작성자가 아닙니다.", user.getId(), feedId), FORBIDDEN_FEED_OWNER_EXCEPTION);
         }
 
         ArrayList<FeedImage> feedImages = feedImageRepository.findAllByFeed(feed.get());

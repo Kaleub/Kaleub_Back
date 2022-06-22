@@ -1,7 +1,9 @@
 package com.photory.service;
 
 import com.photory.common.exception.model.*;
+import com.photory.common.exception.test.ForbiddenException;
 import com.photory.common.exception.test.NotFoundException;
+import com.photory.common.exception.test.ValidationException;
 import com.photory.controller.room.dto.request.*;
 import com.photory.domain.user.UserRole;
 import com.photory.domain.participate.Participate;
@@ -189,7 +191,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(InvalidPasswordException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto));
+        assertThrows(ValidationException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto));
     }
 
     @Test
@@ -527,7 +529,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(NotOwnerException.class, () -> roomService.disableRoom(notOwner.getEmail(), disableRoomRequestDto));
+        assertThrows(ForbiddenException.class, () -> roomService.disableRoom(notOwner.getEmail(), disableRoomRequestDto));
     }
 
     @Test
@@ -646,7 +648,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(NotOwnerException.class, () -> roomService.modifyRoomPassword(notOwner.getEmail(), modifyRoomPasswordRequestDto));
+        assertThrows(ForbiddenException.class, () -> roomService.modifyRoomPassword(notOwner.getEmail(), modifyRoomPasswordRequestDto));
     }
 
     @Test
@@ -676,6 +678,6 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(InvalidPasswordException.class, () -> roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordRequestDto));
+        assertThrows(ValidationException.class, () -> roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordRequestDto));
     }
 }

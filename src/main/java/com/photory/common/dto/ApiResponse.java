@@ -1,7 +1,6 @@
 package com.photory.common.dto;
 
 import com.photory.common.exception.ErrorCode;
-import com.photory.common.exception.ErrorStatusCode;
 import lombok.*;
 
 @ToString
@@ -12,19 +11,19 @@ public class ApiResponse<T> {
 
     public static final ApiResponse<String> SUCCESS = success("OK");
 
-    private ErrorStatusCode resultCode;
+    private int status;
     private String message;
     private T data;
 
     public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(null, "", data);
+        return new ApiResponse<>(200, "", data);
     }
 
     public static <T> ApiResponse<T> error(ErrorCode errorCode) {
-        return new ApiResponse<>(errorCode.getStatusCode(), errorCode.getMessage(), null);
+        return new ApiResponse<>(errorCode.getStatus(), errorCode.getMessage(), null);
     }
 
     public static <T> ApiResponse<T> error(ErrorCode errorCode, String message) {
-        return new ApiResponse<>(errorCode.getStatusCode(), message, null);
+        return new ApiResponse<>(errorCode.getStatus(), message, null);
     }
 }

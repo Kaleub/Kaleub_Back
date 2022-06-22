@@ -45,19 +45,14 @@ public class ControllerExceptionAdvice {
     //400
     @ExceptionHandler({
             ValidationException.class,
-            InvalidPasswordException.class,
             AlreadyInRoomException.class,
             AlreadyNotInRoomException.class,
             UserAlreadyNotInRoomException.class,
-            IncorrectAuthKeyException.class,
             OwnerCanNotLeaveException.class,
             AlertLeaveRoomException.class,
-            NotOwnerException.class,
             NotAloneException.class,
             NotInRoomException.class,
-            ExceedRoomCapacityException.class,
-            InvalidFileException.class,
-            NotFeedOwnerException.class
+            ExceedRoomCapacityException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);
@@ -70,27 +65,10 @@ public class ControllerExceptionAdvice {
         );
     }
 
-    //401
-    @ExceptionHandler({
-            UnAuthenticatedEmailException.class
-    })
-    public ResponseEntity<ErrorDto> AuthException(final RuntimeException ex) {
-        log.warn(ex.getMessage(), ex);
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ErrorDto.builder()
-                        .status(401)
-                        .message(ex.getMessage())
-                        .build()
-        );
-    }
-
     //500
     @ExceptionHandler({
             Exception.class,
-            MessageFailedException.class,
-            ImageUploadFailedException.class,
-            ImageDeleteFailedException.class
+            MessageFailedException.class
     })
     public ResponseEntity<ErrorDto> HandleAllException(final Exception ex) {
         log.error(ex.getMessage(), ex);

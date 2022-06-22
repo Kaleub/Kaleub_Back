@@ -1,7 +1,9 @@
 package com.photory.service.room;
 
 import com.photory.common.exception.model.*;
+import com.photory.common.exception.test.ForbiddenException;
 import com.photory.common.exception.test.NotFoundException;
+import com.photory.common.exception.test.ValidationException;
 import com.photory.controller.room.dto.request.*;
 import com.photory.controller.room.dto.response.CreateRoomResponse;
 import com.photory.controller.room.dto.response.GetRoomsResponse;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.photory.common.exception.ErrorCode.NOT_FOUND_ROOM_EXCEPTION;
+import static com.photory.common.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -79,7 +81,7 @@ public class RoomService {
                     return joinRoomResponse;
                 }
             } else {
-                throw new InvalidPasswordException();
+                throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
             }
         } else {
             throw new NotFoundException(String.format("존재하지 않는 방 (%s) 입니다", code), NOT_FOUND_ROOM_EXCEPTION);
@@ -149,7 +151,7 @@ public class RoomService {
 
         // 방장이 아니면 방을 비활성화할 수 없음
         if (user.getId() != ownerUser.getId()) {
-            throw new NotOwnerException();
+            throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
         }
 
         // 방장을 제외한 다른 참가자가 더 있으면 방을 비활성화할 수 없음
@@ -175,7 +177,7 @@ public class RoomService {
 
         //방장이 아니면 사용자 강퇴시킬 수 없음
         if (user.getId() != ownerUser.getId()) {
-            throw new NotOwnerException();
+            throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
         }
 
         //참가 방이 아니면 강퇴시킬 수 없음
@@ -207,12 +209,12 @@ public class RoomService {
 
         // 방장이 아니면 비밀번호를 변경할 수 없음
         if (user.getId() != ownerUser.getId()) {
-            throw new NotOwnerException();
+            throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
         }
 
         // 이전 비밀번호가 틀리면 비밀번호를 변경할 수 없음
         if (!passwordEncoder.matches(beforePassword, room.getPassword())) {
-            throw new InvalidPasswordException();
+            throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
         }
 
         room.setPassword(passwordEncoder.encode(afterPassword));
@@ -232,7 +234,7 @@ public class RoomService {
 
         // 방장이 아니면 방장 변경 불가능
         if (user.getId() != ownerUser.getId()) {
-            throw new NotOwnerException();
+            throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
         }
 
         //참가한 방이 아니면 위임 불가능

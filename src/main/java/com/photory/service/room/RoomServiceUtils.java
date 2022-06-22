@@ -19,7 +19,7 @@ public class RoomServiceUtils {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         if (user.isEmpty()) {
-            throw new UnAuthorizedException("로그인 실패입니다.");
+            throw new UnAuthorizedException("로그인 오류입니다.");
         }
 
         return user.get();

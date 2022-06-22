@@ -3,6 +3,7 @@ package com.photory.service.auth;
 import com.photory.common.exception.model.*;
 import com.photory.common.exception.test.ConflictException;
 import com.photory.common.exception.test.NotFoundException;
+import com.photory.common.exception.test.ValidationException;
 import com.photory.controller.auth.dto.request.*;
 import com.photory.domain.user.UserRole;
 import com.photory.controller.auth.dto.response.SigninUserResponse;
@@ -68,10 +69,10 @@ public class AuthService {
 
         try {
             if (!email.equals(authEmailCompleteRequestDto.getEmail())) {
-                throw new IncorrectAuthKeyException();
+                throw new ValidationException("잘못된 이메일 인증번호입니다.", VALIDATION_EMAIL_AUTH_KEY_EXCEPTION);
             }
         } catch (NullPointerException e) {
-            throw new IncorrectAuthKeyException();
+            throw new ValidationException("잘못된 이메일 인증번호입니다.", VALIDATION_EMAIL_AUTH_KEY_EXCEPTION);
         }
 
         redisUtil.setDataExpire(email, "1", 60 * 60 * 24L);
@@ -90,7 +91,7 @@ public class AuthService {
 
         userRepository.save(user);
 //        } else {
-//            throw new UnAuthenticatedEmailException();
+//            throw new UnAuthorizedException(String.format("인증이 완료되지 않은 이메일 (%s) 입니다.", email), UNAUTHORIZED_EMAIL_EXCEPTION);
 //        }
     }
 
@@ -108,7 +109,7 @@ public class AuthService {
 
                 return signinUserResponse;
             } else {
-                throw new InvalidPasswordException();
+                throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
             }
         } else {
             throw new NotFoundException(String.format("가입되지 않은 이메일 (%s) 입니다", email), NOT_FOUND_EMAIL_EXCEPTION);

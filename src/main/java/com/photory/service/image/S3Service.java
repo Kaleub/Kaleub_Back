@@ -7,9 +7,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.photory.common.exception.model.ImageDeleteFailedException;
-import com.photory.common.exception.model.ImageUploadFailedException;
-import com.photory.common.exception.model.InvalidFileException;
+import com.photory.common.exception.test.ForbiddenException;
+import com.photory.common.exception.test.InternalServerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.photory.common.exception.ErrorCode.FORBIDDEN_FILE_TYPE_EXCEPTION;
 
 
 @Service
@@ -44,7 +45,7 @@ public class S3Service {
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
-                throw new ImageUploadFailedException();
+                throw new InternalServerException(String.format("파일 (%s) 입력 스트림을 가져오는 중 에러가 발생하였습니다", file.getOriginalFilename()));
             }
 
             fileUrlList.add(amazonS3.getUrl(bucket, fileName).toString());
@@ -61,9 +62,9 @@ public class S3Service {
             //Delete
             this.amazonS3.deleteObject(deleteObjectRequest);
         } catch (AmazonServiceException e) {
-            throw new ImageDeleteFailedException();
+            throw new InternalServerException(String.format("파일 (%s) 을 삭제하는 중 에러가 발생하였습니다", fileName));
         } catch (SdkClientException e) {
-            throw new ImageDeleteFailedException();
+            throw new InternalServerException(String.format("파일 (%s) 을 삭제하는 중 에러가 발생하였습니다", fileName));
         }
     }
 
@@ -75,7 +76,7 @@ public class S3Service {
         try {
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
-            throw new InvalidFileException();
+            throw new ForbiddenException(String.format("허용되지 않은 파일 형식 (%s) 입니다.", fileName), FORBIDDEN_FILE_TYPE_EXCEPTION);
         }
     }
 }
