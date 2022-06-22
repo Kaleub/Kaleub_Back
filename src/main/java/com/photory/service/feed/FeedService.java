@@ -1,5 +1,6 @@
 package com.photory.service.feed;
 
+import com.photory.common.exception.test.NotFoundException;
 import com.photory.domain.feed.Feed;
 import com.photory.domain.feed.repository.FeedRepository;
 import com.photory.domain.feedimage.FeedImage;
@@ -15,7 +16,6 @@ import com.photory.controller.feed.dto.request.ModifyFeedRequestDto;
 import com.photory.controller.feed.dto.response.ModifyFeedResponse;
 import com.photory.controller.feed.dto.response.GetFeedResponse;
 import com.photory.common.exception.model.NotFeedOwnerException;
-import com.photory.common.exception.model.NotFoundFeedException;
 import com.photory.common.exception.model.NotInRoomException;
 import com.photory.service.image.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.photory.common.exception.ErrorCode.NOT_FOUND_FEED_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +66,7 @@ public class FeedService {
 
         Optional<Feed> feed = feedRepository.findById(feedId);
         if (feed.isEmpty()) {
-            throw new NotFoundFeedException();
+            throw new NotFoundException(String.format("존재하지 않는 피드 (%s) 입니다", feedId), NOT_FOUND_FEED_EXCEPTION);
         }
 
         Room room = feed.get().getRoom();
@@ -94,7 +96,7 @@ public class FeedService {
 
         Optional<Feed> feed = feedRepository.findById(feedId);
         if (feed.isEmpty()) {
-            throw new NotFoundFeedException();
+            throw new NotFoundException(String.format("존재하지 않는 피드 (%s) 입니다", feedId), NOT_FOUND_FEED_EXCEPTION);
         }
 
         // 피드 작성자가 아니면 수정할 수 없음
@@ -124,7 +126,7 @@ public class FeedService {
 
         Optional<Feed> feed = feedRepository.findById(feedId);
         if (feed.isEmpty()) {
-            throw new NotFoundFeedException();
+            throw new NotFoundException(String.format("존재하지 않는 피드 (%s) 입니다", feedId), NOT_FOUND_FEED_EXCEPTION);
         }
 
         //피드 작성자 아니면 삭제 불가능

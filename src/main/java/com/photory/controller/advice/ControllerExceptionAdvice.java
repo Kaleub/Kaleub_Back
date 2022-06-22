@@ -1,7 +1,9 @@
 package com.photory.controller.advice;
 
+import com.photory.common.dto.ApiResponse;
 import com.photory.common.exception.model.*;
 import com.photory.common.dto.ErrorDto;
+import com.photory.common.exception.test.PhotoryException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,16 @@ import javax.validation.ValidationException;
 @ControllerAdvice
 @Slf4j
 public class ControllerExceptionAdvice {
+
+    /**
+     * Photory Custom Exception
+     */
+    @ExceptionHandler(PhotoryException.class)
+    protected ResponseEntity<ApiResponse<Object>> handleBaseException(PhotoryException exception) {
+        log.error(exception.getMessage(), exception);
+        return ResponseEntity.status(exception.getStatus())
+                .body(ApiResponse.error(exception.getErrorCode()));
+    }
 
     //validation
     @ExceptionHandler({
@@ -33,13 +45,10 @@ public class ControllerExceptionAdvice {
     //400
     @ExceptionHandler({
             ValidationException.class,
-            NotFoundEmailException.class,
             InvalidPasswordException.class,
-            NotFoundRoomException.class,
             AlreadyInRoomException.class,
             AlreadyNotInRoomException.class,
             UserAlreadyNotInRoomException.class,
-            ExistingEmailException.class,
             IncorrectAuthKeyException.class,
             OwnerCanNotLeaveException.class,
             AlertLeaveRoomException.class,
@@ -48,7 +57,6 @@ public class ControllerExceptionAdvice {
             NotInRoomException.class,
             ExceedRoomCapacityException.class,
             InvalidFileException.class,
-            NotFoundFeedException.class,
             NotFeedOwnerException.class
     })
     public ResponseEntity<ErrorDto> InvalidRequest(final RuntimeException ex) {
@@ -64,7 +72,6 @@ public class ControllerExceptionAdvice {
 
     //401
     @ExceptionHandler({
-            LoginException.class,
             UnAuthenticatedEmailException.class
     })
     public ResponseEntity<ErrorDto> AuthException(final RuntimeException ex) {

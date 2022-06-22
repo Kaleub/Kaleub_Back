@@ -1,6 +1,6 @@
 package com.photory.config.security;
 
-import com.photory.common.exception.model.LoginException;
+import com.photory.common.exception.test.UnAuthorizedException;
 import com.photory.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            throw new LoginException();
+            throw new UnAuthorizedException("토큰이 없거나 만료된 토큰입니다.");
         }
 
         request.setAttribute("user", email);

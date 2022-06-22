@@ -1,6 +1,8 @@
 package com.photory.service.auth;
 
 import com.photory.common.exception.model.*;
+import com.photory.common.exception.test.ConflictException;
+import com.photory.common.exception.test.NotFoundException;
 import com.photory.controller.auth.dto.request.*;
 import com.photory.domain.user.UserRole;
 import com.photory.controller.auth.dto.response.SigninUserResponse;
@@ -19,6 +21,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.photory.common.exception.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -36,7 +40,7 @@ public class AuthService {
         boolean emailDuplicate = userRepository.existsByEmail(email);
 
         if (emailDuplicate) {
-            throw new ExistingEmailException();
+            throw new ConflictException(String.format("이미 사용중인 (%s) 이메일입니다.", email), CONFLICT_EMAIL_EXCEPTION);
         }
     }
 
@@ -45,7 +49,7 @@ public class AuthService {
         String email = authEmailRequestDto.getEmail();
 
         if (userRepository.existsByEmail(email)) {
-            throw new ExistingEmailException();
+            throw new ConflictException(String.format("이미 가입된 유저의 이메일 (%s) 입니다.", email), CONFLICT_USER_EXCEPTION);
         }
         String authKey = "";
         //임의의 authKey 생성
@@ -78,7 +82,7 @@ public class AuthService {
         String password = createUserRequestDto.getPassword();
 
         if (userRepository.existsByEmail(email)) {
-            throw new ExistingEmailException();
+            throw new ConflictException(String.format("이미 가입된 유저의 이메일 (%s) 입니다.", email), CONFLICT_USER_EXCEPTION);
         }
 
 //       if (redisUtil.getData(email) != null && redisUtil.getData(email).compareTo("1") == 0) {
@@ -107,7 +111,7 @@ public class AuthService {
                 throw new InvalidPasswordException();
             }
         } else {
-            throw new NotFoundEmailException();
+            throw new NotFoundException(String.format("가입되지 않은 이메일 (%s) 입니다", email), NOT_FOUND_EMAIL_EXCEPTION);
         }
     }
 

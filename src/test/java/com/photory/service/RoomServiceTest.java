@@ -1,6 +1,7 @@
 package com.photory.service;
 
 import com.photory.common.exception.model.*;
+import com.photory.common.exception.test.NotFoundException;
 import com.photory.controller.room.dto.request.*;
 import com.photory.domain.user.UserRole;
 import com.photory.domain.participate.Participate;
@@ -153,7 +154,7 @@ public class RoomServiceTest {
         //when
 
         //then
-        assertThrows(NotFoundRoomException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto));
+        assertThrows(NotFoundException.class, () -> roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto));
     }
 
     @Test

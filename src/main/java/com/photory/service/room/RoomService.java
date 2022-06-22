@@ -1,6 +1,7 @@
 package com.photory.service.room;
 
 import com.photory.common.exception.model.*;
+import com.photory.common.exception.test.NotFoundException;
 import com.photory.controller.room.dto.request.*;
 import com.photory.controller.room.dto.response.CreateRoomResponse;
 import com.photory.controller.room.dto.response.GetRoomsResponse;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.photory.common.exception.ErrorCode.NOT_FOUND_ROOM_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -79,7 +82,7 @@ public class RoomService {
                 throw new InvalidPasswordException();
             }
         } else {
-            throw new NotFoundRoomException();
+            throw new NotFoundException(String.format("존재하지 않는 방 (%s) 입니다", code), NOT_FOUND_ROOM_EXCEPTION);
         }
     }
 
