@@ -199,12 +199,6 @@ public class RoomService {
             throw new NotAloneException();
         }
 
-        // 참가하고 있는 방이 아니면 방을 비활성화할 수 없음
-        Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
-        if (participating.isEmpty()) {
-            throw new AlreadyNotInRoomException();
-        }
-
         // 방 비활성화
         room.setStatus(false);
         roomRepository.save(room);
