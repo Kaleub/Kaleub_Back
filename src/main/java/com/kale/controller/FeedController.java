@@ -2,8 +2,11 @@ package com.kale.controller;
 
 import com.kale.config.resolver.UserEmail;
 import com.kale.dto.ResponseDto;
+import com.kale.dto.request.feed.DeleteFeedReqDto;
 import com.kale.dto.request.feed.ModifyFeedReqDto;
+import com.kale.dto.request.feed.SelectFeedReqDto;
 import com.kale.dto.response.feed.ModifyFeedResDto;
+import com.kale.dto.response.feed.SelectFeedResDto;
 import com.kale.service.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,6 +44,21 @@ public class FeedController {
         );
     }
 
+    @GetMapping("/{feedId}")
+    public ResponseEntity<ResponseDto> selectFeed(
+            @PathVariable("feedId") @Valid long feedId,
+            @UserEmail String userEmail
+    ) {
+        SelectFeedResDto selectFeedResDto = feedService.selectFeed(userEmail, feedId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("피드 조회 성공")
+                        .data(selectFeedResDto)
+                        .build()
+        );
+    }
+
     @PutMapping
     public ResponseEntity<ResponseDto> modifyFeed(
             @RequestBody @Valid ModifyFeedReqDto modifyFeedReqDto,
@@ -52,6 +70,21 @@ public class FeedController {
                         .status(200)
                         .message("피드 수정 성공")
                         .data(modifyFeedResDto)
+                        .build()
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseDto> deleteFeed(
+            @RequestBody @Valid DeleteFeedReqDto deleteFeedReqDto,
+            @UserEmail String userEmail
+    ) {
+        feedService.deleteFeed(userEmail, deleteFeedReqDto);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("피드 삭제 성공")
+                        .data(null)
                         .build()
         );
     }
