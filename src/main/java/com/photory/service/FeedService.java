@@ -1,8 +1,10 @@
 package com.photory.service;
 
 import com.photory.domain.*;
+import com.photory.dto.request.feed.DeleteFeedReqDto;
 import com.photory.dto.request.feed.ModifyFeedReqDto;
 import com.photory.dto.response.feed.ModifyFeedResDto;
+import com.photory.dto.response.feed.GetFeedResDto;
 import com.photory.exception.NotFeedOwnerException;
 import com.photory.exception.NotFoundFeedException;
 import com.photory.exception.NotInRoomException;
@@ -56,6 +58,39 @@ public class FeedService {
         });
     }
 
+    public GetFeedResDto getFeed(String userEmail, Long feedId) {
+        User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
+
+        Optional<Feed> feed = feedRepository.findById(feedId);
+        if (feed.isEmpty()) {
+            throw new NotFoundFeedException();
+        }
+
+        Room room = feed.get().getRoom();
+
+        //방에 참가한 사람만 피드 조회할 수 있음
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
+        if (participating.isEmpty()) {
+            throw new NotInRoomException();
+        }
+
+        ArrayList<String> imageUrls = new ArrayList<>();
+        ArrayList<FeedImage> images = feedImageRepository.findAllByFeed(feed.get());
+        images.forEach(image -> {
+            imageUrls.add(imageUrls.size(), image.getImageUrl());
+        });
+
+        GetFeedResDto getFeedResDto = GetFeedResDto.builder()
+                .roomId(feed.get().getRoom().getId())
+                .userId(feed.get().getUser().getId())
+                .title(feed.get().getTitle())
+                .content(feed.get().getContent())
+                .imageUrls(imageUrls)
+                .build();
+
+        return getFeedResDto;
+    }
+
     public ModifyFeedResDto modifyFeed(String userEmail, ModifyFeedReqDto modifyFeedReqDto) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
         Long feedId = modifyFeedReqDto.getFeedId();
@@ -68,7 +103,7 @@ public class FeedService {
         }
 
         // 피드 작성자가 아니면 수정할 수 없음
-        if (feed.get().getUser() != user) {
+        if (feed.get().getUser().getId() != user.getId()) {
             throw new NotFeedOwnerException();
         }
 
@@ -92,5 +127,30 @@ public class FeedService {
                 .build();
 
         return modifyFeedResDto;
+    }
+
+    public void deleteFeed(String userEmail, DeleteFeedReqDto deleteFeedReqDto) {
+        User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
+        Long feedId = deleteFeedReqDto.getFeedId();
+
+        Optional<Feed> feed = feedRepository.findById(feedId);
+        if (feed.isEmpty()) {
+            throw new NotFoundFeedException();
+        }
+
+        //피드 작성자 아니면 삭제 불가능
+        if (feed.get().getUser() != user) {
+            throw new NotFeedOwnerException();
+        }
+
+        ArrayList<FeedImage> feedImages = feedImageRepository.findAllByFeed(feed.get());
+        for (FeedImage image : feedImages) {
+            String date[] = image.getImageUrl().split(".com/");
+            s3Service.deleteFile(date[1]);
+            feedImageRepository.delete(image);
+        }
+
+        //전체 피드 삭제
+        feedRepository.delete(feed.get());
     }
 }

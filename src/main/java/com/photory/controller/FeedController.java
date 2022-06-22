@@ -2,8 +2,10 @@ package com.photory.controller;
 
 import com.photory.config.resolver.UserEmail;
 import com.photory.dto.ResponseDto;
+import com.photory.dto.request.feed.DeleteFeedReqDto;
 import com.photory.dto.request.feed.ModifyFeedReqDto;
 import com.photory.dto.response.feed.ModifyFeedResDto;
+import com.photory.dto.response.feed.GetFeedResDto;
 import com.photory.service.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,6 +43,21 @@ public class FeedController {
         );
     }
 
+    @GetMapping("/{feedId}")
+    public ResponseEntity<ResponseDto> getFeed(
+            @PathVariable("feedId") @Valid Long feedId,
+            @UserEmail String userEmail
+    ) {
+        GetFeedResDto getFeedResDto = feedService.getFeed(userEmail, feedId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("피드 조회 성공")
+                        .data(getFeedResDto)
+                        .build()
+        );
+    }
+
     @PutMapping
     public ResponseEntity<ResponseDto> modifyFeed(
             @RequestBody @Valid ModifyFeedReqDto modifyFeedReqDto,
@@ -52,6 +69,21 @@ public class FeedController {
                         .status(200)
                         .message("피드 수정 성공")
                         .data(modifyFeedResDto)
+                        .build()
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseDto> deleteFeed(
+            @RequestBody @Valid DeleteFeedReqDto deleteFeedReqDto,
+            @UserEmail String userEmail
+    ) {
+        feedService.deleteFeed(userEmail, deleteFeedReqDto);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("피드 삭제 성공")
+                        .data(null)
                         .build()
         );
     }

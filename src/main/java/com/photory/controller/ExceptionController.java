@@ -82,7 +82,8 @@ public class ExceptionController {
     @ExceptionHandler({
             Exception.class,
             MessageFailedException.class,
-            ImageUploadFailedException.class
+            ImageUploadFailedException.class,
+            ImageDeleteFailedException.class
     })
     public ResponseEntity<ErrorDto> HandleAllException(final Exception ex) {
         log.error(ex.getMessage(), ex);
