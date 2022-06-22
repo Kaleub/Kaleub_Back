@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.photory.exception.ImageDeleteFailedException;
 import com.photory.exception.ImageUploadFailedException;
 import com.photory.exception.InvalidFileException;
 import lombok.RequiredArgsConstructor;
@@ -60,9 +61,9 @@ public class S3Service {
             //Delete
             this.amazonS3.deleteObject(deleteObjectRequest);
         } catch (AmazonServiceException e) {
-            e.printStackTrace();
+            throw new ImageDeleteFailedException();
         } catch (SdkClientException e) {
-            e.printStackTrace();
+            throw new ImageDeleteFailedException();
         }
     }
 
