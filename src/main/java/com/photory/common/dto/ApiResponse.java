@@ -5,8 +5,8 @@ import lombok.*;
 
 @ToString
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApiResponse<T> {
 
     public static final ApiResponse<String> SUCCESS = success("OK");
