@@ -6,6 +6,7 @@ import com.photory.domain.Room;
 import com.photory.domain.User;
 import com.photory.dto.request.room.CreateRoomReqDto;
 import com.photory.dto.request.room.JoinRoomReqDto;
+import com.photory.dto.request.room.LeaveRoomReqDto;
 import com.photory.exception.AlreadyInRoomException;
 import com.photory.exception.ExceedRoomCapacityException;
 import com.photory.exception.InvalidPasswordException;
@@ -301,5 +302,53 @@ public class RoomServiceTest {
 
         //then
         assertThrows(AlreadyInRoomException.class, () -> roomService.joinRoom(roomOwner.getEmail(), joinRoomReqDto));
+    }
+
+    @Test
+    @DisplayName("leaveRoomTest_성공")
+    void leaveRoomTest_성공() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User user2 = User.builder()
+                .email("user2@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+
+        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .build();
+
+        //when
+        roomService.leaveRoom(notOwner.getEmail(), leaveRoomReqDto);
+
+        //then
+        Optional<Participate> participate = participateRepository.findByRoomAndUser(room.get(), notOwner);
+        Optional<Room> leftRoom = roomRepository.findById(leaveRoomReqDto.getRoomId());
+
+        assertAll(
+                () -> assertTrue(participate.isEmpty()),
+                () -> assertEquals(1, leftRoom.get().getParticipantsCount())
+        );
     }
 }
