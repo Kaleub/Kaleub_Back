@@ -45,7 +45,7 @@ public class FeedController {
 
     @GetMapping("/{feedId}")
     public ResponseEntity<ResponseDto> getFeed(
-            @PathVariable("feedId") @Valid long feedId,
+            @PathVariable("feedId") @Valid Long feedId,
             @UserEmail String userEmail
     ) {
         GetFeedResDto getFeedResDto = feedService.getFeed(userEmail, feedId);

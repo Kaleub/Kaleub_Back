@@ -58,14 +58,15 @@ public class FeedService {
         });
     }
 
-    public GetFeedResDto getFeed(String userEmail, long feedId) {
+    public GetFeedResDto getFeed(String userEmail, Long feedId) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
 
         Optional<Feed> feed = feedRepository.findById(feedId);
-        Room room = feed.get().getRoom();
         if (feed.isEmpty()) {
             throw new NotFoundFeedException();
         }
+
+        Room room = feed.get().getRoom();
 
         //방에 참가한 사람만 피드 조회할 수 있음
         Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
@@ -146,6 +147,7 @@ public class FeedService {
         for (FeedImage image : feedImages) {
             String date[] = image.getImageUrl().split(".com/");
             s3Service.deleteFile(date[1]);
+            feedImageRepository.delete(image);
         }
 
         //전체 피드 삭제
