@@ -251,12 +251,6 @@ public class RoomService {
             throw new NotOwnerException();
         }
 
-        // 참가하고 있는 방이 아니면 비밀번호를 변경할 수 없음
-        Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
-        if (participating.isEmpty()) {
-            throw new NotInRoomException();
-        }
-
         // 이전 비밀번호가 틀리면 비밀번호를 변경할 수 없음
         if (!passwordEncoder.matches(beforePassword, room.getPassword())) {
             throw new InvalidPasswordException();
