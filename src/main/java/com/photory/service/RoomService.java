@@ -43,9 +43,7 @@ public class RoomService {
 
         participateRepository.save(participate);
 
-        CreateRoomResDto createRoomResDto = CreateRoomResDto.of(created,
-                DateUtil.convertToTimeInterval(room.getCreatedDate()),
-                DateUtil.convertToTimeInterval(room.getModifiedDate()));
+        CreateRoomResDto createRoomResDto = CreateRoomResDto.of(created);
 
         return createRoomResDto;
     }
@@ -74,9 +72,7 @@ public class RoomService {
                     room.get().setParticipantsCount(room.get().getParticipantsCount() + 1);
                     roomRepository.save(room.get());
 
-                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.of(room.get(),
-                            DateUtil.convertToTimeInterval(room.get().getCreatedDate()),
-                            DateUtil.convertToTimeInterval(room.get().getModifiedDate()));
+                    JoinRoomResDto joinRoomResDto = JoinRoomResDto.of(room.get());
 
                     return joinRoomResDto;
                 }
@@ -100,9 +96,7 @@ public class RoomService {
 
         ArrayList<GetRoomsResDto> getRoomsResDtos = new ArrayList<>();
         rooms.forEach((room -> {
-            GetRoomsResDto getRoomsResDto = GetRoomsResDto.of(room,
-                    DateUtil.convertToTimeInterval(room.getCreatedDate()),
-                    DateUtil.convertToTimeInterval(room.getModifiedDate()));
+            GetRoomsResDto getRoomsResDto = GetRoomsResDto.of(room);
 
             getRoomsResDtos.add(getRoomsResDto);
         }));
