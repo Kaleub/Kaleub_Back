@@ -7,10 +7,7 @@ import com.photory.domain.User;
 import com.photory.dto.request.room.CreateRoomReqDto;
 import com.photory.dto.request.room.JoinRoomReqDto;
 import com.photory.dto.request.room.LeaveRoomReqDto;
-import com.photory.exception.AlreadyInRoomException;
-import com.photory.exception.ExceedRoomCapacityException;
-import com.photory.exception.InvalidPasswordException;
-import com.photory.exception.NotFoundRoomException;
+import com.photory.exception.*;
 import com.photory.repository.ParticipateRepository;
 import com.photory.repository.RoomRepository;
 import com.photory.repository.UserRepository;
@@ -350,5 +347,108 @@ public class RoomServiceTest {
                 () -> assertTrue(participate.isEmpty()),
                 () -> assertEquals(1, leftRoom.get().getParticipantsCount())
         );
+    }
+
+    @Test
+    @DisplayName("leaveRoomTest_실패_참가중인_방이_아닌_경우")
+    void leaveRoomTest_실패_참가중인_방이_아닌_경우() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User user2 = User.builder()
+                .email("user2@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(AlreadyNotInRoomException.class, () -> roomService.leaveRoom(notOwner.getEmail(), leaveRoomReqDto));
+    }
+
+    @Test
+    @DisplayName("leaveRoomTest_실패_방의_주인인데_다른_참여자가_남은_경우")
+    void leaveRoomTest_실패_방의_주인인데_다른_참여자가_남은_경우() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User user2 = User.builder()
+                .email("user2@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomReqDto joinRoomReqDto = JoinRoomReqDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomReqDto);
+
+        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(OwnerCanNotLeaveException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomReqDto));
+    }
+
+    @Test
+    @DisplayName("leaveRoomTest_실패_방의_주인인데_혼자_남은_경우")
+    void leaveRoomTest_실패_방의_주인인데_혼자_남은_경우() {
+        //given
+        User user1 = User.builder()
+                .email("user1@gmail.com")
+                .password("password1")
+                .role(Role.ROLE_USER)
+                .build();
+        User roomOwner = userRepository.save(user1);
+
+        CreateRoomReqDto createRoomReqDto = CreateRoomReqDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomReqDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        LeaveRoomReqDto leaveRoomReqDto = LeaveRoomReqDto.testBuilder()
+                .roomId(room.get().getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(AlertLeaveRoomException.class, () -> roomService.leaveRoom(roomOwner.getEmail(), leaveRoomReqDto));
     }
 }
