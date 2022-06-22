@@ -30,4 +30,12 @@ public class User extends BaseEntity {
         this.password = password;
         this.role = role;
     }
+
+    public static User of(String email, String password, Role role) {
+        return User.builder()
+                .email(email)
+                .password(password)
+                .role(role)
+                .build();
+    }
 }

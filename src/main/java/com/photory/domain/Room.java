@@ -42,4 +42,15 @@ public class Room extends BaseEntity {
         this.participantsCount = participantsCount;
         this.status = status;
     }
+
+    public static Room of(String code, User ownerUser, String title, String password, int participantsCount, Boolean status) {
+        return Room.builder()
+                .code(code)
+                .ownerUser(ownerUser)
+                .title(title)
+                .password(password)
+                .participantsCount(participantsCount)
+                .status(status)
+                .build();
+    }
 }

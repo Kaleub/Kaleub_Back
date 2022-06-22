@@ -33,4 +33,13 @@ public class Feed extends BaseEntity {
         this.title = title;
         this.content = content;
     }
+
+    public static Feed of(Room room, User user, String title, String content) {
+        return Feed.builder()
+                .room(room)
+                .user(user)
+                .title(title)
+                .content(content)
+                .build();
+    }
 }
