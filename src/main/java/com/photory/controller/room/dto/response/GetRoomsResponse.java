@@ -1,5 +1,6 @@
 package com.photory.controller.room.dto.response;
 
+import com.photory.common.dto.AuditingTimeResponse;
 import com.photory.domain.room.Room;
 import com.photory.common.util.DateUtil;
 import lombok.*;
@@ -7,7 +8,7 @@ import lombok.*;
 @ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GetRoomsResponse {
+public class GetRoomsResponse extends AuditingTimeResponse {
 
     private Long id;
     private String code;
@@ -16,11 +17,9 @@ public class GetRoomsResponse {
     private String password;
     private int participantsCount;
     private Boolean status;
-    private long createdTimeInterval;
-    private long modifiedTimeInterval;
 
     @Builder
-    public GetRoomsResponse(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status, long createdTimeInterval, long modifiedTimeInterval) {
+    public GetRoomsResponse(Long id, String code, String ownerEmail, String title, String password, int participantsCount, Boolean status) {
         this.id = id;
         this.code = code;
         this.ownerEmail = ownerEmail;
@@ -28,8 +27,6 @@ public class GetRoomsResponse {
         this.password = password;
         this.participantsCount = participantsCount;
         this.status = status;
-        this.createdTimeInterval = createdTimeInterval;
-        this.modifiedTimeInterval = modifiedTimeInterval;
     }
 
     public static GetRoomsResponse of(Room room) {
@@ -41,9 +38,8 @@ public class GetRoomsResponse {
                 .password(room.getPassword())
                 .participantsCount(room.getParticipantsCount())
                 .status(room.getStatus())
-                .createdTimeInterval(DateUtil.convertToTimeInterval(room.getCreatedDate()))
-                .modifiedTimeInterval(DateUtil.convertToTimeInterval(room.getModifiedDate()))
                 .build();
+        response.setBaseTime(room);
         return response;
     }
 }

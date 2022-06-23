@@ -1,6 +1,6 @@
 package com.photory.domain.participate;
 
-import com.photory.domain.common.BaseEntity;
+import com.photory.domain.common.AuditingTimeEntity;
 import com.photory.domain.user.User;
 import com.photory.domain.room.Room;
 import lombok.AccessLevel;
@@ -14,7 +14,11 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Participate extends BaseEntity {
+public class Participate extends AuditingTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name="ROOM_ID")

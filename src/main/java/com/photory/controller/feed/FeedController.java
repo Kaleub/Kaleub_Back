@@ -42,14 +42,14 @@ public class FeedController {
     }
 
     @PutMapping
-    public ApiResponse<ModifyFeedResponse> modifyFeed(@RequestBody @Valid ModifyFeedRequestDto modifyFeedRequestDto, @UserEmail String userEmail) {
-        ModifyFeedResponse modifyFeedResponse = feedService.modifyFeed(userEmail, modifyFeedRequestDto);
+    public ApiResponse<ModifyFeedResponse> modifyFeed(@RequestBody @Valid ModifyFeedRequestDto request, @UserEmail String userEmail) {
+        ModifyFeedResponse modifyFeedResponse = feedService.modifyFeed(userEmail, request);
         return ApiResponse.success(modifyFeedResponse);
     }
 
     @DeleteMapping
-    public ApiResponse<String> deleteFeed(@RequestBody @Valid DeleteFeedRequestDto deleteFeedRequestDto, @UserEmail String userEmail) {
-        feedService.deleteFeed(userEmail, deleteFeedRequestDto);
+    public ApiResponse<String> deleteFeed(@RequestBody @Valid DeleteFeedRequestDto request, @UserEmail String userEmail) {
+        feedService.deleteFeed(userEmail, request);
         return ApiResponse.SUCCESS;
     }
 }
