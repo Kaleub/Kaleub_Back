@@ -1,6 +1,6 @@
 package com.photory.domain.room;
 
-import com.photory.domain.common.BaseEntity;
+import com.photory.domain.common.AuditingTimeEntity;
 import com.photory.domain.user.User;
 import lombok.*;
 
@@ -10,7 +10,11 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Room extends BaseEntity {
+public class Room extends AuditingTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 20)
     private String code;

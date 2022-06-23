@@ -1,6 +1,6 @@
 package com.photory.domain.feed;
 
-import com.photory.domain.common.BaseEntity;
+import com.photory.domain.common.AuditingTimeEntity;
 import com.photory.domain.user.User;
 import com.photory.domain.room.Room;
 import lombok.*;
@@ -11,7 +11,11 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Feed extends BaseEntity {
+public class Feed extends AuditingTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name="ROOM_ID")

@@ -1,6 +1,6 @@
 package com.photory.domain.feedimage;
 
-import com.photory.domain.common.BaseEntity;
+import com.photory.domain.common.AuditingTimeEntity;
 import com.photory.domain.feed.Feed;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,7 +13,11 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FeedImage extends BaseEntity {
+public class FeedImage extends AuditingTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name="FEED_ID")
