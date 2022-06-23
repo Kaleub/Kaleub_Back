@@ -22,20 +22,20 @@ public class RoomController {
 
     @PostMapping
     public ApiResponse<CreateRoomResponse> createRoom(@RequestBody @Valid CreateRoomRequestDto request, @UserEmail String userEmail) {
-        CreateRoomResponse createRoomResponse = roomService.createRoom(userEmail, request);
-        return ApiResponse.success(createRoomResponse);
+        CreateRoomResponse response = roomService.createRoom(userEmail, request);
+        return ApiResponse.success(response);
     }
 
     @PostMapping("/participate")
     public ApiResponse<JoinRoomResponse> joinRoom(@RequestBody JoinRoomRequestDto request, @UserEmail String userEmail) {
-        JoinRoomResponse joinRoomResponse = roomService.joinRoom(userEmail, request);
-        return ApiResponse.success(joinRoomResponse);
+        JoinRoomResponse response = roomService.joinRoom(userEmail, request);
+        return ApiResponse.success(response);
     }
 
     @GetMapping
     public ApiResponse<ArrayList<GetRoomsResponse>> getRooms(@UserEmail String userEmail) {
-        ArrayList<GetRoomsResponse> getRoomsResponses = roomService.getRooms(userEmail);
-        return ApiResponse.success(getRoomsResponses);
+        ArrayList<GetRoomsResponse> response = roomService.getRooms(userEmail);
+        return ApiResponse.success(response);
     }
 
     @DeleteMapping("/participate")

@@ -45,8 +45,8 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ApiResponse<String> signinUser(@RequestBody SigninUserRequestDto request) {
-        String token = authService.signinUser(request);
-        return ApiResponse.success(token);
+        String response = authService.signinUser(request);
+        return ApiResponse.success(response);
     }
 
     @GetMapping("/check")
