@@ -80,13 +80,14 @@ public class AuthService {
     public void createUser(CreateUserRequestDto createUserRequestDto) {
         String email = createUserRequestDto.getEmail();
         String password = createUserRequestDto.getPassword();
+        String nickname = createUserRequestDto.getNickname();
 
         if (userRepository.existsByEmail(email)) {
             throw new ConflictException(String.format("이미 가입된 유저의 이메일 (%s) 입니다.", email), CONFLICT_USER_EXCEPTION);
         }
 
 //       if (redisUtil.getData(email) != null && redisUtil.getData(email).compareTo("1") == 0) {
-        User user = User.of(email, passwordEncoder.encode(password), UserRole.ROLE_USER);
+        User user = User.of(email, passwordEncoder.encode(password), nickname, null, UserRole.ROLE_USER);
 
         userRepository.save(user);
 //        } else {
