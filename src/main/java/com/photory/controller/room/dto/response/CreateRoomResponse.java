@@ -2,7 +2,6 @@ package com.photory.controller.room.dto.response;
 
 import com.photory.common.dto.AuditingTimeResponse;
 import com.photory.domain.room.Room;
-import com.photory.common.util.DateUtil;
 import lombok.*;
 
 @ToString

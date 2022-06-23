@@ -24,21 +24,31 @@ public class User extends AuditingTimeEntity {
     @Column(nullable = false, length = 100)
     private String password;
 
+    @Column(nullable = false, length = 10)
+    private String nickname;
+
+    @Column
+    private String imageUrl;
+
     @Column(nullable = false, length = 20)
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
 
     @Builder
-    public User(String email, String password, UserRole role) {
+    public User(String email, String password, String nickname, String imageUrl, UserRole role) {
         this.email = email;
         this.password = password;
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
         this.role = role;
     }
 
-    public static User of(String email, String password, UserRole role) {
+    public static User of(String email, String password, String nickname, String imageUrl, UserRole role) {
         return User.builder()
                 .email(email)
                 .password(password)
+                .nickname(nickname)
+                .imageUrl(imageUrl)
                 .role(role)
                 .build();
     }

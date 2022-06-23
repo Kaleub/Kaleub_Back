@@ -33,9 +33,9 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final JavaMailSender javaMailSender;
 
-    public void validateEmail(ValidateEmailRequestDto validateEmailRequestDto) {
+    public void validateEmail(ValidateEmailRequestDto request) {
 
-        String email = validateEmailRequestDto.getEmail();
+        String email = request.getEmail();
 
         boolean emailDuplicate = userRepository.existsByEmail(email);
 
@@ -44,9 +44,9 @@ public class AuthService {
         }
     }
 
-    public void authEmail(AuthEmailRequestDto authEmailRequestDto) {
+    public void authEmail(AuthEmailRequestDto request) {
 
-        String email = authEmailRequestDto.getEmail();
+        String email = request.getEmail();
 
         if (userRepository.existsByEmail(email)) {
             throw new ConflictException(String.format("이미 가입된 유저의 이메일 (%s) 입니다.", email), CONFLICT_USER_EXCEPTION);
@@ -62,12 +62,12 @@ public class AuthService {
         sendAuthEmail(email, authKey);
     }
 
-    public void authEmailComplete(AuthEmailCompleteRequestDto authEmailCompleteRequestDto) {
+    public void authEmailComplete(AuthEmailCompleteRequestDto request) {
 
-        String email = redisUtil.getData(authEmailCompleteRequestDto.getAuthKey());
+        String email = redisUtil.getData(request.getAuthKey());
 
         try {
-            if (!email.equals(authEmailCompleteRequestDto.getEmail())) {
+            if (!email.equals(request.getEmail())) {
                 throw new ValidationException("잘못된 이메일 인증번호입니다.", VALIDATION_EMAIL_AUTH_KEY_EXCEPTION);
             }
         } catch (NullPointerException e) {
@@ -77,16 +77,17 @@ public class AuthService {
         redisUtil.setDataExpire(email, "1", 60 * 60 * 24L);
     }
 
-    public void createUser(CreateUserRequestDto createUserRequestDto) {
-        String email = createUserRequestDto.getEmail();
-        String password = createUserRequestDto.getPassword();
+    public void createUser(CreateUserRequestDto request) {
+        String email = request.getEmail();
+        String password = request.getPassword();
+        String nickname = request.getNickname();
 
         if (userRepository.existsByEmail(email)) {
             throw new ConflictException(String.format("이미 가입된 유저의 이메일 (%s) 입니다.", email), CONFLICT_USER_EXCEPTION);
         }
 
 //       if (redisUtil.getData(email) != null && redisUtil.getData(email).compareTo("1") == 0) {
-        User user = User.of(email, passwordEncoder.encode(password), UserRole.ROLE_USER);
+        User user = User.of(email, passwordEncoder.encode(password), nickname, null, UserRole.ROLE_USER);
 
         userRepository.save(user);
 //        } else {
@@ -94,10 +95,10 @@ public class AuthService {
 //        }
     }
 
-    public String signinUser(SigninUserRequestDto signinUserRequestDto) {
+    public String signinUser(SigninUserRequestDto request) {
 
-        String email = signinUserRequestDto.getEmail();
-        String password = signinUserRequestDto.getPassword();
+        String email = request.getEmail();
+        String password = request.getPassword();
 
         Optional<User> user = userRepository.findByEmail(email);
 

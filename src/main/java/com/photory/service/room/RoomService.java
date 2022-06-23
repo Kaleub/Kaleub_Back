@@ -33,9 +33,9 @@ public class RoomService {
     private final ParticipateRepository participateRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CreateRoomResponse createRoom(String userEmail, CreateRoomRequestDto createRoomRequestDto) {
-        String title = createRoomRequestDto.getTitle();
-        String password = createRoomRequestDto.getPassword();
+    public CreateRoomResponse createRoom(String userEmail, CreateRoomRequestDto request) {
+        String title = request.getTitle();
+        String password = request.getPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
@@ -47,14 +47,14 @@ public class RoomService {
 
         participateRepository.save(participate);
 
-        CreateRoomResponse createRoomResponse = CreateRoomResponse.of(created);
+        CreateRoomResponse response = CreateRoomResponse.of(created);
 
-        return createRoomResponse;
+        return response;
     }
 
-    public JoinRoomResponse joinRoom(String userEmail, JoinRoomRequestDto joinRoomRequestDto) {
-        String code = joinRoomRequestDto.getCode();
-        String password = joinRoomRequestDto.getPassword();
+    public JoinRoomResponse joinRoom(String userEmail, JoinRoomRequestDto request) {
+        String code = request.getCode();
+        String password = request.getPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
@@ -76,9 +76,9 @@ public class RoomService {
                     room.get().setParticipantsCount(room.get().getParticipantsCount() + 1);
                     roomRepository.save(room.get());
 
-                    JoinRoomResponse joinRoomResponse = JoinRoomResponse.of(room.get());
+                    JoinRoomResponse response = JoinRoomResponse.of(room.get());
 
-                    return joinRoomResponse;
+                    return response;
                 }
             } else {
                 throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
@@ -98,18 +98,18 @@ public class RoomService {
             rooms.add(participates.get(i).getRoom());
         }
 
-        ArrayList<GetRoomsResponse> getRoomsResponses = new ArrayList<>();
+        ArrayList<GetRoomsResponse> response = new ArrayList<>();
         rooms.forEach((room -> {
             GetRoomsResponse getRoomsResponse = GetRoomsResponse.of(room);
 
-            getRoomsResponses.add(getRoomsResponse);
+            response.add(getRoomsResponse);
         }));
 
-        return getRoomsResponses;
+        return response;
     }
 
-    public void leaveRoom(String userEmail, LeaveRoomRequestDto leaveRoomRequestDto) {
-        Long roomId = leaveRoomRequestDto.getRoomId();
+    public void leaveRoom(String userEmail, LeaveRoomRequestDto request) {
+        Long roomId = request.getRoomId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
@@ -141,8 +141,8 @@ public class RoomService {
         }
     }
 
-    public void disableRoom(String userEmail, DisableRoomRequestDto disableRoomRequestDto) {
-        Long roomId = disableRoomRequestDto.getRoomId();
+    public void disableRoom(String userEmail, DisableRoomRequestDto request) {
+        Long roomId = request.getRoomId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
@@ -165,9 +165,9 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    public void deleteUserForce(String userEmail, DeleteUserForceRequestDto deleteUserForceRequestDto) {
-        Long deletedUserId = deleteUserForceRequestDto.getDeletedUserId();
-        Long roomId = deleteUserForceRequestDto.getRoomId();
+    public void deleteUserForce(String userEmail, DeleteUserForceRequestDto request) {
+        Long deletedUserId = request.getDeletedUserId();
+        Long roomId = request.getRoomId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Optional<User> deletedUser = userRepository.findById(deletedUserId);
@@ -197,10 +197,10 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    public void modifyRoomPassword(String userEmail, ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto) {
-        Long roomId = modifyRoomPasswordRequestDto.getRoomId();
-        String beforePassword = modifyRoomPasswordRequestDto.getBeforePassword();
-        String afterPassword = modifyRoomPasswordRequestDto.getAfterPassword();
+    public void modifyRoomPassword(String userEmail, ModifyRoomPasswordRequestDto request) {
+        Long roomId = request.getRoomId();
+        String beforePassword = request.getBeforePassword();
+        String afterPassword = request.getAfterPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
@@ -222,9 +222,9 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    public void delegateOwner(String userEmail, DelegateOwnerRequestDto delegateOwnerRequestDto) {
-        Long roomId = delegateOwnerRequestDto.getRoomId();
-        Long delegatedUserId = delegateOwnerRequestDto.getDelegatedUserId();
+    public void delegateOwner(String userEmail, DelegateOwnerRequestDto request) {
+        Long roomId = request.getRoomId();
+        Long delegatedUserId = request.getDelegatedUserId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
         Optional<User> delegatedUser = userRepository.findById(delegatedUserId);

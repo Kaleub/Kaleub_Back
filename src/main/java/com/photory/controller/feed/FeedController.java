@@ -37,14 +37,14 @@ public class FeedController {
 
     @GetMapping("/{feedId}")
     public ApiResponse<GetFeedResponse> getFeed(@PathVariable("feedId") @Valid Long feedId, @UserEmail String userEmail) {
-        GetFeedResponse getFeedResponse = feedService.getFeed(userEmail, feedId);
-        return ApiResponse.success(getFeedResponse);
+        GetFeedResponse response = feedService.getFeed(userEmail, feedId);
+        return ApiResponse.success(response);
     }
 
     @PutMapping
     public ApiResponse<ModifyFeedResponse> modifyFeed(@RequestBody @Valid ModifyFeedRequestDto request, @UserEmail String userEmail) {
-        ModifyFeedResponse modifyFeedResponse = feedService.modifyFeed(userEmail, request);
-        return ApiResponse.success(modifyFeedResponse);
+        ModifyFeedResponse response = feedService.modifyFeed(userEmail, request);
+        return ApiResponse.success(response);
     }
 
     @DeleteMapping

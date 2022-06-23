@@ -82,16 +82,16 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        GetFeedResponse getFeedResponse = GetFeedResponse.of(feed.get(), imageUrls);
+        GetFeedResponse response = GetFeedResponse.of(feed.get(), imageUrls);
 
-        return getFeedResponse;
+        return response;
     }
 
-    public ModifyFeedResponse modifyFeed(String userEmail, ModifyFeedRequestDto modifyFeedRequestDto) {
+    public ModifyFeedResponse modifyFeed(String userEmail, ModifyFeedRequestDto request) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
-        Long feedId = modifyFeedRequestDto.getFeedId();
-        String title = modifyFeedRequestDto.getTitle();
-        String content = modifyFeedRequestDto.getContent();
+        Long feedId = request.getFeedId();
+        String title = request.getTitle();
+        String content = request.getContent();
 
         Optional<Feed> feed = feedRepository.findById(feedId);
         if (feed.isEmpty()) {
@@ -114,14 +114,14 @@ public class FeedService {
             imageUrls.add(imageUrls.size(), image.getImageUrl());
         });
 
-        ModifyFeedResponse modifyFeedResponse = ModifyFeedResponse.of(modified, imageUrls);
+        ModifyFeedResponse response = ModifyFeedResponse.of(modified, imageUrls);
 
-        return modifyFeedResponse;
+        return response;
     }
 
-    public void deleteFeed(String userEmail, DeleteFeedRequestDto deleteFeedRequestDto) {
+    public void deleteFeed(String userEmail, DeleteFeedRequestDto request) {
         User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
-        Long feedId = deleteFeedRequestDto.getFeedId();
+        Long feedId = request.getFeedId();
 
         Optional<Feed> feed = feedRepository.findById(feedId);
         if (feed.isEmpty()) {
