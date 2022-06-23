@@ -54,11 +54,7 @@ public class RoomServiceTest {
     @DisplayName("createRoomTest_성공")
     void createRoomTest_성공() {
         //given
-        User user = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User saved = userRepository.save(user);
 
         CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
@@ -86,16 +82,8 @@ public class RoomServiceTest {
     @DisplayName("joinRoomTest_성공")
     void joinRoomTest_성공() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -129,16 +117,8 @@ public class RoomServiceTest {
     @DisplayName("joinRoomTest_실패_없는_방_코드")
     void joinRoomTest_실패_없는_방_코드() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -163,16 +143,8 @@ public class RoomServiceTest {
     @DisplayName("joinRoomTest_실패_틀린_비밀번호")
     void joinRoomTest_실패_틀린_비밀번호() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -198,51 +170,16 @@ public class RoomServiceTest {
     @DisplayName("joinRoomTest_실패_최대_인원_초과")
     void joinRoomTest_실패_최대_인원_초과() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user3 = User.builder()
-                .email("user3@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user4 = User.builder()
-                .email("user4@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user5 = User.builder()
-                .email("user5@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user6 = User.builder()
-                .email("user6@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user7 = User.builder()
-                .email("user7@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user8 = User.builder()
-                .email("user8@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user9 = User.builder()
-                .email("user9@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user3 = User.of("user3@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user4 = User.of("user4@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user5 = User.of("user5@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user6 = User.of("user6@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user7 = User.of("user7@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user8 = User.of("user8@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user9 = User.of("user9@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+
         User roomOwner = userRepository.save(user1);
         User notOwner1 = userRepository.save(user2);
         User notOwner2 = userRepository.save(user3);
@@ -282,11 +219,7 @@ public class RoomServiceTest {
     @DisplayName("joinRoomTest_실패_이미_참가중인_방")
     void joinRoomTest_실패_이미_참가중인_방() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
 
         CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
@@ -311,16 +244,8 @@ public class RoomServiceTest {
     @DisplayName("leaveRoomTest_성공")
     void leaveRoomTest_성공() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -359,16 +284,8 @@ public class RoomServiceTest {
     @DisplayName("leaveRoomTest_실패_참가중인_방이_아닌_경우")
     void leaveRoomTest_실패_참가중인_방이_아닌_경우() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -393,16 +310,8 @@ public class RoomServiceTest {
     @DisplayName("leaveRoomTest_실패_방의_주인인데_다른_참여자가_남은_경우")
     void leaveRoomTest_실패_방의_주인인데_다른_참여자가_남은_경우() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -434,11 +343,7 @@ public class RoomServiceTest {
     @DisplayName("leaveRoomTest_실패_방의_주인인데_혼자_남은_경우")
     void leaveRoomTest_실패_방의_주인인데_혼자_남은_경우() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
 
         CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
@@ -462,11 +367,7 @@ public class RoomServiceTest {
     @DisplayName("disableRoomTest_성공")
     void disableRoomTest_성공() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
 
         CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
@@ -495,16 +396,8 @@ public class RoomServiceTest {
     @DisplayName("disableRoomTest_실패_방장이_아닌_경우")
     void disableRoomTest_실패_방장이_아닌_경우() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -536,16 +429,8 @@ public class RoomServiceTest {
     @DisplayName("disableRoomTest_실패_다른_참가자가_남은_경우")
     void disableRoomTest_실패_다른_참가자가_남은_경우() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -577,11 +462,7 @@ public class RoomServiceTest {
     @DisplayName("modifyRoomPasswordTest_성공")
     void modifyRoomPasswordTest_성공() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
 
         CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
@@ -612,16 +493,8 @@ public class RoomServiceTest {
     @DisplayName("modifyRoomPasswordTest_실패_방장이_아닌_경우")
     void modifyRoomPasswordTest_실패_방장이_아닌_경우() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
-        User user2 = User.builder()
-                .email("user2@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
         User notOwner = userRepository.save(user2);
 
@@ -655,11 +528,7 @@ public class RoomServiceTest {
     @DisplayName("modifyRoomPasswordTest_실패_비밀번호_틀린_경우")
     void modifyRoomPasswordTest_실패_비밀번호_틀린_경우() {
         //given
-        User user1 = User.builder()
-                .email("user1@gmail.com")
-                .password("password1")
-                .role(UserRole.ROLE_USER)
-                .build();
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User roomOwner = userRepository.save(user1);
 
         CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
