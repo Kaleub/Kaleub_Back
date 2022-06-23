@@ -129,7 +129,7 @@ public class FeedService {
         }
 
         //피드 작성자 아니면 삭제 불가능
-        if (feed.get().getUser() != user) {
+        if (feed.get().getUser().getId() != user.getId()) {
             throw new ForbiddenException(String.format("유저 (%s) 는 피드 (%s) 의 작성자가 아닙니다.", user.getId(), feedId), FORBIDDEN_FEED_OWNER_EXCEPTION);
         }
 
