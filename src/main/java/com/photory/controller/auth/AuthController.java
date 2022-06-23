@@ -2,7 +2,6 @@ package com.photory.controller.auth;
 
 import com.photory.common.dto.ApiResponse;
 import com.photory.controller.auth.dto.request.*;
-import com.photory.controller.auth.dto.response.SigninUserResponse;
 import com.photory.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +44,9 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ApiResponse<SigninUserResponse> signinUser(@RequestBody SigninUserRequestDto signinUserRequestDto) {
-        SigninUserResponse signinUserResponse = authService.signinUser(signinUserRequestDto);
-        return ApiResponse.success(signinUserResponse);
+    public ApiResponse<String> signinUser(@RequestBody SigninUserRequestDto signinUserRequestDto) {
+        String token = authService.signinUser(signinUserRequestDto);
+        return ApiResponse.success(token);
     }
 
     @GetMapping("/check")

@@ -6,7 +6,6 @@ import com.photory.common.exception.model.NotFoundException;
 import com.photory.common.exception.model.ValidationException;
 import com.photory.controller.auth.dto.request.*;
 import com.photory.domain.user.UserRole;
-import com.photory.controller.auth.dto.response.SigninUserResponse;
 import com.photory.domain.user.User;
 import com.photory.domain.user.repository.UserRepository;
 import com.photory.common.util.JwtUtil;
@@ -95,7 +94,7 @@ public class AuthService {
 //        }
     }
 
-    public SigninUserResponse signinUser(SigninUserRequestDto signinUserRequestDto) {
+    public String signinUser(SigninUserRequestDto signinUserRequestDto) {
 
         String email = signinUserRequestDto.getEmail();
         String password = signinUserRequestDto.getPassword();
@@ -105,9 +104,8 @@ public class AuthService {
         if (user.isPresent()) {
             if (passwordEncoder.matches(password, user.get().getPassword())) {
                 String token = createToken(user.get());
-                SigninUserResponse signinUserResponse = SigninUserResponse.of(token);
 
-                return signinUserResponse;
+                return token;
             } else {
                 throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
             }
