@@ -180,12 +180,6 @@ public class RoomService {
             throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
         }
 
-        //참가 방이 아니면 강퇴시킬 수 없음
-        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room, user);
-        if (participatingOwner.isEmpty()) {
-            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", user.getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
-        }
-
         //방에 참가하지 않은 사용자 강퇴시킬 수 없음
         Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, deletedUser.get());
         if (participatingUser.isEmpty()) {
@@ -235,12 +229,6 @@ public class RoomService {
         // 방장이 아니면 방장 변경 불가능
         if (user.getId() != ownerUser.getId()) {
             throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
-        }
-
-        //참가한 방이 아니면 위임 불가능
-        Optional<Participate> participatingOwner = participateRepository.findByRoomAndUser(room, user);
-        if (participatingOwner.isEmpty()) {
-            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", user.getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
 
         //위임하려는 사용자가 방에 없으면 위임 불가

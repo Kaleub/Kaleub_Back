@@ -4,10 +4,15 @@ import lombok.*;
 
 @ToString
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeleteUserForceRequestDto {
 
     private Long roomId;
     private Long deletedUserId;
+
+    @Builder(builderMethodName = "testBuilder")
+    public DeleteUserForceRequestDto(Long roomId, Long deletedUserId) {
+        this.roomId = roomId;
+        this.deletedUserId = deletedUserId;
+    }
 }
