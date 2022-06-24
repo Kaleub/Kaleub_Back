@@ -2,6 +2,9 @@ package com.photory.service.feed;
 
 import com.photory.common.exception.model.ForbiddenException;
 import com.photory.common.exception.model.NotFoundException;
+import com.photory.controller.feed.dto.response.GetFeedsResponse;
+import com.photory.domain.collection.FeedImageCollection;
+import com.photory.domain.common.collection.ScrollPaginationCollection;
 import com.photory.domain.feed.Feed;
 import com.photory.domain.feed.repository.FeedRepository;
 import com.photory.domain.feedimage.FeedImage;
@@ -18,6 +21,8 @@ import com.photory.controller.feed.dto.response.ModifyFeedResponse;
 import com.photory.controller.feed.dto.response.GetFeedResponse;
 import com.photory.service.image.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,6 +88,20 @@ public class FeedService {
         });
 
         GetFeedResponse response = GetFeedResponse.of(feed.get(), imageUrls);
+
+        return response;
+    }
+
+    public GetFeedsResponse getFeeds(String userEmail, Long roomId, int size, Long lastFeedId) {
+        User user = FeedServiceUtils.findUserByEmail(userRepository, userEmail);
+        Room room = FeedServiceUtils.findRoomByRoomId(roomRepository, roomId);
+
+        PageRequest pageRequest = PageRequest.of(0, size + 1);
+        Page<Feed> page = feedRepository.findAllByUserAndRoomAndIdLessThanOrderByIdDesc(user, room, lastFeedId, pageRequest);
+        List<Feed> feeds = page.getContent();
+
+        ScrollPaginationCollection<Feed> feedsCursor = ScrollPaginationCollection.of(feeds, size);
+        GetFeedsResponse response = GetFeedsResponse.of(feedsCursor, FeedImageCollection.of(feeds, feedImageRepository), feedRepository.countAllByUserAndRoom(user, room));
 
         return response;
     }
