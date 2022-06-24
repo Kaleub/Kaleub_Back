@@ -4,6 +4,7 @@ import com.photory.common.dto.ApiResponse;
 import com.photory.config.resolver.UserEmail;
 import com.photory.controller.feed.dto.request.DeleteFeedRequestDto;
 import com.photory.controller.feed.dto.request.ModifyFeedRequestDto;
+import com.photory.controller.feed.dto.response.GetFeedsResponse;
 import com.photory.controller.feed.dto.response.ModifyFeedResponse;
 import com.photory.controller.feed.dto.response.GetFeedResponse;
 import com.photory.service.feed.FeedService;
@@ -33,6 +34,15 @@ public class FeedController {
     ) {
         feedService.createFeed(userEmail, images, roomId, title, content);
         return ApiResponse.SUCCESS;
+    }
+
+    @GetMapping
+    public ApiResponse<GetFeedsResponse> getFeeds(@RequestParam Long roomId,
+                                                  @RequestParam int size,
+                                                  @RequestParam Long lastFeedId,
+                                                  @UserEmail String userEmail) {
+        GetFeedsResponse response = feedService.getFeeds(userEmail, roomId, size, lastFeedId);
+        return ApiResponse.success(response);
     }
 
     @GetMapping("/{feedId}")
