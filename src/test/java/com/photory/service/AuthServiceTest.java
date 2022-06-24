@@ -1,10 +1,11 @@
 package com.photory.service;
 
+import com.photory.common.exception.model.ConflictException;
 import com.photory.common.exception.model.NotFoundException;
 import com.photory.common.exception.model.ValidationException;
 import com.photory.common.util.JwtUtil;
-import com.photory.controller.auth.dto.request.CreateUserRequestDto;
-import com.photory.controller.auth.dto.request.SigninUserRequestDto;
+import com.photory.controller.auth.dto.request.*;
+import com.photory.controller.auth.dto.request.ValidateEmailRequestDto.ValidateEmailRequestDtoBuilder;
 import com.photory.domain.user.User;
 import com.photory.domain.user.UserRole;
 import com.photory.domain.user.repository.UserRepository;
@@ -47,26 +48,105 @@ class AuthServiceTest {
 
 
     @Test
-    public void 이메일중복_확인() {
+    @DisplayName("validateEmail_성공")
+    public void validateEmail_성공() {
+        //given
+        String email = "test@gmail.com";
+        ValidateEmailRequestDto dto = ValidateEmailRequestDto.testBuilder()
+                .email(email)
+                .build();
 
+        //when
+        authService.validateEmail(dto);
+        Optional<User> user = userRepository.findByEmail(email);
+
+        //then
+        assertThat(user).isEmpty();
     }
 
     @Test
-    public void 인증이메일_전송() {
+    @DisplayName("validateEmail_실패_중복이메일_입력한_경우")
+    public void validateEmail_실패_중복이메일_입력한_경우() {
+        //given
+        String email = "test@gmail.com";
+        User user = User.of(email, "1234", "kim", "imageUrl", UserRole.ROLE_USER);
+        userRepository.save(user);
+        ValidateEmailRequestDto dto = ValidateEmailRequestDto.testBuilder()
+                .email(email)
+                .build();
 
+        //when
+
+        //then
+        assertThrows(ConflictException.class, () -> authService.validateEmail(dto));
     }
 
     @Test
-    public void 인증이메일_완료() {
+    @DisplayName("authEmail_실패_중복이메일_입력한_경우")
+    public void authEmail_실패_중복이메일_입력한_경우() {
+        //given
+        String email = "test@gmail.com";
+        User user = User.of(email, "1234", "kim", "imageUrl", UserRole.ROLE_USER);
+        userRepository.save(user);
 
+        AuthEmailRequestDto dto = AuthEmailRequestDto.testBuilder()
+                .email(email)
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ConflictException.class, () -> authService.authEmail(dto));
     }
 
     @Test
-    public void createUser_() {
+    @DisplayName("authEmailComplete_성공")
+    public void authEmailComplete_성공() {
+        //given
+        String authKey = "123456";
+        String email = "test@gmail.com";
+        redisUtil.setDataExpire(authKey, email, 60 * 3L);
 
+        AuthEmailCompleteRequestDto dto = AuthEmailCompleteRequestDto.testBuilder()
+                .authKey(authKey)
+                .email(email)
+                .build();
+
+        //when
+        authService.authEmailComplete(dto);
+        String findEmail = redisUtil.getData(authKey);
+
+        //then
+        assertThat(findEmail).isEqualTo(email);
+    }
+
+    @Test
+    @DisplayName("authEmailComplete_실패_틀린_인증번호_입력한_경우")
+    public void authEmailComplete_실패_틀린_인증번호_입력한_경우() {
+        //given
+        String authKey = "123456";
+        String wrongAuthKey = "123457";
+        String email = "test@gmail.com";
+        redisUtil.setDataExpire(authKey, email, 60 * 3L);
+
+        AuthEmailCompleteRequestDto dto = AuthEmailCompleteRequestDto.testBuilder()
+                .authKey(wrongAuthKey)
+                .email(email)
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ValidationException.class, () -> authService.authEmailComplete(dto));
+    }
+
+    @Test
+    @DisplayName("createUser_성공")
+    public void createUser_성공() {
         //given
         String email = "heyazoo1007@gmail.com";
         String password = "12345";
+        String nickName = "nickname";
 
         //이메일 인증번호 저장
         redisUtil.setDataExpire(email, "1", 60 * 60 * 24L);
@@ -74,6 +154,7 @@ class AuthServiceTest {
         CreateUserRequestDto dto = CreateUserRequestDto.testBuilder()
                 .email(email)
                 .password(password)
+                .nickname(nickName)
                 .build();
 
         //when
@@ -83,6 +164,29 @@ class AuthServiceTest {
 
         //then
         assertThat(testEmail).isEqualTo(email);
+    }
+
+    @Test
+    @DisplayName("createUser_실패_중복으로_회원가입한_경우")
+    public void createUser_실패_중복으로_회원가입한_경우() {
+        //given
+        String email = "test@gmail.com";
+        String password = "password1234";
+        String nickName = "nickname";
+        User user = User.of(email, passwordEncoder.encode(password), nickName, null, UserRole.ROLE_USER);
+
+        userRepository.save(user);
+
+        CreateUserRequestDto dto = CreateUserRequestDto.testBuilder()
+                .email(email)
+                .password(password)
+                .nickname(nickName)
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ConflictException.class, () -> authService.createUser(dto));
     }
 
     @Test
