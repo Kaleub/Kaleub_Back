@@ -461,7 +461,7 @@ public class RoomServiceTest {
 
     @Test
     @DisplayName("deleteUserForce_성공")
-    public void deleteUserForce_성공() {
+    void deleteUserForce_성공() {
         //given
         User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
@@ -502,7 +502,7 @@ public class RoomServiceTest {
 
     @Test
     @DisplayName("deleteUserForce_실패_방장이_아닌_경우")
-    public void deleteUserForce_실패_방장이_아닌_경우() {
+    void deleteUserForce_실패_방장이_아닌_경우() {
         //given
         User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
@@ -536,7 +536,7 @@ public class RoomServiceTest {
 
    @Test
    @DisplayName("deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우")
-   public void deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우() {
+   void deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우() {
         //given
         User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
@@ -655,7 +655,7 @@ public class RoomServiceTest {
 
     @Test
     @DisplayName("delegateOwner_성공")
-    public void delegateOwner_성공() {
+    void delegateOwner_성공() {
         //given
         User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
@@ -691,7 +691,7 @@ public class RoomServiceTest {
 
     @Test
     @DisplayName("delegateOwner_실패_방장이_아닐때_위임_불가능한_경우")
-    public void delegateOwner_실패_방장이_아닐때_위임_불가능한_경우() {
+    void delegateOwner_실패_방장이_아닐때_위임_불가능한_경우() {
         //given
         User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
@@ -725,7 +725,7 @@ public class RoomServiceTest {
 
     @Test
     @DisplayName("delegateOwner_실패_방에_없는_사람_위임_불가능한_경우")
-    public void delegateOwner_실패_방에_없는_사람_위임_불가능한_경우() {
+    void delegateOwner_실패_방에_없는_사람_위임_불가능한_경우() {
         //given
         User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
