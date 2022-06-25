@@ -4,6 +4,7 @@ import com.photory.common.exception.model.ForbiddenException;
 import com.photory.common.exception.model.NotFoundException;
 import com.photory.controller.feed.dto.request.DeleteFeedRequestDto;
 import com.photory.controller.feed.dto.request.ModifyFeedRequestDto;
+import com.photory.controller.feed.dto.response.GetFeedResponse;
 import com.photory.controller.room.dto.request.CreateRoomRequestDto;
 import com.photory.controller.room.dto.request.JoinRoomRequestDto;
 import com.photory.domain.feed.Feed;
@@ -161,6 +162,160 @@ public class FeedServiceTest {
     }
 
     @Test
+    @DisplayName("getFeed_성공")
+    void getFeed_성공() throws IOException{
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User feedOwner = userRepository.save(user1);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+
+        roomService.createRoom(feedOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(feedOwner);
+
+        String fileName = "profile";
+        String contentType = "png";
+        String filePath = "src/test/resources/image/profile.png";
+        MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
+
+        String userEmail = feedOwner.getEmail();
+        Long roomId = room.get().getId();
+        String title = "제목";
+        String content = "내용";
+        List<MultipartFile> images = new ArrayList<>() {
+            {
+                add(mockMultipartFile);
+            }
+        };
+
+        feedService.createFeed(userEmail, images, roomId, title, content);
+
+        List<Feed> feeds = feedRepository.findAll();
+        Long feedId = feeds.get(0).getId();
+
+        //when
+        GetFeedResponse getFeedResponse = feedService.getFeed(feedOwner.getEmail(), feedId);
+
+        //then
+        List<FeedImage> findImages = feedImageRepository.findAll();
+        assertAll(
+
+                () -> assertEquals(getFeedResponse.getRoomId(), roomId),
+                () -> assertEquals(getFeedResponse.getUserId(), feedOwner.getId()),
+                () -> assertEquals(getFeedResponse.getTitle(), "제목"),
+                () -> assertEquals(getFeedResponse.getContent(), "내용"),
+                () -> assertThat(findImages).hasSize(1),
+                () -> assertEquals(getFeedResponse.getImageUrls().get(0), findImages.get(0).getImageUrl())
+        );
+    }
+
+    @Test
+    @DisplayName("getFeed_실패_존재하지않는_피드인_경우")
+    void getFeed_실패_존재하지않는_피드인_경우() throws IOException {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password2", "닉네임", null, UserRole.ROLE_USER);
+        User feedOwner = userRepository.save(user1);
+        User notFeedOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+
+        roomService.createRoom(feedOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(feedOwner);
+
+        String fileName = "profile";
+        String contentType = "png";
+        String filePath = "src/test/resources/image/profile.png";
+        MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
+
+        String userEmail = feedOwner.getEmail();
+        Long roomId = room.get().getId();
+        String title = "제목";
+        String content = "내용";
+        List<MultipartFile> images = new ArrayList<>() {
+            {
+                add(mockMultipartFile);
+            }
+        };
+
+        feedService.createFeed(userEmail, images, roomId, title, content);
+
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notFeedOwner.getEmail(), joinRoomRequestDto);
+
+        List<Feed> feeds = feedRepository.findAll();
+        Long feedId = feeds.get(0).getId();
+
+        DeleteFeedRequestDto deleteFeedRequestDto = DeleteFeedRequestDto.testBuilder()
+                .feedId(feedId)
+                .build();
+
+        feedService.deleteFeed(feedOwner.getEmail(), deleteFeedRequestDto);
+
+        //when
+
+        //then
+        assertAll(
+
+                () -> assertThrows(NotFoundException.class, () -> feedService.getFeed(feedOwner.getEmail(), feedId)),
+                () -> assertThrows(NotFoundException.class, () -> feedService.getFeed(notFeedOwner.getEmail(), feedId))
+        );
+    }
+
+    @Test
+    @DisplayName("getFeed_실패_참여중인_방이_아닌_경우")
+    void getFeed_실패_참여중인_방이_아닌_경우() throws IOException {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password2", "닉네임", null, UserRole.ROLE_USER);
+        User feedOwner = userRepository.save(user1);
+        User notInRoomUser = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+
+        roomService.createRoom(feedOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(feedOwner);
+
+        String fileName = "profile";
+        String contentType = "png";
+        String filePath = "src/test/resources/image/profile.png";
+        MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
+
+        String userEmail = feedOwner.getEmail();
+        Long roomId = room.get().getId();
+        String title = "제목";
+        String content = "내용";
+        List<MultipartFile> images = new ArrayList<>() {
+            {
+                add(mockMultipartFile);
+            }
+        };
+
+        feedService.createFeed(userEmail, images, roomId, title, content);
+
+        List<Feed> feeds = feedRepository.findAll();
+        Long feedId = feeds.get(0).getId();
+
+        //when
+
+        //then
+        assertThrows(ForbiddenException.class, () -> feedService.getFeed(notInRoomUser.getEmail(), feedId));
+    }
+
+    @Test
     @DisplayName("modifyFeedTest_성공")
     void modifyFeedTest_성공() throws IOException {
         //given
@@ -202,7 +357,7 @@ public class FeedServiceTest {
         feedService.modifyFeed(userEmail, modifyFeedRequestDto);
 
         //then
-        Optional<Feed> feed = feedRepository.findById(1L);
+        Optional<Feed> feed = feedRepository.findById(feeds.get(0).getId());
 
         assertAll(
                 () -> assertTrue(feed.isPresent()),
@@ -326,6 +481,159 @@ public class FeedServiceTest {
                 .feedId(feeds.get(0).getId())
                 .build();
         feedService.deleteFeed(feedOwner.getEmail(), deleteFeedRequestDto);
+    }
+
+    @Test
+    @DisplayName("deleteFeed_성공")
+    void deleteFeed_성공() throws IOException {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User feedOwner = userRepository.save(user1);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(feedOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(feedOwner);
+
+        String fileName = "profile";
+        String contentType = "png";
+        String filePath = "src/test/resources/image/profile.png";
+        MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
+
+        String userEmail = feedOwner.getEmail();
+        Long roomId = room.get().getId();
+        String title = "제목";
+        String content = "내용";
+        List<MultipartFile> images = new ArrayList<>() {
+            {
+                add(mockMultipartFile);
+            }
+        };
+
+        feedService.createFeed(userEmail, images, roomId, title, content);
+
+        List<Feed> feeds = feedRepository.findAll();
+        Long feedId = feeds.get(0).getId();
+
+        DeleteFeedRequestDto deleteFeedRequestDto = DeleteFeedRequestDto.testBuilder()
+                .feedId(feedId)
+                .build();
+
+        //when
+        feedService.deleteFeed(feedOwner.getEmail(), deleteFeedRequestDto);
+
+        //then
+        Optional<Feed> feed = feedRepository.findById(feedId);
+        assertTrue(feed.isEmpty());
+    }
+
+    @Test
+    @DisplayName("deleteFeed_실패_피드가_존재하지_않는_경우")
+    void deleteFeed_실패_피드가_존재하지_않는_경우() throws IOException {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User feedOwner = userRepository.save(user1);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(feedOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(feedOwner);
+
+        String fileName = "profile";
+        String contentType = "png";
+        String filePath = "src/test/resources/image/profile.png";
+        MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
+
+        String userEmail = feedOwner.getEmail();
+        Long roomId = room.get().getId();
+        String title = "제목";
+        String content = "내용";
+        List<MultipartFile> images = new ArrayList<>() {
+            {
+                add(mockMultipartFile);
+            }
+        };
+
+        feedService.createFeed(userEmail, images, roomId, title, content);
+
+        List<Feed> feeds = feedRepository.findAll();
+        Long feedId = feeds.get(0).getId();
+
+        DeleteFeedRequestDto deleteFeedRequestDto = DeleteFeedRequestDto.testBuilder()
+                .feedId(feedId)
+                .build();
+
+        feedService.deleteFeed(feedOwner.getEmail(), deleteFeedRequestDto);
+
+        DeleteFeedRequestDto deleteFeedRequestDtoWithId2 = DeleteFeedRequestDto.testBuilder()
+                .feedId(2L)
+                .build();
+
+        //when
+
+        //then
+        assertAll(
+
+                () -> assertThrows(NotFoundException.class, () -> feedService.deleteFeed(feedOwner.getEmail(), deleteFeedRequestDto)),
+                () -> assertThrows(NotFoundException.class, () -> feedService.deleteFeed(feedOwner.getEmail(), deleteFeedRequestDtoWithId2))
+        );
+    }
+
+    @Test
+    @DisplayName("deleteFeed_실패_피드주인이_아닌_경우")
+    void deleteFeed_실패_피드주인이_아닌_경우() throws IOException {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password2", "닉네임", null, UserRole.ROLE_USER);
+        User feedOwner = userRepository.save(user1);
+        User notFeedOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(feedOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(feedOwner);
+
+        String fileName = "profile";
+        String contentType = "png";
+        String filePath = "src/test/resources/image/profile.png";
+        MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
+
+        String userEmail = feedOwner.getEmail();
+        Long roomId = room.get().getId();
+        String title = "제목";
+        String content = "내용";
+        List<MultipartFile> images = new ArrayList<>() {
+            {
+                add(mockMultipartFile);
+            }
+        };
+
+        feedService.createFeed(userEmail, images, roomId, title, content);
+
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notFeedOwner.getEmail(), joinRoomRequestDto);
+
+        List<Feed> feeds = feedRepository.findAll();
+        Long feedId = feeds.get(0).getId();
+
+        DeleteFeedRequestDto deleteFeedRequestDto = DeleteFeedRequestDto.testBuilder()
+                .feedId(feedId)
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ForbiddenException.class, () -> feedService.deleteFeed(notFeedOwner.getEmail(), deleteFeedRequestDto));
     }
 
     private MockMultipartFile getMockMultipartFile(String fileName, String contentType, String path) throws IOException {
