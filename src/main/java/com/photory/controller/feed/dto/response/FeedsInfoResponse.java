@@ -14,14 +14,16 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FeedsInfoResponse extends AuditingTimeResponse {
 
-    private Long id;
+    private Long feedId;
+    private Long userId;
     private String title;
     private String content;
     private ArrayList<String> imageUrls;
 
     @Builder
-    public FeedsInfoResponse(Long id, String title, String content, ArrayList<String> imageUrls) {
-        this.id = id;
+    public FeedsInfoResponse(Long feedId, Long userId, String title, String content, ArrayList<String> imageUrls) {
+        this.feedId = feedId;
+        this.userId = userId;
         this.title = title;
         this.content = content;
         this.imageUrls = imageUrls;
@@ -33,7 +35,8 @@ public class FeedsInfoResponse extends AuditingTimeResponse {
             tmp.add(feedImage.getImageUrl());
         }
         FeedsInfoResponse response = FeedsInfoResponse.builder()
-                .id(feed.getId())
+                .feedId(feed.getId())
+                .userId(feed.getUser().getId())
                 .title(feed.getTitle())
                 .content(feed.getContent())
                 .imageUrls(tmp)

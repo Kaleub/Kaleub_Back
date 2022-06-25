@@ -97,11 +97,11 @@ public class FeedService {
         Room room = FeedServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
         PageRequest pageRequest = PageRequest.of(0, size + 1);
-        Page<Feed> page = feedRepository.findAllByUserAndRoomAndIdLessThanOrderByIdDesc(user, room, lastFeedId, pageRequest);
+        Page<Feed> page = feedRepository.findAllByRoomAndIdLessThanOrderByIdDesc(room, lastFeedId, pageRequest);
         List<Feed> feeds = page.getContent();
 
         ScrollPaginationCollection<Feed> feedsCursor = ScrollPaginationCollection.of(feeds, size);
-        GetFeedsResponse response = GetFeedsResponse.of(feedsCursor, FeedImageCollection.of(feeds, feedImageRepository), feedRepository.countAllByUserAndRoom(user, room));
+        GetFeedsResponse response = GetFeedsResponse.of(feedsCursor, FeedImageCollection.of(feeds, feedImageRepository), feedRepository.countAllByRoom(room));
 
         return response;
     }
