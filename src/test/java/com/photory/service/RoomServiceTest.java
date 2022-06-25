@@ -5,6 +5,7 @@ import com.photory.common.exception.model.ForbiddenException;
 import com.photory.common.exception.model.NotFoundException;
 import com.photory.common.exception.model.ValidationException;
 import com.photory.controller.room.dto.request.*;
+import com.photory.controller.room.dto.response.JoinRoomResponse;
 import com.photory.domain.user.UserRole;
 import com.photory.domain.participate.Participate;
 import com.photory.domain.room.Room;
@@ -459,6 +460,108 @@ public class RoomServiceTest {
     }
 
     @Test
+    @DisplayName("deleteUserForce_성공")
+    void deleteUserForce_성공() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
+
+        DeleteUserForceRequestDto deleteUserForceRequestDto = DeleteUserForceRequestDto.testBuilder()
+                .roomId(room.get().getId())
+                .deletedUserId(notOwner.getId())
+                .build();
+
+        //when
+        roomService.deleteUserForce(roomOwner.getEmail(), deleteUserForceRequestDto);
+
+        //then
+        Optional<Participate> participate = participateRepository.findByRoomAndUser(room.get(), notOwner);
+        Optional<Room> leftRoom = roomRepository.findById(deleteUserForceRequestDto.getRoomId());
+
+        assertAll(
+                () -> assertTrue(participate.isEmpty()),
+                () -> assertEquals(1, leftRoom.get().getParticipantsCount())
+        );
+    }
+
+    @Test
+    @DisplayName("deleteUserForce_실패_방장이_아닌_경우")
+    void deleteUserForce_실패_방장이_아닌_경우() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
+
+        DeleteUserForceRequestDto deleteUserForceRequestDto = DeleteUserForceRequestDto.testBuilder()
+                .roomId(room.get().getId())
+                .deletedUserId(notOwner.getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ForbiddenException.class, () -> roomService.deleteUserForce(notOwner.getEmail(), deleteUserForceRequestDto));
+    }
+
+   @Test
+   @DisplayName("deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우")
+   void deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notInRoom = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        DeleteUserForceRequestDto deleteUserForceRequestDto = DeleteUserForceRequestDto.testBuilder()
+                .roomId(room.get().getId())
+                .deletedUserId(notInRoom.getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ConflictException.class, () -> roomService.deleteUserForce(roomOwner.getEmail(), deleteUserForceRequestDto));
+    }
+
+    @Test
     @DisplayName("modifyRoomPasswordTest_성공")
     void modifyRoomPasswordTest_성공() {
         //given
@@ -548,5 +651,102 @@ public class RoomServiceTest {
 
         //then
         assertThrows(ValidationException.class, () -> roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordRequestDto));
+    }
+
+    @Test
+    @DisplayName("delegateOwner_성공")
+    void delegateOwner_성공() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
+
+        DelegateOwnerRequestDto delegateOwnerRequestDto = DelegateOwnerRequestDto.testBuilder()
+                .roomId(room.get().getId())
+                .delegatedUserId(notOwner.getId())
+                .build();
+
+        //when
+        roomService.delegateOwner(roomOwner.getEmail(), delegateOwnerRequestDto);
+
+        //then
+        Optional<Room> modifiedRoom = roomRepository.findByOwnerUser(notOwner);
+
+        assertThat(modifiedRoom.get().getId()).isEqualTo(room.get().getId());
+    }
+
+    @Test
+    @DisplayName("delegateOwner_실패_방장이_아닐때_위임_불가능한_경우")
+    void delegateOwner_실패_방장이_아닐때_위임_불가능한_경우() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
+
+        DelegateOwnerRequestDto delegateOwnerRequestDto = DelegateOwnerRequestDto.testBuilder()
+                .roomId(room.get().getId())
+                .delegatedUserId(roomOwner.getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ForbiddenException.class, () -> roomService.delegateOwner(notOwner.getEmail(), delegateOwnerRequestDto));
+    }
+
+    @Test
+    @DisplayName("delegateOwner_실패_방에_없는_사람_위임_불가능한_경우")
+    void delegateOwner_실패_방에_없는_사람_위임_불가능한_경우() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("제목")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        DelegateOwnerRequestDto delegateOwnerRequestDto = DelegateOwnerRequestDto.testBuilder()
+                .roomId(room.get().getId())
+                .delegatedUserId(notOwner.getId())
+                .build();
+
+        //when
+
+        //then
+        assertThrows(ConflictException.class, () -> roomService.delegateOwner(roomOwner.getEmail(), delegateOwnerRequestDto));
     }
 }

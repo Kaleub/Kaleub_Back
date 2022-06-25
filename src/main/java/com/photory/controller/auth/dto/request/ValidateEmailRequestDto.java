@@ -7,11 +7,15 @@ import javax.validation.constraints.NotNull;
 
 @ToString
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ValidateEmailRequestDto {
 
     @Email(message = "올바르지 않은 이메일 형식입니다.")
     @NotNull(message = "이메일은 필수 입력값입니다.")
     private String email;
+
+    @Builder(builderMethodName = "testBuilder")
+    public ValidateEmailRequestDto(@Email(message = "올바르지 않은 이메일 형식입니다.") @NotNull(message = "이메일은 필수 입력값입니다.") String email) {
+        this.email = email;
+    }
 }
