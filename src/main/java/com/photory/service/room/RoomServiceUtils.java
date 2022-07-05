@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.util.Optional;
 
 import static com.photory.common.exception.ErrorCode.NOT_FOUND_ROOM_EXCEPTION;
+import static com.photory.common.exception.ErrorCode.NOT_FOUND_USER_EXCEPTION;
 
 @NoArgsConstructor
 public class RoomServiceUtils {
@@ -20,6 +21,16 @@ public class RoomServiceUtils {
 
         if (user.isEmpty()) {
             throw new UnAuthorizedException("로그인 오류입니다.");
+        }
+
+        return user.get();
+    }
+
+    public static User findUserById(UserRepository userRepository, Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        if (user.isEmpty()) {
+            throw new NotFoundException(String.format("존재하지 않는 사용자 (%s) 입니다", userId), NOT_FOUND_USER_EXCEPTION);
         }
 
         return user.get();

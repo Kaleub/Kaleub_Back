@@ -170,7 +170,7 @@ public class RoomService {
         Long roomId = request.getRoomId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
-        Optional<User> deletedUser = userRepository.findById(deletedUserId);
+        User deletedUser = RoomServiceUtils.findUserById(userRepository, deletedUserId);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
         User ownerUser = room.getOwnerUser();
@@ -181,9 +181,9 @@ public class RoomService {
         }
 
         //방에 참가하지 않은 사용자 강퇴시킬 수 없음
-        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, deletedUser.get());
+        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, deletedUser);
         if (participatingUser.isEmpty()) {
-            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", deletedUser.get().getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
+            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", deletedUser.getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
 
         participateRepository.delete(participatingUser.get());
@@ -221,7 +221,7 @@ public class RoomService {
         Long delegatedUserId = request.getDelegatedUserId();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
-        Optional<User> delegatedUser = userRepository.findById(delegatedUserId);
+        User delegatedUser = RoomServiceUtils.findUserById(userRepository, delegatedUserId);
         Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
 
         User ownerUser = room.getOwnerUser();
@@ -232,12 +232,12 @@ public class RoomService {
         }
 
         //위임하려는 사용자가 방에 없으면 위임 불가
-        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, delegatedUser.get());
+        Optional<Participate> participatingUser = participateRepository.findByRoomAndUser(room, delegatedUser);
         if (participatingUser.isEmpty()) {
-            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", delegatedUser.get().getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
+            throw new ConflictException(String.format("유저 (%s) 는 이미 방 (%s) 을 나갔습니다.", delegatedUser.getId(), room.getId()), CONFLICT_LEAVE_ROOM_EXCEPTION);
         }
 
-        room.setOwnerUser(delegatedUser.get());
+        room.setOwnerUser(delegatedUser);
 
         roomRepository.save(room);
     }
