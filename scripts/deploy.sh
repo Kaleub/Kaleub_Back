@@ -21,10 +21,5 @@ fi
 
 DEPLOY_JAR=$DEPLOY_PATH$JAR_NAME
 
-echo $DEPLOY_JAR >> /home/ubuntu/photory/deploy.log
-echo $DEPLOY_PATH >> /home/ubuntu/photory/deploy.log
-echo $BUILD_JAR >> /home/ubuntu/photory/deploy.log
-echo JAR_NAME >> /home/ubuntu/photory/deploy.log
-
 echo "> DEPLOY_JAR 배포"    >> /home/ubuntu/photory/deploy.log
 nohup java -jar $DEPLOY_JAR >> /home/ubuntu/photory/deploy.log 2>/home/ubuntu/photory/deploy_err.log &
