@@ -577,7 +577,6 @@ public class RoomServiceTest {
 
         ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto = ModifyRoomPasswordRequestDto.testBuilder()
                 .roomId(room.get().getId())
-                .beforePassword("password1")
                 .afterPassword("password2")
                 .build();
 
@@ -617,7 +616,6 @@ public class RoomServiceTest {
 
         ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto = ModifyRoomPasswordRequestDto.testBuilder()
                 .roomId(room.get().getId())
-                .beforePassword("password1")
                 .afterPassword("password2")
                 .build();
 
@@ -643,7 +641,6 @@ public class RoomServiceTest {
 
         ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto = ModifyRoomPasswordRequestDto.testBuilder()
                 .roomId(room.get().getId())
-                .beforePassword("wrong123")
                 .afterPassword("password2")
                 .build();
 

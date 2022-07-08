@@ -15,7 +15,6 @@ import com.photory.domain.participate.repository.ParticipateRepository;
 import com.photory.domain.room.repository.RoomRepository;
 import com.photory.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ public class RoomService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final ParticipateRepository participateRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public CreateRoomResponse createRoom(String userEmail, CreateRoomRequestDto request) {
         String title = request.getTitle();
@@ -39,7 +37,7 @@ public class RoomService {
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
-        Room room = Room.of(createRoomCode(), user, title, passwordEncoder.encode(password), 1, true);
+        Room room = Room.of(createRoomCode(), user, title, password, 1, true);
 
         Room created = roomRepository.save(room);
 
@@ -61,7 +59,7 @@ public class RoomService {
         Optional<Room> room = roomRepository.findByCode(code);
 
         if (room.isPresent()) {
-            if (passwordEncoder.matches(password, room.get().getPassword())) {
+            if (password.equals(room.get().getPassword())) {
                 if (room.get().getParticipantsCount() >= 8) {
                     throw new ForbiddenException(String.format("방 (%s) 은 최대 인원 8명을 넘을 수 없습니다.", room.get().getId()), FORBIDDEN_ROOM_EXCEED_CAPACITY_EXCEPTION);
                 }
@@ -193,7 +191,6 @@ public class RoomService {
 
     public void modifyRoomPassword(String userEmail, ModifyRoomPasswordRequestDto request) {
         Long roomId = request.getRoomId();
-        String beforePassword = request.getBeforePassword();
         String afterPassword = request.getAfterPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
@@ -206,12 +203,7 @@ public class RoomService {
             throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
         }
 
-        // 이전 비밀번호가 틀리면 비밀번호를 변경할 수 없음
-        if (!passwordEncoder.matches(beforePassword, room.getPassword())) {
-            throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
-        }
-
-        room.setPassword(passwordEncoder.encode(afterPassword));
+        room.setPassword(afterPassword);
 
         roomRepository.save(room);
     }
