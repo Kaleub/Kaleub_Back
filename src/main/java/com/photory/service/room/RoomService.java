@@ -193,7 +193,6 @@ public class RoomService {
 
     public void modifyRoomPassword(String userEmail, ModifyRoomPasswordRequestDto request) {
         Long roomId = request.getRoomId();
-        String beforePassword = request.getBeforePassword();
         String afterPassword = request.getAfterPassword();
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
@@ -204,11 +203,6 @@ public class RoomService {
         // 방장이 아니면 비밀번호를 변경할 수 없음
         if (user.getId() != ownerUser.getId()) {
             throw new ForbiddenException(String.format("해당 유저 (%s) 는 방장이 아닙니다.", user.getId()), FORBIDDEN_ROOM_OWNER_EXCEPTION);
-        }
-
-        // 이전 비밀번호가 틀리면 비밀번호를 변경할 수 없음
-        if (!passwordEncoder.matches(beforePassword, room.getPassword())) {
-            throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
         }
 
         room.setPassword(passwordEncoder.encode(afterPassword));
