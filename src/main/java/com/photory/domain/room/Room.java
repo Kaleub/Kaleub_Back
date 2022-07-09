@@ -21,7 +21,7 @@ public class Room extends AuditingTimeEntity {
 
     @Setter
     @ManyToOne
-    @JoinColumn(name="USER_ID")
+    @JoinColumn(name = "USER_ID")
     private User ownerUser;
 
     @Column(nullable = false, length = 20)

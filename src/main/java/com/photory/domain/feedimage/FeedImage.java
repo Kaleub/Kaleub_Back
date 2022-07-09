@@ -20,7 +20,7 @@ public class FeedImage extends AuditingTimeEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="FEED_ID")
+    @JoinColumn(name = "FEED_ID")
     private Feed feed;
 
     @Column(nullable = false)

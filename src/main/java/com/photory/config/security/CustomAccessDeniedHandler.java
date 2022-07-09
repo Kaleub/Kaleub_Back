@@ -32,7 +32,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         String message = "접근 가능한 권한을 가지고 있지 않습니다.";
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityUser user = (SecurityUser)authentication.getPrincipal();
+        SecurityUser user = (SecurityUser) authentication.getPrincipal();
         Collection<GrantedAuthority> authorities = user.getAuthorities();
 
         if (hasRole(authorities, UserRole.ROLE_NOT_PERMITTED.name())) {
@@ -44,7 +44,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         out.print(jsonResponse);
     }
 
-    private boolean hasRole(Collection<GrantedAuthority> authorites, String role){
+    private boolean hasRole(Collection<GrantedAuthority> authorites, String role) {
         return authorites.contains(new SimpleGrantedAuthority(role));
     }
 }
