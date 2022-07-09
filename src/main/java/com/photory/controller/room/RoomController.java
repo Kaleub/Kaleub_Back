@@ -4,6 +4,7 @@ import com.photory.common.dto.ApiResponse;
 import com.photory.config.resolver.UserEmail;
 import com.photory.controller.room.dto.request.*;
 import com.photory.controller.room.dto.response.CreateRoomResponse;
+import com.photory.controller.room.dto.response.GetRoomResponse;
 import com.photory.controller.room.dto.response.GetRoomsResponse;
 import com.photory.controller.room.dto.response.JoinRoomResponse;
 import com.photory.service.room.RoomService;
@@ -35,6 +36,12 @@ public class RoomController {
     @GetMapping
     public ApiResponse<ArrayList<GetRoomsResponse>> getRooms(@UserEmail String userEmail) {
         ArrayList<GetRoomsResponse> response = roomService.getRooms(userEmail);
+        return ApiResponse.success(response);
+    }
+
+    @GetMapping("/{roomId}")
+    public ApiResponse<GetRoomResponse> getRoom(@PathVariable Long roomId, @UserEmail String userEmail) {
+        GetRoomResponse response = roomService.getRoom(userEmail, roomId);
         return ApiResponse.success(response);
     }
 

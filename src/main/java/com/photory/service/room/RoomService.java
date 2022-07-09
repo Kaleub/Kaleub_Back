@@ -6,13 +6,14 @@ import com.photory.common.exception.model.NotFoundException;
 import com.photory.common.exception.model.ValidationException;
 import com.photory.controller.room.dto.request.*;
 import com.photory.controller.room.dto.response.CreateRoomResponse;
+import com.photory.controller.room.dto.response.GetRoomResponse;
 import com.photory.controller.room.dto.response.GetRoomsResponse;
 import com.photory.controller.room.dto.response.JoinRoomResponse;
 import com.photory.domain.participate.Participate;
-import com.photory.domain.room.Room;
-import com.photory.domain.user.User;
 import com.photory.domain.participate.repository.ParticipateRepository;
+import com.photory.domain.room.Room;
 import com.photory.domain.room.repository.RoomRepository;
+import com.photory.domain.user.User;
 import com.photory.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -102,6 +103,31 @@ public class RoomService {
 
             response.add(getRoomsResponse);
         }));
+
+        return response;
+    }
+
+    public GetRoomResponse getRoom(String userEmail, Long roomId) {
+        User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
+        Room room = RoomServiceUtils.findRoomByRoomId(roomRepository, roomId);
+
+        ArrayList<Long> userIds = new ArrayList<>();
+
+        //방에 참가한 사용자만 방 정보 조회 가능
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room, user);
+        if (participating.isEmpty()) {
+            throw new ForbiddenException(String.format("참가하지 않은 방 (%s) 입니다", room.getId()), FORBIDDEN_ROOM_PARTICIPANT_EXCEPTION);
+        }
+
+        //해당 방에 대한 참가정보 가져오기
+        ArrayList<Participate> participates = participateRepository.findAllByRoom(room);
+        for (Participate participate : participates) {
+            Long userId = participate.getUser().getId();
+
+            userIds.add(userId);
+        }
+
+        GetRoomResponse response = GetRoomResponse.of(room, userIds);
 
         return response;
     }
@@ -238,16 +264,16 @@ public class RoomService {
         String result;
         do {
             char[] tmp = new char[8];
-            for(int i=0; i<tmp.length; i++) {
-                int div = (int) Math.floor( Math.random() * 2 );
-                if(div == 0) { // 0이면 숫자로
-                    tmp[i] = (char) (Math.random() * 10 + '0') ;
+            for (int i = 0; i < tmp.length; i++) {
+                int div = (int) Math.floor(Math.random() * 2);
+                if (div == 0) { // 0이면 숫자로
+                    tmp[i] = (char) (Math.random() * 10 + '0');
                 } else { //1이면 알파벳
-                    tmp[i] = (char) (Math.random() * 26 + 'A') ;
+                    tmp[i] = (char) (Math.random() * 26 + 'A');
                 }
             }
             result = new String(tmp);
-        } while(checkRoomCode(result));
+        } while (checkRoomCode(result));
 
         return result;
     }
@@ -255,7 +281,7 @@ public class RoomService {
     private Boolean checkRoomCode(String roomCode) {
         List<Room> allRooms = roomRepository.findAll();
         for (int i = 0; i < allRooms.size(); i++) {
-            if(roomCode.equals(allRooms.get(i).getCode())) {
+            if (roomCode.equals(allRooms.get(i).getCode())) {
                 return true;
             }
         }
