@@ -587,7 +587,7 @@ public class RoomServiceTest {
         Optional<Room> modifiedRoom = roomRepository.findByOwnerUser(roomOwner);
 
         assertAll(
-                () -> assertTrue(passwordEncoder.matches("password2", modifiedRoom.get().getPassword()))
+                () -> assertEquals("password2", modifiedRoom.get().getPassword())
         );
     }
 
@@ -623,31 +623,6 @@ public class RoomServiceTest {
 
         //then
         assertThrows(ForbiddenException.class, () -> roomService.modifyRoomPassword(notOwner.getEmail(), modifyRoomPasswordRequestDto));
-    }
-
-    @Test
-    @DisplayName("modifyRoomPasswordTest_실패_비밀번호_틀린_경우")
-    void modifyRoomPasswordTest_실패_비밀번호_틀린_경우() {
-        //given
-        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
-        User roomOwner = userRepository.save(user1);
-
-        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
-                .title("room")
-                .password("password1")
-                .build();
-        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
-        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
-
-        ModifyRoomPasswordRequestDto modifyRoomPasswordRequestDto = ModifyRoomPasswordRequestDto.testBuilder()
-                .roomId(room.get().getId())
-                .afterPassword("password2")
-                .build();
-
-        //when
-
-        //then
-        assertThrows(ValidationException.class, () -> roomService.modifyRoomPassword(roomOwner.getEmail(), modifyRoomPasswordRequestDto));
     }
 
     @Test

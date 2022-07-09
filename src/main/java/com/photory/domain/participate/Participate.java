@@ -1,8 +1,8 @@
 package com.photory.domain.participate;
 
 import com.photory.domain.common.AuditingTimeEntity;
-import com.photory.domain.user.User;
 import com.photory.domain.room.Room;
+import com.photory.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,11 +21,11 @@ public class Participate extends AuditingTimeEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="ROOM_ID")
+    @JoinColumn(name = "ROOM_ID")
     private Room room;
 
     @ManyToOne
-    @JoinColumn(name="USER_ID")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @Builder

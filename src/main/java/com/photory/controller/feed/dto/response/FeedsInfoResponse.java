@@ -1,7 +1,6 @@
 package com.photory.controller.feed.dto.response;
 
 import com.photory.common.dto.AuditingTimeResponse;
-import com.photory.domain.collection.FeedImageCollection;
 import com.photory.domain.feed.Feed;
 import com.photory.domain.feedimage.FeedImage;
 import lombok.*;

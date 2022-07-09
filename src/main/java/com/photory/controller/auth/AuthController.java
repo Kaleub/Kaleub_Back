@@ -14,7 +14,7 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
-  
+
     //이메일이 유효한거 확인 되면, 인증 버튼 누를 수 있음
     @PostMapping("/signup/email/check")
     public ApiResponse<String> validateEmail(@RequestBody @Valid ValidateEmailRequestDto request) {

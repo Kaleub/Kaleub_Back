@@ -4,12 +4,12 @@ import com.photory.common.exception.model.ConflictException;
 import com.photory.common.exception.model.InternalServerException;
 import com.photory.common.exception.model.NotFoundException;
 import com.photory.common.exception.model.ValidationException;
-import com.photory.controller.auth.dto.request.*;
-import com.photory.domain.user.UserRole;
-import com.photory.domain.user.User;
-import com.photory.domain.user.repository.UserRepository;
 import com.photory.common.util.JwtUtil;
 import com.photory.common.util.RedisUtil;
+import com.photory.controller.auth.dto.request.*;
+import com.photory.domain.user.User;
+import com.photory.domain.user.UserRole;
+import com.photory.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -56,7 +56,7 @@ public class AuthService {
         do {
             Random random = new Random();
             authKey = String.valueOf(random.nextInt(888888) + 111111);
-        } while(redisUtil.existKey(authKey));
+        } while (redisUtil.existKey(authKey));
 
         //이메일 발송
         sendAuthEmail(email, authKey);
@@ -122,10 +122,10 @@ public class AuthService {
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true,"utf-8");
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
             helper.setTo(email);
             helper.setSubject(subject);
-            helper.setText(text,true);
+            helper.setText(text, true);
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
