@@ -16,7 +16,7 @@ public class GetRoomResponse extends AuditingTimeResponse {
     private String password;
     private int participantsCount;
     private boolean status;
-    private ArrayList<Long> userIds = new ArrayList<>();
+    private ArrayList<Long> userIds;
 
     @Builder
     public GetRoomResponse(String code, String ownerEmail, String password, int participantsCount, boolean status, ArrayList<Long> userIds) {
