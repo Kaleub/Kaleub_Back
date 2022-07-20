@@ -5,13 +5,13 @@ import com.photory.common.exception.model.ForbiddenException;
 import com.photory.common.exception.model.NotFoundException;
 import com.photory.common.exception.model.ValidationException;
 import com.photory.controller.room.dto.request.*;
-import com.photory.controller.room.dto.response.JoinRoomResponse;
-import com.photory.domain.user.UserRole;
+import com.photory.controller.room.dto.response.GetRoomResponse;
 import com.photory.domain.participate.Participate;
-import com.photory.domain.room.Room;
-import com.photory.domain.user.User;
 import com.photory.domain.participate.repository.ParticipateRepository;
+import com.photory.domain.room.Room;
 import com.photory.domain.room.repository.RoomRepository;
+import com.photory.domain.user.User;
+import com.photory.domain.user.UserRole;
 import com.photory.domain.user.repository.UserRepository;
 import com.photory.service.room.RoomService;
 import org.junit.jupiter.api.AfterEach;
@@ -21,10 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class RoomServiceTest {
@@ -239,6 +240,76 @@ public class RoomServiceTest {
 
         //then
         assertThrows(ConflictException.class, () -> roomService.joinRoom(roomOwner.getEmail(), joinRoomRequestDto));
+    }
+
+    @Test
+    @DisplayName("getRoomTest_성공")
+    void getRoomTest_성공() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        JoinRoomRequestDto joinRoomRequestDto = JoinRoomRequestDto.testBuilder()
+                .code(room.get().getCode())
+                .password("password1")
+                .build();
+
+        roomService.joinRoom(notOwner.getEmail(), joinRoomRequestDto);
+
+        //when
+        GetRoomResponse getRoom1 = roomService.getRoom(roomOwner.getEmail(), room.get().getId());
+        GetRoomResponse getRoom2 = roomService.getRoom(notOwner.getEmail(), room.get().getId());
+
+        //then
+        ArrayList<Participate> participates = participateRepository.findAllByRoom(room.get());
+
+        assertAll(
+                () -> assertEquals(room.get().getCode(), getRoom1.getCode()),
+                () -> assertEquals(room.get().getOwnerUser().getEmail(), getRoom1.getOwnerEmail()),
+                () -> assertEquals(room.get().getPassword(), getRoom1.getPassword()),
+                () -> assertEquals(2, getRoom1.getParticipantsCount()),
+                () -> assertEquals(2, getRoom1.getUserIds().size())
+        );
+
+        assertAll(
+                () -> assertEquals(room.get().getCode(), getRoom2.getCode()),
+                () -> assertEquals(room.get().getOwnerUser().getEmail(), getRoom2.getOwnerEmail()),
+                () -> assertEquals(room.get().getPassword(), getRoom2.getPassword()),
+                () -> assertEquals(2, getRoom2.getParticipantsCount()),
+                () -> assertEquals(2, getRoom2.getUserIds().size())
+        );
+
+        assertThat(getRoom1.getUserIds()).containsExactly(participates.get(0).getId(), participates.get(1).getId());
+        assertThat(getRoom2.getUserIds()).containsExactly(participates.get(0).getId(), participates.get(1).getId());
+    }
+
+    @Test
+    @DisplayName("getRoom_실패_방_참가자가_아닌_경우")
+    void getRoom_실패_방_참가자가_아닌_경우() {
+        //given
+        User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
+        User roomOwner = userRepository.save(user1);
+        User notOwner = userRepository.save(user2);
+
+        CreateRoomRequestDto createRoomRequestDto = CreateRoomRequestDto.testBuilder()
+                .title("room")
+                .password("password1")
+                .build();
+        roomService.createRoom(roomOwner.getEmail(), createRoomRequestDto);
+        Optional<Room> room = roomRepository.findByOwnerUser(roomOwner);
+
+        //then
+        assertThrows(ForbiddenException.class, () -> roomService.getRoom(notOwner.getEmail(), room.get().getId()));
     }
 
     @Test
@@ -534,9 +605,9 @@ public class RoomServiceTest {
         assertThrows(ForbiddenException.class, () -> roomService.deleteUserForce(notOwner.getEmail(), deleteUserForceRequestDto));
     }
 
-   @Test
-   @DisplayName("deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우")
-   void deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우() {
+    @Test
+    @DisplayName("deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우")
+    void deleteUserForce_실패_방에_없는_사용자는_강퇴_불가능한_경우() {
         //given
         User user1 = User.of("user1@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
         User user2 = User.of("user2@gmail.com", "password1", "닉네임", null, UserRole.ROLE_USER);
