@@ -271,6 +271,8 @@ public class RoomServiceTest {
 
         //then
         ArrayList<Participate> participates = participateRepository.findAllByRoom(room.get());
+        assertThat(getRoom1.getUserIds()).containsExactly(participates.get(0).getId(), participates.get(1).getId());
+        assertThat(getRoom2.getUserIds()).containsExactly(participates.get(0).getId(), participates.get(1).getId());
 
         assertAll(
                 () -> assertEquals(room.get().getCode(), getRoom1.getCode()),
@@ -287,9 +289,6 @@ public class RoomServiceTest {
                 () -> assertEquals(2, getRoom2.getParticipantsCount()),
                 () -> assertEquals(2, getRoom2.getUserIds().size())
         );
-
-        assertThat(getRoom1.getUserIds()).containsExactly(participates.get(0).getId(), participates.get(1).getId());
-        assertThat(getRoom2.getUserIds()).containsExactly(participates.get(0).getId(), participates.get(1).getId());
     }
 
     @Test
