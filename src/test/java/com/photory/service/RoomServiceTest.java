@@ -279,10 +279,7 @@ public class RoomServiceTest {
                 () -> assertEquals(room.get().getOwnerUser().getEmail(), getRoom1.getOwnerEmail()),
                 () -> assertEquals(room.get().getPassword(), getRoom1.getPassword()),
                 () -> assertEquals(2, getRoom1.getParticipantsCount()),
-                () -> assertEquals(2, getRoom1.getUserIds().size())
-        );
-
-        assertAll(
+                () -> assertEquals(2, getRoom1.getUserIds().size()),
                 () -> assertEquals(room.get().getCode(), getRoom2.getCode()),
                 () -> assertEquals(room.get().getOwnerUser().getEmail(), getRoom2.getOwnerEmail()),
                 () -> assertEquals(room.get().getPassword(), getRoom2.getPassword()),
