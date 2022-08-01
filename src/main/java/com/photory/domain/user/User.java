@@ -1,10 +1,7 @@
 package com.photory.domain.user;
 
 import com.photory.domain.common.AuditingTimeEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -34,6 +31,7 @@ public class User extends AuditingTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
 
+    @Setter
     @Column(nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
     private UserStatus status;
