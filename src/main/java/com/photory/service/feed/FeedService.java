@@ -147,8 +147,11 @@ public class FeedService {
             throw new NotFoundException(String.format("존재하지 않는 피드 (%s) 입니다", feedId), NOT_FOUND_FEED_EXCEPTION);
         }
 
-        //피드 작성자 아니면 삭제 불가능
-        if (feed.get().getUser().getId() != user.getId()) {
+        Room room = feed.get().getRoom();
+
+        // 피드 작성자가 방에 있을 때 피드 작성자가 아니면 삭제 불가능
+        Optional<Participate> participating = participateRepository.findByRoomAndUser(room, feed.get().getUser());
+        if (participating.isPresent() && feed.get().getUser().getId() != user.getId()) {
             throw new ForbiddenException(String.format("유저 (%s) 는 피드 (%s) 의 작성자가 아닙니다.", user.getId(), feedId), FORBIDDEN_FEED_OWNER_EXCEPTION);
         }
 
@@ -159,7 +162,7 @@ public class FeedService {
             feedImageRepository.delete(image);
         }
 
-        //전체 피드 삭제
+        // 피드 삭제
         feedRepository.delete(feed.get());
     }
 }
