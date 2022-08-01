@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static com.photory.common.exception.ErrorCode.*;
@@ -38,7 +37,7 @@ public class RoomService {
 
         User user = RoomServiceUtils.findUserByEmail(userRepository, userEmail);
 
-        Room room = Room.of(createRoomCode(), user, title, password, 1, true);
+        Room room = Room.of(RoomServiceUtils.createRoomCode(roomRepository), user, title, password, 1, true);
 
         Room created = roomRepository.save(room);
 
@@ -258,33 +257,5 @@ public class RoomService {
         room.setOwnerUser(delegatedUser);
 
         roomRepository.save(room);
-    }
-
-    private String createRoomCode() {
-        String result;
-        do {
-            char[] tmp = new char[8];
-            for (int i = 0; i < tmp.length; i++) {
-                int div = (int) Math.floor(Math.random() * 2);
-                if (div == 0) { // 0이면 숫자로
-                    tmp[i] = (char) (Math.random() * 10 + '0');
-                } else { //1이면 알파벳
-                    tmp[i] = (char) (Math.random() * 26 + 'A');
-                }
-            }
-            result = new String(tmp);
-        } while (checkRoomCode(result));
-
-        return result;
-    }
-
-    private Boolean checkRoomCode(String roomCode) {
-        List<Room> allRooms = roomRepository.findAll();
-        for (int i = 0; i < allRooms.size(); i++) {
-            if (roomCode.equals(allRooms.get(i).getCode())) {
-                return true;
-            }
-        }
-        return false;
     }
 }
