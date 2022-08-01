@@ -11,6 +11,7 @@ import com.photory.controller.auth.dto.request.AuthEmailRequestDto;
 import com.photory.controller.auth.dto.request.SigninUserRequestDto;
 import com.photory.controller.auth.dto.request.ValidateEmailRequestDto;
 import com.photory.domain.user.User;
+import com.photory.domain.user.UserStatus;
 import com.photory.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -86,7 +87,7 @@ public class AuthService {
 
         Optional<User> user = userRepository.findByEmail(email);
 
-        if (user.isPresent()) {
+        if (user.isPresent() && user.get().getStatus() == UserStatus.ACTIVE) {
             if (passwordEncoder.matches(password, user.get().getPassword())) {
                 String token = createToken(user.get());
 
@@ -95,7 +96,7 @@ public class AuthService {
                 throw new ValidationException("잘못된 비밀번호입니다.", VALIDATION_WRONG_PASSWORD_EXCEPTION);
             }
         } else {
-            throw new NotFoundException(String.format("가입되지 않은 이메일 (%s) 입니다", email), NOT_FOUND_EMAIL_EXCEPTION);
+            throw new NotFoundException(String.format("가입되지 않았거나 탈퇴한 이메일 (%s) 입니다", email), NOT_FOUND_EMAIL_EXCEPTION);
         }
     }
 
@@ -121,7 +122,7 @@ public class AuthService {
 
     private String createToken(User user) {
         String token = jwtUtil.generateToken(user);
-        redisUtil.setDataExpire(token, user.getEmail(), JwtUtil.TOKEN_VALIDATION_SECOND);
+        redisUtil.setDataExpire(user.getEmail(), token, JwtUtil.TOKEN_VALIDATION_SECOND);
 
         return token;
     }
