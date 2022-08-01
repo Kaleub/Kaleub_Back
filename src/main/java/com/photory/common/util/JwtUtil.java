@@ -6,6 +6,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +17,11 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 @PropertySource(value = "classpath:application-jwt.yml", factory = YamlPropertySourceFactory.class, ignoreResourceNotFound = true)
 public class JwtUtil {
+
+    private final RedisUtil redisUtil;
 
     public final static long TOKEN_VALIDATION_SECOND = 1L * 60 * 60 * 24 * 365; // 1년
 
@@ -67,7 +71,8 @@ public class JwtUtil {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getEmail(token);
+        final boolean existKey = redisUtil.existKey(username);
 
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && existKey);
     }
 }
