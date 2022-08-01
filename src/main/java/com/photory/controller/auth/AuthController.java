@@ -3,6 +3,7 @@ package com.photory.controller.auth;
 import com.photory.common.dto.ApiResponse;
 import com.photory.controller.auth.dto.request.*;
 import com.photory.service.auth.AuthService;
+import com.photory.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     //이메일이 유효한거 확인 되면, 인증 버튼 누를 수 있음
     @PostMapping("/signup/email/check")
@@ -39,7 +41,7 @@ public class AuthController {
     //마지막으로 회원 생성
     @PostMapping("/signup")
     public ApiResponse<String> createUser(@RequestBody @Valid CreateUserRequestDto request) {
-        authService.createUser(request);
+        userService.createUser(request);
         return ApiResponse.SUCCESS;
     }
 
