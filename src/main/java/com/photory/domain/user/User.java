@@ -34,13 +34,18 @@ public class User extends AuditingTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
 
+    @Column(nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
     @Builder
-    public User(String email, String password, String nickname, String imageUrl, UserRole role) {
+    public User(String email, String password, String nickname, String imageUrl, UserRole role, UserStatus status) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.imageUrl = imageUrl;
         this.role = role;
+        this.status = status;
     }
 
     public static User of(String email, String password, String nickname, String imageUrl, UserRole role) {
@@ -50,6 +55,7 @@ public class User extends AuditingTimeEntity {
                 .nickname(nickname)
                 .imageUrl(imageUrl)
                 .role(role)
+                .status(UserStatus.ACTIVE)
                 .build();
     }
 }
